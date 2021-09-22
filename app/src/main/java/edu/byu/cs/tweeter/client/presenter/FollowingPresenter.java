@@ -64,6 +64,6 @@ public class FollowingPresenter implements FollowService.GetFollowingObserver {
   }
 
   public void gotoUser(String alias) {
-    view.displayInfoMessage("Getting user's profile...");
+    view.displayInfoMessage("Getting " + alias + "'s profile...");
   }
 }
