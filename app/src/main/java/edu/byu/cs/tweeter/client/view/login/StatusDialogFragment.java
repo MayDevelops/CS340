@@ -25,80 +25,80 @@ import edu.byu.cs.tweeter.client.view.util.ImageUtils;
  * Implements the pop-up dialog for sending a new status.
  */
 public class StatusDialogFragment extends AppCompatDialogFragment {
-    private TextView fullName;
-    private TextView alias;
-    private ImageView image;
-    private EditText post;
-    private Observer observer;
-    private TextView wordCount;
+  private TextView fullName;
+  private TextView alias;
+  private ImageView image;
+  private EditText post;
+  private Observer observer;
+  private TextView wordCount;
 
-    @Override
-    public Dialog onCreateDialog(Bundle savedInstanceState) {
-        AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+  @Override
+  public Dialog onCreateDialog(Bundle savedInstanceState) {
+    AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
 
-        LayoutInflater inflater = getActivity().getLayoutInflater();
-        View view = inflater.inflate(R.layout.status_dialog, null);
+    LayoutInflater inflater = getActivity().getLayoutInflater();
+    View view = inflater.inflate(R.layout.status_dialog, null);
 
-        builder.setView(view)
-                .setNegativeButton("Close", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
+    builder.setView(view)
+            .setNegativeButton("Close", new DialogInterface.OnClickListener() {
+              @Override
+              public void onClick(DialogInterface dialog, int which) {
 
-                    }
-                })
-                .setPositiveButton("POST STATUS", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        observer.onStatusPosted(post.getText().toString());
-                    }
-                });
+              }
+            })
+            .setPositiveButton("POST STATUS", new DialogInterface.OnClickListener() {
+              @Override
+              public void onClick(DialogInterface dialog, int which) {
+                observer.onStatusPosted(post.getText().toString());
+              }
+            });
 
-        fullName = view.findViewById(R.id.dialogFullName);
-        fullName.setText(Cache.getInstance().getCurrUser().getName());
-        fullName.setTextSize(17);
-        alias = view.findViewById(R.id.dialogAlias);
-        alias.setText(Cache.getInstance().getCurrUser().getAlias());
-        alias.setTextSize(15);
-        alias.setTextColor(getResources().getColor(R.color.lightGray));
-        image = view.findViewById(R.id.dialogImage);
-        image.setImageDrawable(ImageUtils.drawableFromByteArray(Cache.getInstance().getCurrUser().getImageBytes()));
-        post = view.findViewById(R.id.dialogPost);
+    fullName = view.findViewById(R.id.dialogFullName);
+    fullName.setText(Cache.getInstance().getCurrUser().getName());
+    fullName.setTextSize(17);
+    alias = view.findViewById(R.id.dialogAlias);
+    alias.setText(Cache.getInstance().getCurrUser().getAlias());
+    alias.setTextSize(15);
+    alias.setTextColor(getResources().getColor(R.color.lightGray));
+    image = view.findViewById(R.id.dialogImage);
+    image.setImageDrawable(ImageUtils.drawableFromByteArray(Cache.getInstance().getCurrUser().getImageBytes()));
+    post = view.findViewById(R.id.dialogPost);
 
-        post.addTextChangedListener(new TextWatcher() {
-            @Override
-            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+    post.addTextChangedListener(new TextWatcher() {
+      @Override
+      public void beforeTextChanged(CharSequence s, int start, int count, int after) {
 
-            }
+      }
 
-            @Override
-            public void onTextChanged(CharSequence s, int start, int before, int count) {
-                wordCount.setText(String.format(Locale.US, "%d / %d", s.length(), 250));
-            }
+      @Override
+      public void onTextChanged(CharSequence s, int start, int before, int count) {
+        wordCount.setText(String.format(Locale.US, "%d / %d", s.length(), 250));
+      }
 
-            @Override
-            public void afterTextChanged(Editable s) {
+      @Override
+      public void afterTextChanged(Editable s) {
 
-            }
-        });
+      }
+    });
 
-        wordCount = view.findViewById(R.id.wordCount);
-        wordCount.setText(String.format(Locale.US, "%d / %d", 0, 250));
+    wordCount = view.findViewById(R.id.wordCount);
+    wordCount.setText(String.format(Locale.US, "%d / %d", 0, 250));
 
-        return builder.create();
+    return builder.create();
+  }
+
+  @Override
+  public void onAttach(Context context) {
+    super.onAttach(context);
+    try {
+      observer = (Observer) context;
+    } catch (ClassCastException e) {
+      throw new ClassCastException(context.toString() + " must implement the StatusDialogFragment.Observer");
     }
+  }
 
-    @Override
-    public void onAttach(Context context) {
-        super.onAttach(context);
-        try {
-            observer = (Observer) context;
-        } catch (ClassCastException e) {
-            throw new ClassCastException(context.toString() + " must implement the StatusDialogFragment.Observer");
-        }
-    }
-
-    public interface Observer {
-        void onStatusPosted(String post);
-    }
+  public interface Observer {
+    void onStatusPosted(String post);
+  }
 
 }

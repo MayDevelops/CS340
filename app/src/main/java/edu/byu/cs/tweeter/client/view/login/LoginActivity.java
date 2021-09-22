@@ -14,15 +14,15 @@ import edu.byu.cs.client.R;
  * Contains the "Login" and "Register" tabs
  */
 public class LoginActivity extends AppCompatActivity {
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_login);
+  @Override
+  protected void onCreate(Bundle savedInstanceState) {
+    super.onCreate(savedInstanceState);
+    setContentView(R.layout.activity_login);
 
-        LoginSectionsPagerAdapter loginSectionsPagerAdapter = new LoginSectionsPagerAdapter(this, getSupportFragmentManager());
-        ViewPager viewPager = findViewById(R.id.login_view_pager);
-        viewPager.setAdapter(loginSectionsPagerAdapter);
-        TabLayout tabs = findViewById(R.id.loginTabs);
-        tabs.setupWithViewPager(viewPager);
-    }
+    LoginSectionsPagerAdapter loginSectionsPagerAdapter = new LoginSectionsPagerAdapter(this, getSupportFragmentManager());
+    ViewPager viewPager = findViewById(R.id.login_view_pager);
+    viewPager.setAdapter(loginSectionsPagerAdapter);
+    TabLayout tabs = findViewById(R.id.loginTabs);
+    tabs.setupWithViewPager(viewPager);
+  }
 }
