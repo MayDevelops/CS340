@@ -63,6 +63,7 @@ public class LoginPresenter implements UserService.LoginObserver {
     String message = validateLogin(alias, pw);
     if (message == null) {
       view.displayInfoMessage("Logging In...:");
+      new UserService().login(alias, pw, this);
     } else {
       view.displayErrorMessage("Login failed: " + message);
     }

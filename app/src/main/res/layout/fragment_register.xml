@@ -15,6 +15,7 @@
                 android:layout_height="wrap_content"
                 android:layout_width="match_parent"
                 android:inputType="text"
+                android:text="a"
                 android:hint="@string/firstName" />
 
         <EditText
@@ -22,6 +23,8 @@
                 android:layout_height="wrap_content"
                 android:layout_width="match_parent"
                 android:inputType="text"
+                android:text="a"
+
                 android:hint="@string/lastName" />
 
         <EditText
@@ -29,6 +32,8 @@
                 android:layout_height="wrap_content"
                 android:layout_width="match_parent"
                 android:inputType="text"
+                android:text="@a"
+
                 android:hint="@string/usernameHint" />
 
         <EditText
@@ -36,6 +41,7 @@
                 android:layout_height="wrap_content"
                 android:layout_width="match_parent"
                 android:inputType="textPassword"
+                android:text="a"
                 android:hint="@string/password" />
 
 

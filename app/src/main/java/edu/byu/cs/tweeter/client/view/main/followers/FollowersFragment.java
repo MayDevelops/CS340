@@ -4,7 +4,6 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
-import android.os.Message;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -22,13 +21,10 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 
 import edu.byu.cs.client.R;
-import edu.byu.cs.tweeter.client.backgroundTask.GetFollowersTask;
-import edu.byu.cs.tweeter.client.backgroundTask.GetUserTask;
 import edu.byu.cs.tweeter.client.cache.Cache;
+import edu.byu.cs.tweeter.client.presenter.FollowersPresenter;
 import edu.byu.cs.tweeter.client.view.main.MainActivity;
 import edu.byu.cs.tweeter.client.view.util.ImageUtils;
 import edu.byu.cs.tweeter.model.domain.User;
@@ -36,7 +32,7 @@ import edu.byu.cs.tweeter.model.domain.User;
 /**
  * Implements the "Followers" tab.
  */
-public class FollowersFragment extends Fragment {
+public class FollowersFragment extends Fragment implements FollowersPresenter.View {
 
   private static final String LOG_TAG = "FollowersFragment";
   private static final String USER_KEY = "UserKey";
@@ -44,17 +40,52 @@ public class FollowersFragment extends Fragment {
   private static final int LOADING_DATA_VIEW = 0;
   private static final int ITEM_VIEW = 1;
 
-  private static final int PAGE_SIZE = 10;
 
-  private User user;
+  private boolean isLoading = false;
 
-  private FollowersRecyclerViewAdapter followersRecyclerViewAdapter;
+  private FollowersPresenter presenter;
+  private FollowersRecyclerViewAdapter FollowersRecyclerViewAdapter;
+
+
+  @Override
+  public void addItems(List<User> followees) {
+    FollowersRecyclerViewAdapter.addItems(followees);
+  }
+
+  @Override
+  public void setLoading(boolean value) {
+    isLoading = value;
+    if (isLoading) {
+      FollowersRecyclerViewAdapter.addLoadingFooter();
+    } else {
+      FollowersRecyclerViewAdapter.removeLoadingFooter();
+    }
+  }
+
+  @Override
+  public void navigateToUser(User user) {
+    Intent intent = new Intent(getContext(), MainActivity.class);
+    intent.putExtra(MainActivity.CURRENT_USER_KEY, user);
+    startActivity(intent);
+  }
+
+  @Override
+  public void displayErrorMessage(String message) {
+    Toast.makeText(getActivity(), message, Toast.LENGTH_LONG).show();
+  }
+
+
+  @Override
+  public void displayInfoMessage(String message) {
+    Toast.makeText(getActivity(), message, Toast.LENGTH_LONG).show();
+  }
+
 
   /**
    * Creates an instance of the fragment and places the target user in an arguments
    * bundle assigned to the fragment.
    *
-   * @param user the user whose followers are being displayed (not necessarily the logged-in user).
+   * @param user the user whose Followers is being displayed (not necessarily the logged-in user).
    * @return the fragment.
    */
   public static FollowersFragment newInstance(User user) {
@@ -72,24 +103,34 @@ public class FollowersFragment extends Fragment {
                            Bundle savedInstanceState) {
     View view = inflater.inflate(R.layout.fragment_followers, container, false);
 
-    //noinspection ConstantConditions
-    user = (User) getArguments().getSerializable(USER_KEY);
+    User user = (User) getArguments().getSerializable(USER_KEY);
+    presenter = new FollowersPresenter(this, Cache.getInstance().getCurrUserAuthToken(), user);
 
-    RecyclerView followersRecyclerView = view.findViewById(R.id.followersRecyclerView);
+    RecyclerView FollowersRecyclerView = view.findViewById(R.id.followersRecyclerView);
 
     LinearLayoutManager layoutManager = new LinearLayoutManager(this.getContext());
-    followersRecyclerView.setLayoutManager(layoutManager);
+    FollowersRecyclerView.setLayoutManager(layoutManager);
 
-    followersRecyclerViewAdapter = new FollowersRecyclerViewAdapter();
-    followersRecyclerView.setAdapter(followersRecyclerViewAdapter);
+    FollowersRecyclerViewAdapter = new FollowersRecyclerViewAdapter();
+    FollowersRecyclerView.setAdapter(FollowersRecyclerViewAdapter);
 
-    followersRecyclerView.addOnScrollListener(new FollowRecyclerViewPaginationScrollListener(layoutManager));
+    FollowersRecyclerView.addOnScrollListener(new FollowRecyclerViewPaginationScrollListener(layoutManager));
 
     return view;
   }
 
+  private void loadMoreItems() {
+    Log.e("FollowersFragment", "calling presenter to load more items");
+
+    final Handler handler = new Handler(Looper.getMainLooper());
+    handler.postDelayed(() -> {
+      presenter.loadMoreItems();
+    }, 0);
+  }
+
+
   /**
-   * The ViewHolder for the RecyclerView that displays the follower data.
+   * The ViewHolder for the RecyclerView that displays the Followers data.
    */
   private class FollowersHolder extends RecyclerView.ViewHolder {
 
@@ -112,11 +153,7 @@ public class FollowersFragment extends Fragment {
       itemView.setOnClickListener(new View.OnClickListener() {
         @Override
         public void onClick(View view) {
-          GetUserTask getUserTask = new GetUserTask(Cache.getInstance().getCurrUserAuthToken(),
-                  userAlias.getText().toString(), new GetUserHandler());
-          ExecutorService executor = Executors.newSingleThreadExecutor();
-          executor.execute(getUserTask);
-          Toast.makeText(getContext(), "Getting user's profile...", Toast.LENGTH_LONG).show();
+          presenter.getUsers(userAlias.getText().toString());
         }
       });
     }
@@ -127,53 +164,23 @@ public class FollowersFragment extends Fragment {
      * @param user the user.
      */
     void bindUser(User user) {
-      if (user == null)
-        Log.e(LOG_TAG, "user is null!");
-      if (user != null && user.getImageBytes() == null)
-        Log.e(LOG_TAG, "image bytes are null");
       userImage.setImageDrawable(ImageUtils.drawableFromByteArray(user.getImageBytes()));
       userAlias.setText(user.getAlias());
       userName.setText(user.getName());
     }
 
-    /**
-     * Message handler (i.e., observer) for GetUserTask.
-     */
-    private class GetUserHandler extends Handler {
-      @Override
-      public void handleMessage(@NonNull Message msg) {
-        boolean success = msg.getData().getBoolean(GetUserTask.SUCCESS_KEY);
-        if (success) {
-          User user = (User) msg.getData().getSerializable(GetUserTask.USER_KEY);
 
-          Intent intent = new Intent(getContext(), MainActivity.class);
-          intent.putExtra(MainActivity.CURRENT_USER_KEY, user);
-          startActivity(intent);
-        } else if (msg.getData().containsKey(GetUserTask.MESSAGE_KEY)) {
-          String message = msg.getData().getString(GetUserTask.MESSAGE_KEY);
-          Toast.makeText(getContext(), "Failed to get user's profile: " + message, Toast.LENGTH_LONG).show();
-        } else if (msg.getData().containsKey(GetUserTask.EXCEPTION_KEY)) {
-          Exception ex = (Exception) msg.getData().getSerializable(GetUserTask.EXCEPTION_KEY);
-          Toast.makeText(getContext(), "Failed to get user's profile because of exception: " + ex.getMessage(), Toast.LENGTH_LONG).show();
-        }
-      }
-    }
   }
 
   /**
-   * The adapter for the RecyclerView that displays the follower data.
+   * The adapter for the RecyclerView that displays the Followers data.
    */
   private class FollowersRecyclerViewAdapter extends RecyclerView.Adapter<FollowersHolder> {
 
     private final List<User> users = new ArrayList<>();
 
-    private User lastFollower;
-
-    private boolean hasMorePages;
-    private boolean isLoading = false;
-
     /**
-     * Creates an instance and loads the first page of following data.
+     * Creates an instance and loads the first page of Followers data.
      */
     FollowersRecyclerViewAdapter() {
       loadMoreItems();
@@ -215,7 +222,7 @@ public class FollowersFragment extends Fragment {
     }
 
     /**
-     * Creates a view holder for a follower to be displayed in the RecyclerView or for a message
+     * Creates a view holder for a followee to be displayed in the RecyclerView or for a message
      * indicating that new rows are being loaded if we are waiting for rows to load.
      *
      * @param parent   the parent view.
@@ -239,24 +246,24 @@ public class FollowersFragment extends Fragment {
     }
 
     /**
-     * Binds the follower at the specified position unless we are currently loading new data. If
+     * Binds the followee at the specified position unless we are currently loading new data. If
      * we are loading new data, the display at that position will be the data loading footer.
      *
-     * @param followingHolder the ViewHolder to which the follower should be bound.
-     * @param position        the position (in the list of followers) that contains the follower to be
+     * @param FollowersHolder the ViewHolder to which the followee should be bound.
+     * @param position        the position (in the list of followees) that contains the followee to be
      *                        bound.
      */
     @Override
-    public void onBindViewHolder(@NonNull FollowersHolder followingHolder, int position) {
+    public void onBindViewHolder(@NonNull FollowersHolder FollowersHolder, int position) {
       if (!isLoading) {
-        followingHolder.bindUser(users.get(position));
+        FollowersHolder.bindUser(users.get(position));
       }
     }
 
     /**
-     * Returns the current number of followers available for display.
+     * Returns the current number of followees available for display.
      *
-     * @return the number of followers available for display.
+     * @return the number of followees available for display.
      */
     @Override
     public int getItemCount() {
@@ -276,22 +283,6 @@ public class FollowersFragment extends Fragment {
     }
 
     /**
-     * Causes the Adapter to display a loading footer and make a request to get more following
-     * data.
-     */
-    void loadMoreItems() {
-      if (!isLoading) {   // This guard is important for avoiding a race condition in the scrolling code.
-        isLoading = true;
-        addLoadingFooter();
-
-        GetFollowersTask getFollowersTask = new GetFollowersTask(Cache.getInstance().getCurrUserAuthToken(),
-                user, PAGE_SIZE, lastFollower, new GetFollowersHandler());
-        ExecutorService executor = Executors.newSingleThreadExecutor();
-        executor.execute(getFollowersTask);
-      }
-    }
-
-    /**
      * Adds a dummy user to the list of users so the RecyclerView will display a view (the
      * loading footer view) at the bottom of the list.
      */
@@ -308,32 +299,6 @@ public class FollowersFragment extends Fragment {
     }
 
 
-    /**
-     * Message handler (i.e., observer) for GetFollowersTask.
-     */
-    private class GetFollowersHandler extends Handler {
-      @Override
-      public void handleMessage(@NonNull Message msg) {
-        isLoading = false;
-        removeLoadingFooter();
-
-        boolean success = msg.getData().getBoolean(GetFollowersTask.SUCCESS_KEY);
-        if (success) {
-          List<User> followers = (List<User>) msg.getData().getSerializable(GetFollowersTask.FOLLOWERS_KEY);
-          hasMorePages = msg.getData().getBoolean(GetFollowersTask.MORE_PAGES_KEY);
-
-          lastFollower = (followers.size() > 0) ? followers.get(followers.size() - 1) : null;
-
-          followersRecyclerViewAdapter.addItems(followers);
-        } else if (msg.getData().containsKey(GetFollowersTask.MESSAGE_KEY)) {
-          String message = msg.getData().getString(GetFollowersTask.MESSAGE_KEY);
-          Toast.makeText(getContext(), "Failed to get followers: " + message, Toast.LENGTH_LONG).show();
-        } else if (msg.getData().containsKey(GetFollowersTask.EXCEPTION_KEY)) {
-          Exception ex = (Exception) msg.getData().getSerializable(GetFollowersTask.EXCEPTION_KEY);
-          Toast.makeText(getContext(), "Failed to get followers because of exception: " + ex.getMessage(), Toast.LENGTH_LONG).show();
-        }
-      }
-    }
   }
 
   /**
@@ -370,17 +335,11 @@ public class FollowersFragment extends Fragment {
       int totalItemCount = layoutManager.getItemCount();
       int firstVisibleItemPosition = layoutManager.findFirstVisibleItemPosition();
 
-      if (!followersRecyclerViewAdapter.isLoading && followersRecyclerViewAdapter.hasMorePages) {
-        if ((visibleItemCount + firstVisibleItemPosition) >=
-                totalItemCount && firstVisibleItemPosition >= 0) {
-          // Run this code later on the UI thread
-          final Handler handler = new Handler(Looper.getMainLooper());
-          handler.postDelayed(() -> {
-            followersRecyclerViewAdapter.loadMoreItems();
-          }, 0);
-        }
+      if ((visibleItemCount + firstVisibleItemPosition) >=
+              totalItemCount && firstVisibleItemPosition >= 0) {
+        loadMoreItems();
       }
     }
   }
-
 }
+

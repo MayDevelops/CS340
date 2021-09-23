@@ -4,6 +4,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -23,6 +24,7 @@ import java.util.List;
 
 import edu.byu.cs.client.R;
 import edu.byu.cs.tweeter.client.cache.Cache;
+import edu.byu.cs.tweeter.client.model.service.UserService;
 import edu.byu.cs.tweeter.client.presenter.FollowingPresenter;
 import edu.byu.cs.tweeter.client.view.main.MainActivity;
 import edu.byu.cs.tweeter.client.view.util.ImageUtils;
@@ -71,14 +73,12 @@ public class FollowingFragment extends Fragment implements FollowingPresenter.Vi
   @Override
   public void displayErrorMessage(String message) {
     Toast.makeText(getActivity(), message, Toast.LENGTH_LONG).show();
-
   }
 
 
   @Override
   public void displayInfoMessage(String message) {
     Toast.makeText(getActivity(), message, Toast.LENGTH_LONG).show();
-
   }
 
 
@@ -121,7 +121,8 @@ public class FollowingFragment extends Fragment implements FollowingPresenter.Vi
   }
 
   private void loadMoreItems() {
-    // Run this code later on the UI thread
+    Log.e("FollowingFragment", "calling presenter to load more items");
+
     final Handler handler = new Handler(Looper.getMainLooper());
     handler.postDelayed(() -> {
       presenter.loadMoreItems();
@@ -153,7 +154,7 @@ public class FollowingFragment extends Fragment implements FollowingPresenter.Vi
       itemView.setOnClickListener(new View.OnClickListener() {
         @Override
         public void onClick(View view) {
-          presenter.gotoUser(userAlias.getText().toString());
+          presenter.getUsers(userAlias.getText().toString());
         }
       });
     }
@@ -178,7 +179,6 @@ public class FollowingFragment extends Fragment implements FollowingPresenter.Vi
   private class FollowingRecyclerViewAdapter extends RecyclerView.Adapter<FollowingHolder> {
 
     private final List<User> users = new ArrayList<>();
-
 
     /**
      * Creates an instance and loads the first page of following data.

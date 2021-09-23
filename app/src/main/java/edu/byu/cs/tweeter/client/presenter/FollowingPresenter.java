@@ -1,17 +1,36 @@
 package edu.byu.cs.tweeter.client.presenter;
 
+import android.util.Log;
+
 import java.util.List;
 
+import edu.byu.cs.tweeter.client.cache.Cache;
 import edu.byu.cs.tweeter.client.model.service.FollowService;
+import edu.byu.cs.tweeter.client.model.service.UserService;
 import edu.byu.cs.tweeter.model.domain.AuthToken;
 import edu.byu.cs.tweeter.model.domain.User;
 
-public class FollowingPresenter implements FollowService.GetFollowingObserver {
+public class FollowingPresenter implements FollowService.GetFollowingObserver, UserService.GetUserObserver {
 
+  private static final int PAGE_SIZE = 10;
+  private User lastFollowee;
+
+  private boolean hasMorePages = true;
+  private boolean isLoading = false;
+
+  private View view;
+  private User user;
+  private AuthToken authToken;
+
+  public FollowingPresenter(View view, AuthToken authToken, User targetUser) {
+    this.view = view;
+    this.authToken = authToken;
+    this.user = targetUser;
+  }
 
   @Override
   public void getFollowingSucceeded(List<User> users, boolean hasMorePages) {
-
+    view.addItems(users);
   }
 
   @Override
@@ -21,6 +40,27 @@ public class FollowingPresenter implements FollowService.GetFollowingObserver {
 
   @Override
   public void getFollowingThrewException(Exception e) {
+
+  }
+
+  @Override
+  public void setLastFollowee(List<User> followees, boolean hasMorepages) {
+    this.hasMorePages = hasMorepages;
+    lastFollowee = (followees.size() > 0) ? followees.get(followees.size() - 1) : null;
+  }
+
+  @Override
+  public void getUserSucceeded(User user) {
+view.navigateToUser(user);
+  }
+
+  @Override
+  public void getUserFailed(String string) {
+
+  }
+
+  @Override
+  public void getUserThrewException(Exception ex) {
 
   }
 
@@ -37,33 +77,23 @@ public class FollowingPresenter implements FollowService.GetFollowingObserver {
     void displayInfoMessage(String message);
   }
 
-  private static final int PAGE_SIZE = 10;
-  private User lastFollowee;
-
-  private boolean hasMorePages;
-  private boolean isLoading = false;
-
-  private View view;
-  private User user;
-  private AuthToken authToken;
-
-  public FollowingPresenter(View view, AuthToken authToken, User targetUser) {
-    this.view = view;
-    this.authToken = authToken;
-    this.user = targetUser;
-  }
-
 
   public void loadMoreItems() {
+    Log.e("FollowingPresenter", "Calling service to load more items");
+
 
     if (!isLoading && hasMorePages) {
       isLoading = true;
       view.setLoading(true);
-      new FollowService().getFollowing(authToken, user, PAGE_SIZE, lastFollowee, this);
+      Log.e("FollowingPresenter", "Inside condition: calling service NOW");
+
+      new FollowService().getFollowing(authToken, user, lastFollowee, this);
+      isLoading = false;
+      view.setLoading(false);
     }
   }
 
-  public void gotoUser(String alias) {
-    view.displayInfoMessage("Getting " + alias + "'s profile...");
+  public void getUsers(String alias) {
+    UserService.getUser(authToken, alias, this);
   }
 }

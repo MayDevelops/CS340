@@ -11,10 +11,14 @@ import java.util.concurrent.Executors;
 import edu.byu.cs.tweeter.client.backgroundTask.GetUserTask;
 import edu.byu.cs.tweeter.client.backgroundTask.LoginTask;
 import edu.byu.cs.tweeter.client.cache.Cache;
+import edu.byu.cs.tweeter.client.presenter.FollowersPresenter;
 import edu.byu.cs.tweeter.model.domain.AuthToken;
 import edu.byu.cs.tweeter.model.domain.User;
 
 public class UserService {
+
+  public static void getUsers(AuthToken currUserAuthToken, String alias, FollowersPresenter followersPresenter) {
+  }
 
   public interface LoginObserver {
     void loginSucceeded(AuthToken authToken, User user);
@@ -33,7 +37,7 @@ public class UserService {
     void getUserThrewException(Exception ex);
   }
 
-  void getUser(AuthToken authToken, String alias, GetUserObserver observer) {
+  public static void getUser(AuthToken authToken, String alias, GetUserObserver observer) {
     GetUserTask getUserTask = new GetUserTask(authToken, alias, new GetUserHandler(observer));
     ExecutorService executor = Executors.newSingleThreadExecutor();
     executor.execute(getUserTask);
@@ -43,8 +47,8 @@ public class UserService {
   /**
    * Message handler (i.e., observer) for GetUserTask.
    */
-  private class GetUserHandler extends Handler {
-    private GetUserObserver observer;
+  private static class GetUserHandler extends Handler {
+    private final GetUserObserver observer;
 
     public GetUserHandler(GetUserObserver observer) {
       this.observer = observer;
@@ -67,11 +71,9 @@ public class UserService {
   }
 
 
-  public void login(String alias, String pw, LoginObserver observer) {
+  public void login(String alias, String password, LoginObserver observer) {
     // Send the login request.
-    LoginTask loginTask = new LoginTask(alias,
-            pw,
-            new LoginHandler(observer));
+    LoginTask loginTask = new LoginTask(alias, password, new LoginHandler(observer));
     ExecutorService executor = Executors.newSingleThreadExecutor();
     executor.execute(loginTask);
   }
@@ -79,7 +81,7 @@ public class UserService {
   /**
    * Message handler (i.e., observer) for LoginTask
    */
-  private class LoginHandler extends Handler {
+  private static class LoginHandler extends Handler {
     private final LoginObserver observer;
 
     public LoginHandler(UserService.LoginObserver loginObserver) {
