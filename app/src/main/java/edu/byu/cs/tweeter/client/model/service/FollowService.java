@@ -1,5 +1,6 @@
 package edu.byu.cs.tweeter.client.model.service;
 
+import android.annotation.SuppressLint;
 import android.os.Handler;
 import android.os.Message;
 import android.util.Log;
@@ -10,14 +11,21 @@ import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
+import edu.byu.cs.tweeter.client.backgroundTask.FollowTask;
+import edu.byu.cs.tweeter.client.backgroundTask.GetFollowersCountTask;
 import edu.byu.cs.tweeter.client.backgroundTask.GetFollowersTask;
+import edu.byu.cs.tweeter.client.backgroundTask.GetFollowingCountTask;
 import edu.byu.cs.tweeter.client.backgroundTask.GetFollowingTask;
+import edu.byu.cs.tweeter.client.backgroundTask.UnfollowTask;
 import edu.byu.cs.tweeter.model.domain.AuthToken;
 import edu.byu.cs.tweeter.model.domain.User;
 
 public class FollowService {
 
   private static final int PAGE_SIZE = 10;
+
+  private User selectedUser;
+  private AuthToken authToken;
 
   public void getFollowers(AuthToken authToken, User user, User lastFollower, GetFollowerObserver observer) {
     GetFollowersTask getFollowersTask = new GetFollowersTask(authToken,
@@ -46,6 +54,44 @@ public class FollowService {
     void setLastFollowee(List<User> followees, boolean hasMorepages);
   }
 
+  public interface GetFollowObserver {
+    void getFollowSucceeded();
+
+    void getFollowFailed(String message);
+
+    void getFollowThrewException(Exception e);
+
+    void follow(AuthToken authToken, User user);
+  }
+
+  public interface GetUnfollowObserver {
+    void getUnfollowSucceeded();
+
+    void getUnfollowFailed(String e);
+
+    void getUnfollowThrewException(Exception e);
+
+    void unfollow(AuthToken authToken, User user);
+  }
+
+  public interface GetFollowerCountObserver {
+
+    void getFollowerCountFailed(String e);
+
+    void getFollowerCountThrewException(Exception e);
+
+    void setFollowerCount(int count);
+  }
+
+  public interface GetFolloweeCountObserver {
+
+    void getFolloweeCountFailed(String e);
+
+    void getFolloweeCountThrewException(Exception e);
+
+    void setFolloweeCount(int count);
+
+  }
 
   public void getFollowing(AuthToken authToken, User targetUser, User lastFollowee, GetFollowingObserver observer) { //get the next page of data when secrolling
     Log.e("FollowingService", "Executing using executor");
@@ -54,12 +100,8 @@ public class FollowService {
             targetUser, PAGE_SIZE, lastFollowee, new GetFollowingHandler(observer));
     ExecutorService executor = Executors.newSingleThreadExecutor();
     executor.execute(getFollowingTask);
-
   }
 
-  /**
-   * Message handler (i.e., observer) for GetFollowersTask.
-   */
   private static class GetFollowersHandler extends Handler {
     GetFollowerObserver observer;
 
@@ -73,7 +115,6 @@ public class FollowService {
       if (success) {
         List<User> followers = (List<User>) msg.getData().getSerializable(GetFollowersTask.FOLLOWERS_KEY);
         boolean hasMorePages = msg.getData().getBoolean(GetFollowersTask.MORE_PAGES_KEY);
-
         observer.setLastFollowee(followers, hasMorePages);
         observer.getFollowerSucceeded(followers, hasMorePages);
       } else if (msg.getData().containsKey(GetFollowersTask.MESSAGE_KEY)) {
@@ -86,10 +127,6 @@ public class FollowService {
     }
   }
 
-
-  /**
-   * Message handler (i.e., observer) for GetFollowingTask.
-   */
   private static class GetFollowingHandler extends Handler {
     private final GetFollowingObserver observer;
 
@@ -115,6 +152,148 @@ public class FollowService {
     }
   }
 
+  @SuppressLint("HandlerLeak")
+  private class FollowHandler extends Handler {
+
+    GetFollowObserver observer;
+    GetFolloweeCountObserver followeeCountObserver;
+    GetFollowerCountObserver followerCountObserver;
+
+    FollowHandler(GetFollowObserver observer,
+                  GetFolloweeCountObserver followeeCountObserver,
+                  GetFollowerCountObserver followerCountObserver) {
+      this.observer = observer;
+      this.followeeCountObserver = followeeCountObserver;
+      this.followerCountObserver = followerCountObserver;
+    }
+
+    @Override
+    public void handleMessage(@NonNull Message msg) {
+      boolean success = msg.getData().getBoolean(FollowTask.SUCCESS_KEY);
+      if (success) {
+        updateSelectedUserFollowingAndFollowers(followerCountObserver, followeeCountObserver);
+        observer.getFollowSucceeded();
+      } else if (msg.getData().containsKey(FollowTask.MESSAGE_KEY)) {
+        String message = msg.getData().getString(FollowTask.MESSAGE_KEY);
+        observer.getFollowFailed(message);
+      } else if (msg.getData().containsKey(FollowTask.EXCEPTION_KEY)) {
+        Exception ex = (Exception) msg.getData().getSerializable(FollowTask.EXCEPTION_KEY);
+        observer.getFollowThrewException(ex);
+      }
+    }
+  }
+
+  @SuppressLint("HandlerLeak")
+  private class UnfollowHandler extends Handler {
+
+    GetUnfollowObserver observer;
+    GetFolloweeCountObserver followeeCountObserver;
+    GetFollowerCountObserver followerCountObserver;
+
+    UnfollowHandler(GetUnfollowObserver observer,
+                    GetFolloweeCountObserver followeeCountObserver,
+                    GetFollowerCountObserver followerCountObserver) {
+      this.observer = observer;
+      this.followeeCountObserver = followeeCountObserver;
+      this.followerCountObserver = followerCountObserver;
+    }
+
+    @Override
+    public void handleMessage(@NonNull Message msg) {
+      boolean success = msg.getData().getBoolean(UnfollowTask.SUCCESS_KEY);
+      if (success) {
+        updateSelectedUserFollowingAndFollowers(followerCountObserver, followeeCountObserver);
+        observer.getUnfollowSucceeded();
+      } else if (msg.getData().containsKey(UnfollowTask.MESSAGE_KEY)) {
+        String message = msg.getData().getString(UnfollowTask.MESSAGE_KEY);
+        observer.getUnfollowFailed(message);
+      } else if (msg.getData().containsKey(UnfollowTask.EXCEPTION_KEY)) {
+        Exception ex = (Exception) msg.getData().getSerializable(UnfollowTask.EXCEPTION_KEY);
+        observer.getUnfollowThrewException(ex);
+      }
+    }
+  }
+
+  public void followTask(AuthToken authtoken, User selectedUser, GetFollowObserver observer,
+                         GetFolloweeCountObserver followeeCountObserver,
+                         GetFollowerCountObserver followerCountObserver) {
+    this.authToken = authtoken;
+    this.selectedUser = selectedUser;
+    FollowTask followTask = new FollowTask(authtoken,
+            selectedUser, new FollowHandler(observer, followeeCountObserver, followerCountObserver));
+    ExecutorService executor = Executors.newSingleThreadExecutor();
+    executor.execute(followTask);
+  }
+
+  public void unfollowTask(AuthToken authtoken, User selectedUser,
+                           GetUnfollowObserver observer,
+                           GetFolloweeCountObserver followeeCountObserver,
+                           GetFollowerCountObserver followerCountObserver) {
+    this.authToken = authtoken;
+    this.selectedUser = selectedUser;
+    UnfollowTask unfollowTask = new UnfollowTask(authtoken,
+            selectedUser, new UnfollowHandler(observer, followeeCountObserver, followerCountObserver));
+    ExecutorService executor = Executors.newSingleThreadExecutor();
+    executor.execute(unfollowTask);
+  }
+
+  private static class GetFollowersCountHandler extends Handler {
+
+    private final GetFollowerCountObserver observer;
+
+    public GetFollowersCountHandler(GetFollowerCountObserver observer) {
+      this.observer = observer;
+    }
+
+    @Override
+    public void handleMessage(@NonNull Message msg) {
+      boolean success = msg.getData().getBoolean(GetFollowersCountTask.SUCCESS_KEY);
+      if (success) {
+        int count = msg.getData().getInt(GetFollowersCountTask.COUNT_KEY);
+        observer.setFollowerCount(count);
+      } else if (msg.getData().containsKey(GetFollowersCountTask.MESSAGE_KEY)) {
+        String message = msg.getData().getString(GetFollowersCountTask.MESSAGE_KEY);
+        observer.getFollowerCountFailed(message);
+      } else if (msg.getData().containsKey(GetFollowersCountTask.EXCEPTION_KEY)) {
+        Exception ex = (Exception) msg.getData().getSerializable(GetFollowersCountTask.EXCEPTION_KEY);
+        observer.getFollowerCountThrewException(ex);
+      }
+    }
+  }
+
+  private static class GetFollowingCountHandler extends Handler {
+
+    private final GetFolloweeCountObserver observer;
+
+    public GetFollowingCountHandler(GetFolloweeCountObserver observer) {
+      this.observer = observer;
+    }
+
+    @Override
+    public void handleMessage(@NonNull Message msg) {
+      boolean success = msg.getData().getBoolean(GetFollowingCountTask.SUCCESS_KEY);
+      if (success) {
+        int count = msg.getData().getInt(GetFollowingCountTask.COUNT_KEY);
+        observer.setFolloweeCount(count);
+      } else if (msg.getData().containsKey(GetFollowingCountTask.MESSAGE_KEY)) {
+        String message = msg.getData().getString(GetFollowingCountTask.MESSAGE_KEY);
+        observer.getFolloweeCountFailed(message);
+      } else if (msg.getData().containsKey(GetFollowingCountTask.EXCEPTION_KEY)) {
+        Exception ex = (Exception) msg.getData().getSerializable(GetFollowingCountTask.EXCEPTION_KEY);
+        observer.getFolloweeCountThrewException(ex);
+      }
+    }
+  }
+
+  public void updateSelectedUserFollowingAndFollowers(GetFollowerCountObserver followerCountObserver, GetFolloweeCountObserver followeeCountObserver) {
+    ExecutorService executor = Executors.newFixedThreadPool(2);
+
+    GetFollowersCountTask followersCountTask = new GetFollowersCountTask(authToken,
+            selectedUser, new GetFollowersCountHandler(followerCountObserver));
+    executor.execute(followersCountTask);
+
+    GetFollowingCountTask followingCountTask = new GetFollowingCountTask(authToken,
+            selectedUser, new GetFollowingCountHandler(followeeCountObserver));
+    executor.execute(followingCountTask);
+  }
 }
-
-
