@@ -1,15 +1,15 @@
 package edu.byu.cs.tweeter.client.presenter;
 
-import android.util.Log;
-
 import edu.byu.cs.tweeter.client.model.service.FollowService;
+import edu.byu.cs.tweeter.client.model.service.UserService;
 import edu.byu.cs.tweeter.model.domain.AuthToken;
 import edu.byu.cs.tweeter.model.domain.User;
 
 public class MainPresenter implements FollowService.GetFollowObserver,
         FollowService.GetUnfollowObserver,
         FollowService.GetFollowerCountObserver,
-        FollowService.GetFolloweeCountObserver {
+        FollowService.GetFolloweeCountObserver,
+        UserService.LogoutObserver {
 
   private View view;
 
@@ -105,6 +105,28 @@ public class MainPresenter implements FollowService.GetFollowObserver,
     view.setFolloweeCount(count);
   }
 
+  @Override
+  public void logoutSuceeded() {
+    view.logout();
+  }
+
+  @Override
+  public void logoutFailed(String message) {
+    String failMessage = "Failed to logout: " + message;
+    view.displayToast(failMessage);
+  }
+
+  @Override
+  public void logoutThrewException(Exception ex) {
+    String exceptionMessage = "Failed to logout because of exception: " + ex.getMessage();
+    view.displayToast(exceptionMessage);
+  }
+
+  @Override
+  public void logout() {
+    new UserService().logout(this);
+  }
+
   //View Implementation
   public interface View {
     void displayToast(String message);
@@ -116,5 +138,7 @@ public class MainPresenter implements FollowService.GetFollowObserver,
     void setFollowerCount(int count);
 
     void setFolloweeCount(int count);
+
+    void logout();
   }
 }

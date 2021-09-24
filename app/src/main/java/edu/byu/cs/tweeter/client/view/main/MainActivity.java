@@ -33,7 +33,6 @@ import java.util.concurrent.Executors;
 
 import edu.byu.cs.client.R;
 import edu.byu.cs.tweeter.client.backgroundTask.IsFollowerTask;
-import edu.byu.cs.tweeter.client.backgroundTask.LogoutTask;
 import edu.byu.cs.tweeter.client.backgroundTask.PostStatusTask;
 import edu.byu.cs.tweeter.client.cache.Cache;
 import edu.byu.cs.tweeter.client.presenter.MainPresenter;
@@ -146,25 +145,12 @@ public class MainActivity extends AppCompatActivity implements StatusDialogFragm
     if (item.getItemId() == R.id.logoutMenu) {
       logOutToast = Toast.makeText(this, "Logging Out...", Toast.LENGTH_LONG);
       logOutToast.show();
-
-      LogoutTask logoutTask = new LogoutTask(Cache.getInstance().getCurrUserAuthToken(), new LogoutHandler());
-      ExecutorService executor = Executors.newSingleThreadExecutor();
-      executor.execute(logoutTask);
+      presenter.logout();
 
       return true;
     } else {
       return super.onOptionsItemSelected(item);
     }
-  }
-
-  public void logoutUser() {
-    //Revert to login screen.
-    Intent intent = new Intent(this, LoginActivity.class);
-    //Clear everything so that the main activity is recreated with the login page.
-    intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-    //Clear user data (cached data).
-    Cache.getInstance().clearCache();
-    startActivity(intent);
   }
 
   @Override
@@ -260,26 +246,6 @@ public class MainActivity extends AppCompatActivity implements StatusDialogFragm
     }
   }
 
-  // LogoutHandler
-
-  private class LogoutHandler extends Handler {
-    @Override
-    public void handleMessage(@NonNull Message msg) {
-      boolean success = msg.getData().getBoolean(LogoutTask.SUCCESS_KEY);
-      if (success) {
-        logOutToast.cancel();
-        logoutUser();
-      } else if (msg.getData().containsKey(LogoutTask.MESSAGE_KEY)) {
-        String message = msg.getData().getString(LogoutTask.MESSAGE_KEY);
-        Toast.makeText(MainActivity.this, "Failed to logout: " + message, Toast.LENGTH_LONG).show();
-      } else if (msg.getData().containsKey(LogoutTask.EXCEPTION_KEY)) {
-        Exception ex = (Exception) msg.getData().getSerializable(LogoutTask.EXCEPTION_KEY);
-        Toast.makeText(MainActivity.this, "Failed to logout because of exception: " + ex.getMessage(), Toast.LENGTH_LONG).show();
-      }
-    }
-  }
-
-
   // IsFollowerHandler
 
   private class IsFollowerHandler extends Handler {
@@ -351,5 +317,13 @@ public class MainActivity extends AppCompatActivity implements StatusDialogFragm
   @Override
   public void displayToast(String message) {
     Toast.makeText(MainActivity.this, message, Toast.LENGTH_LONG).show();
+  }
+
+  @Override
+  public void logout() {
+    Intent intent = new Intent(this, LoginActivity.class);
+    intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+    Cache.getInstance().clearCache();
+    startActivity(intent);
   }
 }
