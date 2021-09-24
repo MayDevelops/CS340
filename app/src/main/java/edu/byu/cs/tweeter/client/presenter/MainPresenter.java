@@ -102,7 +102,6 @@ public class MainPresenter implements FollowService.GetFollowObserver,
 
   @Override
   public void setFolloweeCount(int count) {
-    Log.e("MainPresenter: ", "Calling View.setFolloweeCount with count value: " + count);
     view.setFolloweeCount(count);
   }
 

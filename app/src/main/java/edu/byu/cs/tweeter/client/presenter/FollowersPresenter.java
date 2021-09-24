@@ -1,7 +1,5 @@
 package edu.byu.cs.tweeter.client.presenter;
 
-import android.util.Log;
-
 import java.util.List;
 
 import edu.byu.cs.tweeter.client.model.service.FollowService;
@@ -78,14 +76,9 @@ public class FollowersPresenter implements FollowService.GetFollowerObserver, Us
 
 
   public void loadMoreItems() {
-    Log.e("FollowingPresenter", "Calling service to load more items");
-
-
     if (!isLoading && hasMorePages) {
       isLoading = true;
       view.setLoading(true);
-      Log.e("FollowingPresenter", "Inside condition: calling service NOW");
-
       new FollowService().getFollowers(authToken, user, lastFollowee, this);
       isLoading = false;
       view.setLoading(false);

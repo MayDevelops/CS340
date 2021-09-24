@@ -1,10 +1,7 @@
 package edu.byu.cs.tweeter.client.presenter;
 
-import android.util.Log;
-
 import java.util.List;
 
-import edu.byu.cs.tweeter.client.cache.Cache;
 import edu.byu.cs.tweeter.client.model.service.FollowService;
 import edu.byu.cs.tweeter.client.model.service.UserService;
 import edu.byu.cs.tweeter.model.domain.AuthToken;
@@ -51,7 +48,7 @@ public class FollowingPresenter implements FollowService.GetFollowingObserver, U
 
   @Override
   public void getUserSucceeded(User user) {
-view.navigateToUser(user);
+    view.navigateToUser(user);
   }
 
   @Override
@@ -79,14 +76,9 @@ view.navigateToUser(user);
 
 
   public void loadMoreItems() {
-    Log.e("FollowingPresenter", "Calling service to load more items");
-
-
     if (!isLoading && hasMorePages) {
       isLoading = true;
       view.setLoading(true);
-      Log.e("FollowingPresenter", "Inside condition: calling service NOW");
-
       new FollowService().getFollowing(authToken, user, lastFollowee, this);
       isLoading = false;
       view.setLoading(false);

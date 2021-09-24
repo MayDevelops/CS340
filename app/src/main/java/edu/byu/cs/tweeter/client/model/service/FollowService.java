@@ -94,8 +94,6 @@ public class FollowService {
   }
 
   public void getFollowing(AuthToken authToken, User targetUser, User lastFollowee, GetFollowingObserver observer) { //get the next page of data when secrolling
-    Log.e("FollowingService", "Executing using executor");
-
     GetFollowingTask getFollowingTask = new GetFollowingTask(authToken,
             targetUser, PAGE_SIZE, lastFollowee, new GetFollowingHandler(observer));
     ExecutorService executor = Executors.newSingleThreadExecutor();

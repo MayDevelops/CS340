@@ -120,8 +120,6 @@ public class FollowersFragment extends Fragment implements FollowersPresenter.Vi
   }
 
   private void loadMoreItems() {
-    Log.e("FollowersFragment", "calling presenter to load more items");
-
     final Handler handler = new Handler(Looper.getMainLooper());
     handler.postDelayed(() -> {
       presenter.loadMoreItems();
