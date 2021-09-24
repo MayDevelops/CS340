@@ -25,7 +25,6 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import org.jetbrains.annotations.NotNull;
 
-import java.net.MalformedURLException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -48,7 +47,6 @@ public class StoryFragment extends Fragment implements StoryPresenter.View {
   private static final int ITEM_VIEW = 1;
 
   private boolean isLoading = false;
-  private boolean hasMorePages = true;
 
   private User user;
   private StoryPresenter presenter;
@@ -86,17 +84,21 @@ public class StoryFragment extends Fragment implements StoryPresenter.View {
     LinearLayoutManager layoutManager = new LinearLayoutManager(this.getContext());
     storyRecyclerView.setLayoutManager(layoutManager);
 
-    try {
-      storyRecyclerViewAdapter = new StoryRecyclerViewAdapter();
-    } catch (MalformedURLException e) {
-      e.printStackTrace();
-    }
+    storyRecyclerViewAdapter = new StoryRecyclerViewAdapter();
     storyRecyclerView.setAdapter(storyRecyclerViewAdapter);
 
     storyRecyclerView.addOnScrollListener(new StoryRecyclerViewPaginationScrollListener(layoutManager));
 
     return view;
   }
+
+  private void loadMoreItems() {
+    final Handler handler = new Handler(Looper.getMainLooper());
+    handler.postDelayed(() -> {
+      presenter.loadMoreItems();
+    }, 0);
+  }
+
 
   /**
    * The ViewHolder for the RecyclerView that displays the story data.
@@ -192,7 +194,7 @@ public class StoryFragment extends Fragment implements StoryPresenter.View {
     /**
      * Creates an instance and loads the first page of story data.
      */
-    StoryRecyclerViewAdapter() throws MalformedURLException {
+    StoryRecyclerViewAdapter() {
       loadMoreItems();
     }
 
@@ -292,12 +294,6 @@ public class StoryFragment extends Fragment implements StoryPresenter.View {
       return (position == story.size() - 1 && isLoading) ? LOADING_DATA_VIEW : ITEM_VIEW;
     }
 
-    private void loadMoreItems() {
-      final Handler handler = new Handler(Looper.getMainLooper());
-      handler.postDelayed(() -> {
-        presenter.loadMoreItems();
-      }, 0);
-    }
 
     /**
      * Adds a dummy status to the list of statuses so the RecyclerView will display a view (the
@@ -355,15 +351,9 @@ public class StoryFragment extends Fragment implements StoryPresenter.View {
       int totalItemCount = layoutManager.getItemCount();
       int firstVisibleItemPosition = layoutManager.findFirstVisibleItemPosition();
 
-      if (!isLoading && hasMorePages) {
-        if ((visibleItemCount + firstVisibleItemPosition) >=
-                totalItemCount && firstVisibleItemPosition >= 0) {
-          // Run this code later on the UI thread
-          final Handler handler = new Handler(Looper.getMainLooper());
-          handler.postDelayed(() -> {
-            storyRecyclerViewAdapter.loadMoreItems();
-          }, 0);
-        }
+      if ((visibleItemCount + firstVisibleItemPosition) >=
+              totalItemCount && firstVisibleItemPosition >= 0) {
+        loadMoreItems();
       }
     }
   }
@@ -385,10 +375,6 @@ public class StoryFragment extends Fragment implements StoryPresenter.View {
     }
   }
 
-  @Override
-  public void setHasMorePages(boolean value) {
-    hasMorePages = value;
-  }
 
   @Override
   public void displayToast(String message) {

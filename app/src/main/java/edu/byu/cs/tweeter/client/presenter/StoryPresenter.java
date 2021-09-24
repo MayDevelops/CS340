@@ -82,8 +82,6 @@ public class StoryPresenter implements UserService.GetUserObserver, StatusServic
 
     void setLoading(boolean value);
 
-    void setHasMorePages(boolean value);
-
     void displayToast(String message);
 
     void addItems(List<Status> statuses);
