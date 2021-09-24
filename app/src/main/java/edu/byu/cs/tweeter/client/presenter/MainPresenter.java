@@ -11,7 +11,8 @@ public class MainPresenter implements FollowService.GetFollowObserver,
         FollowService.GetFollowerCountObserver,
         FollowService.GetFolloweeCountObserver,
         UserService.LogoutObserver,
-        FeedService.StatusObserver {
+        FeedService.StatusObserver,
+        FollowService.CheckFollowerObserver {
 
   private View view;
 
@@ -26,6 +27,10 @@ public class MainPresenter implements FollowService.GetFollowObserver,
 
   public void postStatus(String post, User user) {
     new FeedService().postStatus(post, user, this);
+  }
+
+  public void isFollower(AuthToken authToken, User user, User selectedUser) {
+    new FollowService().isFollower(authToken, user, selectedUser, this);
   }
 
   //GetFollowObserver Implementation
@@ -150,6 +155,31 @@ public class MainPresenter implements FollowService.GetFollowObserver,
     view.displayToast(exceptionMessage);
   }
 
+  //CheckFollowerObserver Implementation
+  @Override
+  public void checkFollowerSucceeded(boolean isFollower) {
+    if (isFollower) {
+      view.updateFollowButtonColor(isFollower);
+
+    } else {
+      view.updateFollowButtonColor(isFollower);
+
+
+    }
+  }
+
+  @Override
+  public void checkFollowerFailed(String message) {
+    String failMessage = "Failed to determine following relationship: " + message;
+    view.displayToast(failMessage);
+  }
+
+  @Override
+  public void checkFollowerThrewException(Exception ex) {
+    String exceptionMessage = "Failed to determine following relationship because of exception: " + ex.getMessage();
+    view.displayToast(exceptionMessage);
+  }
+
   //View Implementation
   public interface View {
     void displayToast(String message);
@@ -163,5 +193,7 @@ public class MainPresenter implements FollowService.GetFollowObserver,
     void setFolloweeCount(int count);
 
     void logout();
+
+    void updateFollowButtonColor(boolean value);
   }
 }

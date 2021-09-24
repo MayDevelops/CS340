@@ -3,7 +3,6 @@ package edu.byu.cs.tweeter.client.model.service;
 import android.annotation.SuppressLint;
 import android.os.Handler;
 import android.os.Message;
-import android.util.Log;
 
 import androidx.annotation.NonNull;
 
@@ -16,6 +15,7 @@ import edu.byu.cs.tweeter.client.backgroundTask.GetFollowersCountTask;
 import edu.byu.cs.tweeter.client.backgroundTask.GetFollowersTask;
 import edu.byu.cs.tweeter.client.backgroundTask.GetFollowingCountTask;
 import edu.byu.cs.tweeter.client.backgroundTask.GetFollowingTask;
+import edu.byu.cs.tweeter.client.backgroundTask.IsFollowerTask;
 import edu.byu.cs.tweeter.client.backgroundTask.UnfollowTask;
 import edu.byu.cs.tweeter.model.domain.AuthToken;
 import edu.byu.cs.tweeter.model.domain.User;
@@ -93,7 +93,49 @@ public class FollowService {
 
   }
 
-  public void getFollowing(AuthToken authToken, User targetUser, User lastFollowee, GetFollowingObserver observer) { //get the next page of data when secrolling
+  public interface CheckFollowerObserver {
+    void checkFollowerSucceeded(boolean isFollower);
+
+    void checkFollowerFailed(String message);
+
+    void checkFollowerThrewException(Exception ex);
+  }
+
+  public void isFollower(AuthToken authToken, User user, User selectedUser, CheckFollowerObserver observer) {
+    IsFollowerTask isFollowerTask = new IsFollowerTask(authToken,
+            user, selectedUser, new IsFollowerHandler(observer));
+    ExecutorService executor = Executors.newSingleThreadExecutor();
+    executor.execute(isFollowerTask);
+  }
+
+  // IsFollowerHandler
+
+  private static class IsFollowerHandler extends Handler {
+
+    private final CheckFollowerObserver observer;
+
+    public IsFollowerHandler(CheckFollowerObserver observer) {
+      this.observer = observer;
+    }
+
+    @Override
+    public void handleMessage(@NonNull Message msg) {
+      boolean success = msg.getData().getBoolean(IsFollowerTask.SUCCESS_KEY);
+      if (success) {
+        boolean isFollower = msg.getData().getBoolean(IsFollowerTask.IS_FOLLOWER_KEY);
+        observer.checkFollowerSucceeded(isFollower);
+      } else if (msg.getData().containsKey(IsFollowerTask.MESSAGE_KEY)) {
+        String message = msg.getData().getString(IsFollowerTask.MESSAGE_KEY);
+        observer.checkFollowerFailed(message);
+      } else if (msg.getData().containsKey(IsFollowerTask.EXCEPTION_KEY)) {
+        Exception ex = (Exception) msg.getData().getSerializable(IsFollowerTask.EXCEPTION_KEY);
+        observer.checkFollowerThrewException(ex);
+      }
+    }
+  }
+
+
+  public void getFollowing(AuthToken authToken, User targetUser, User lastFollowee, GetFollowingObserver observer) {
     GetFollowingTask getFollowingTask = new GetFollowingTask(authToken,
             targetUser, PAGE_SIZE, lastFollowee, new GetFollowingHandler(observer));
     ExecutorService executor = Executors.newSingleThreadExecutor();
