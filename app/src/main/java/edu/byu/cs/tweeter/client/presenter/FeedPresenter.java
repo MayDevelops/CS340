@@ -26,7 +26,7 @@ public class FeedPresenter implements FeedService.FeedObserver, UserService.GetU
   }
 
   public void getUser(AuthToken authToken, String alias) {
-    UserService.getUser(authToken, alias, this);
+    new UserService().getUser(authToken, alias, this);
   }
 
   public void loadMoreItems() throws MalformedURLException {

@@ -86,6 +86,6 @@ public class FollowersPresenter implements FollowService.GetFollowerObserver, Us
   }
 
   public void getUsers(String alias) {
-    UserService.getUser(authToken, alias, this);
+    new UserService().getUser(authToken, alias, this);
   }
 }

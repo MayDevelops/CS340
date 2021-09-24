@@ -72,7 +72,7 @@ public class UserService {
     executor.execute(registerTask);
   }
 
-  public static void getUser(AuthToken authToken, String alias, GetUserObserver observer) {
+  public void getUser(AuthToken authToken, String alias, GetUserObserver observer) {
     GetUserTask getUserTask = new GetUserTask(authToken, alias, new GetUserHandler(observer));
     ExecutorService executor = Executors.newSingleThreadExecutor();
     executor.execute(getUserTask);
