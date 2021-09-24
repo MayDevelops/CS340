@@ -1,5 +1,6 @@
 package edu.byu.cs.tweeter.client.presenter;
 
+import edu.byu.cs.tweeter.client.model.service.FeedService;
 import edu.byu.cs.tweeter.client.model.service.FollowService;
 import edu.byu.cs.tweeter.client.model.service.UserService;
 import edu.byu.cs.tweeter.model.domain.AuthToken;
@@ -9,7 +10,8 @@ public class MainPresenter implements FollowService.GetFollowObserver,
         FollowService.GetUnfollowObserver,
         FollowService.GetFollowerCountObserver,
         FollowService.GetFolloweeCountObserver,
-        UserService.LogoutObserver {
+        UserService.LogoutObserver,
+        FeedService.StatusObserver {
 
   private View view;
 
@@ -20,6 +22,10 @@ public class MainPresenter implements FollowService.GetFollowObserver,
 
   public void updateFollowingAndFollowers() {
     new FollowService().updateSelectedUserFollowingAndFollowers(this, this);
+  }
+
+  public void postStatus(String post, User user) {
+    new FeedService().postStatus(post, user, this);
   }
 
   //GetFollowObserver Implementation
@@ -125,6 +131,23 @@ public class MainPresenter implements FollowService.GetFollowObserver,
   @Override
   public void logout() {
     new UserService().logout(this);
+  }
+
+  @Override
+  public void statusSucceeded() {
+    view.displayToast("Successfully Posted!");
+  }
+
+  @Override
+  public void statusFailed(String message) {
+    String failMessage = "Failed to post status: " + message;
+    view.displayToast(failMessage);
+  }
+
+  @Override
+  public void statusThrewException(Exception ex) {
+    String exceptionMessage = "Failed to post status because of exception: " + ex.getMessage();
+    view.displayToast(exceptionMessage);
   }
 
   //View Implementation
