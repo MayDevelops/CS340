@@ -11,6 +11,7 @@ import java.util.concurrent.Executors;
 import edu.byu.cs.tweeter.client.backgroundTask.GetUserTask;
 import edu.byu.cs.tweeter.client.backgroundTask.LoginTask;
 import edu.byu.cs.tweeter.client.backgroundTask.LogoutTask;
+import edu.byu.cs.tweeter.client.backgroundTask.RegisterTask;
 import edu.byu.cs.tweeter.client.cache.Cache;
 import edu.byu.cs.tweeter.client.presenter.FollowersPresenter;
 import edu.byu.cs.tweeter.model.domain.AuthToken;
@@ -48,10 +49,27 @@ public class UserService {
     void getUserThrewException(Exception ex);
   }
 
+  public interface RegisterObserver {
+    void registerSucceeded(User registeredUser, AuthToken authToken);
+
+    void registerFailed(String message);
+
+    void registerThrewException(Exception ex);
+
+  }
+
   public void logout(LogoutObserver observer) {
     LogoutTask logoutTask = new LogoutTask(Cache.getInstance().getCurrUserAuthToken(), new LogoutHandler(observer));
     ExecutorService executor = Executors.newSingleThreadExecutor();
     executor.execute(logoutTask);
+  }
+
+  public void register(String firstName, String lastName, String alias, String password, String imageBytes, RegisterObserver observer) {
+    RegisterTask registerTask = new RegisterTask(firstName, lastName,
+            alias, password, imageBytes, new RegisterHandler(observer));
+
+    ExecutorService executor = Executors.newSingleThreadExecutor();
+    executor.execute(registerTask);
   }
 
   public static void getUser(AuthToken authToken, String alias, GetUserObserver observer) {
@@ -61,9 +79,6 @@ public class UserService {
 
   }
 
-  /**
-   * Message handler (i.e., observer) for GetUserTask.
-   */
   private static class GetUserHandler extends Handler {
     private final GetUserObserver observer;
 
@@ -87,7 +102,6 @@ public class UserService {
     }
   }
 
-
   public void login(String alias, String password, LoginObserver observer) {
     // Send the login request.
     LoginTask loginTask = new LoginTask(alias, password, new LoginHandler(observer));
@@ -95,9 +109,6 @@ public class UserService {
     executor.execute(loginTask);
   }
 
-  /**
-   * Message handler (i.e., observer) for LoginTask
-   */
   private static class LoginHandler extends Handler {
     private final LoginObserver observer;
 
@@ -126,7 +137,7 @@ public class UserService {
     }
   }
 
-  private class LogoutHandler extends Handler {
+  private static class LogoutHandler extends Handler {
     LogoutObserver observer;
 
     public LogoutHandler(LogoutObserver observer) {
@@ -144,6 +155,30 @@ public class UserService {
       } else if (msg.getData().containsKey(LogoutTask.EXCEPTION_KEY)) {
         Exception ex = (Exception) msg.getData().getSerializable(LogoutTask.EXCEPTION_KEY);
         observer.logoutThrewException(ex);
+      }
+    }
+  }
+
+  private static class RegisterHandler extends Handler {
+    RegisterObserver observer;
+
+    public RegisterHandler(RegisterObserver observer) {
+      this.observer = observer;
+    }
+
+    @Override
+    public void handleMessage(@NonNull Message msg) {
+      boolean success = msg.getData().getBoolean(RegisterTask.SUCCESS_KEY);
+      if (success) {
+        User registeredUser = (User) msg.getData().getSerializable(RegisterTask.USER_KEY);
+        AuthToken authToken = (AuthToken) msg.getData().getSerializable(RegisterTask.AUTH_TOKEN_KEY);
+        observer.registerSucceeded(registeredUser, authToken);
+      } else if (msg.getData().containsKey(RegisterTask.MESSAGE_KEY)) {
+        String message = msg.getData().getString(RegisterTask.MESSAGE_KEY);
+        observer.registerFailed(message);
+      } else if (msg.getData().containsKey(RegisterTask.EXCEPTION_KEY)) {
+        Exception ex = (Exception) msg.getData().getSerializable(RegisterTask.EXCEPTION_KEY);
+        observer.registerThrewException(ex);
       }
     }
   }

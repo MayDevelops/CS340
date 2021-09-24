@@ -53,7 +53,6 @@ public class FeedFragment extends Fragment implements FeedPresenter.View {
   private FeedPresenter presenter;
 
 
-
   private FeedRecyclerViewAdapter feedRecyclerViewAdapter;
 
   /**

@@ -27,7 +27,6 @@ public class FeedService {
   private User user;
   private Status lastStatus;
 
-
   public void getFeed(AuthToken authToken, User user, Status lastStatus, FeedObserver observer) {
     int PAGE_SIZE = 10;
     GetFeedTask getFeedTask = new GetFeedTask(authToken,
@@ -48,10 +47,7 @@ public class FeedService {
     }
   }
 
-  /**
-   * Message handler (i.e., observer) for GetFeedTask.
-   */
-  private class GetFeedHandler extends Handler {
+  private static class GetFeedHandler extends Handler {
     private final FeedObserver observer;
 
     public GetFeedHandler(FeedObserver observer) {
@@ -77,7 +73,7 @@ public class FeedService {
     }
   }
 
-  private class PostStatusHandler extends Handler {
+  private static class PostStatusHandler extends Handler {
     private final StatusObserver observer;
 
     public PostStatusHandler(StatusObserver observer) {
@@ -137,7 +133,6 @@ public class FeedService {
     return containedMentions;
   }
 
-
   public int findUrlEndIndex(String word) {
     if (word.contains(".com")) {
       int index = word.indexOf(".com");
@@ -164,7 +159,6 @@ public class FeedService {
     }
   }
 
-
   public interface FeedObserver {
     void feedSucceeded(List<Status> statuses);
 
@@ -183,6 +177,4 @@ public class FeedService {
     void statusThrewException(Exception ex);
 
   }
-
-
 }
