@@ -7,7 +7,7 @@ import edu.byu.cs.tweeter.client.model.service.UserService;
 import edu.byu.cs.tweeter.model.domain.AuthToken;
 import edu.byu.cs.tweeter.model.domain.User;
 
-public class FollowingPresenter implements FollowService.GetFollowingObserver, UserService.GetUserObserver {
+public class FollowersPresenter implements FollowService.GetFollowerObserver, UserService.GetUserObserver {
 
   private static final int PAGE_SIZE = 10;
   private User lastFollowee;
@@ -19,24 +19,24 @@ public class FollowingPresenter implements FollowService.GetFollowingObserver, U
   private User user;
   private AuthToken authToken;
 
-  public FollowingPresenter(View view, AuthToken authToken, User targetUser) {
+  public FollowersPresenter(View view, AuthToken authToken, User targetUser) {
     this.view = view;
     this.authToken = authToken;
     this.user = targetUser;
   }
 
   @Override
-  public void getFollowingSucceeded(List<User> users, boolean hasMorePages) {
+  public void getFollowerSucceeded(List<User> users, boolean hasMorePages) {
     view.addItems(users);
   }
 
   @Override
-  public void getFollowingFailed(String e) {
+  public void getFollowerFailed(String e) {
 
   }
 
   @Override
-  public void getFollowingThrewException(Exception e) {
+  public void getFollowerThrewException(Exception e) {
 
   }
 
@@ -79,7 +79,7 @@ public class FollowingPresenter implements FollowService.GetFollowingObserver, U
     if (!isLoading && hasMorePages) {
       isLoading = true;
       view.setLoading(true);
-      new FollowService().getFollowing(authToken, user, lastFollowee, this);
+      new FollowService().getFollowers(authToken, user, lastFollowee, this);
       isLoading = false;
       view.setLoading(false);
     }

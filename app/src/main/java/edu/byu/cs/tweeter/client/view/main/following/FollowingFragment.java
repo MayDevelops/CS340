@@ -71,14 +71,12 @@ public class FollowingFragment extends Fragment implements FollowingPresenter.Vi
   @Override
   public void displayErrorMessage(String message) {
     Toast.makeText(getActivity(), message, Toast.LENGTH_LONG).show();
-
   }
 
 
   @Override
   public void displayInfoMessage(String message) {
     Toast.makeText(getActivity(), message, Toast.LENGTH_LONG).show();
-
   }
 
 
@@ -121,7 +119,6 @@ public class FollowingFragment extends Fragment implements FollowingPresenter.Vi
   }
 
   private void loadMoreItems() {
-    // Run this code later on the UI thread
     final Handler handler = new Handler(Looper.getMainLooper());
     handler.postDelayed(() -> {
       presenter.loadMoreItems();
@@ -153,7 +150,7 @@ public class FollowingFragment extends Fragment implements FollowingPresenter.Vi
       itemView.setOnClickListener(new View.OnClickListener() {
         @Override
         public void onClick(View view) {
-          presenter.gotoUser(userAlias.getText().toString());
+          presenter.getUsers(userAlias.getText().toString());
         }
       });
     }
@@ -178,7 +175,6 @@ public class FollowingFragment extends Fragment implements FollowingPresenter.Vi
   private class FollowingRecyclerViewAdapter extends RecyclerView.Adapter<FollowingHolder> {
 
     private final List<User> users = new ArrayList<>();
-
 
     /**
      * Creates an instance and loads the first page of following data.
@@ -336,11 +332,11 @@ public class FollowingFragment extends Fragment implements FollowingPresenter.Vi
       int totalItemCount = layoutManager.getItemCount();
       int firstVisibleItemPosition = layoutManager.findFirstVisibleItemPosition();
 
-        if ((visibleItemCount + firstVisibleItemPosition) >=
-                totalItemCount && firstVisibleItemPosition >= 0) {
-          loadMoreItems();
-        }
+      if ((visibleItemCount + firstVisibleItemPosition) >=
+              totalItemCount && firstVisibleItemPosition >= 0) {
+        loadMoreItems();
       }
     }
   }
+}
 
