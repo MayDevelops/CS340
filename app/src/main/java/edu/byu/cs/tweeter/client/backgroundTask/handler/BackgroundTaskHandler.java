@@ -8,7 +8,7 @@ import androidx.annotation.NonNull;
 
 import edu.byu.cs.tweeter.client.backgroundTask.BackgroundTask;
 import edu.byu.cs.tweeter.client.backgroundTask.GetFollowersCountTask;
-import edu.byu.cs.tweeter.client.observer.ServiceObserver;
+import edu.byu.cs.tweeter.client.backgroundTask.observer.ServiceObserver;
 
 
 public abstract class BackgroundTaskHandler<T extends ServiceObserver> extends Handler {
