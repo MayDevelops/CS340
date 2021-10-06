@@ -43,6 +43,11 @@ public class FollowersPresenter implements FollowService.GetFollowerObserver, Us
   @Override
   public void setLastFollowee(List<User> followees, boolean hasMorepages) {
     this.hasMorePages = hasMorepages;
+
+    if (hasMorepages) {
+      isLoading = false;
+    }
+
     lastFollowee = (followees.size() > 0) ? followees.get(followees.size() - 1) : null;
   }
 

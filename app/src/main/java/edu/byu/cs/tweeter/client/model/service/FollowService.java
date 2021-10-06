@@ -7,8 +7,6 @@ import android.os.Message;
 import androidx.annotation.NonNull;
 
 import java.util.List;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 
 import edu.byu.cs.tweeter.client.backgroundTask.FollowTask;
 import edu.byu.cs.tweeter.client.backgroundTask.GetFollowersCountTask;
@@ -18,6 +16,7 @@ import edu.byu.cs.tweeter.client.backgroundTask.GetFollowingTask;
 import edu.byu.cs.tweeter.client.backgroundTask.IsFollowerTask;
 import edu.byu.cs.tweeter.client.backgroundTask.PagedTask;
 import edu.byu.cs.tweeter.client.backgroundTask.UnfollowTask;
+import edu.byu.cs.tweeter.client.backgroundTask.handler.TaskExecutor;
 import edu.byu.cs.tweeter.model.domain.AuthToken;
 import edu.byu.cs.tweeter.model.domain.User;
 
@@ -31,8 +30,7 @@ public class FollowService {
   public void getFollowers(AuthToken authToken, User user, User lastFollower, GetFollowerObserver observer) {
     GetFollowersTask getFollowersTask = new GetFollowersTask(authToken,
             user, PAGE_SIZE, lastFollower, new GetFollowersHandler(observer));
-    ExecutorService executor = Executors.newSingleThreadExecutor();
-    executor.execute(getFollowersTask);
+    new TaskExecutor<>(getFollowersTask);
   }
 
   public interface GetFollowingObserver {
@@ -105,8 +103,7 @@ public class FollowService {
   public void isFollower(AuthToken authToken, User user, User selectedUser, CheckFollowerObserver observer) {
     IsFollowerTask isFollowerTask = new IsFollowerTask(authToken,
             user, selectedUser, new IsFollowerHandler(observer));
-    ExecutorService executor = Executors.newSingleThreadExecutor();
-    executor.execute(isFollowerTask);
+    new TaskExecutor<>(isFollowerTask);
   }
 
   // IsFollowerHandler
@@ -139,8 +136,7 @@ public class FollowService {
   public void getFollowing(AuthToken authToken, User targetUser, User lastFollowee, GetFollowingObserver observer) {
     GetFollowingTask getFollowingTask = new GetFollowingTask(authToken,
             targetUser, PAGE_SIZE, lastFollowee, new GetFollowingHandler(observer));
-    ExecutorService executor = Executors.newSingleThreadExecutor();
-    executor.execute(getFollowingTask);
+    new TaskExecutor<>(getFollowingTask);
   }
 
   private static class GetFollowersHandler extends Handler {
@@ -262,8 +258,7 @@ public class FollowService {
     this.selectedUser = selectedUser;
     FollowTask followTask = new FollowTask(authtoken,
             selectedUser, new FollowHandler(observer, followeeCountObserver, followerCountObserver));
-    ExecutorService executor = Executors.newSingleThreadExecutor();
-    executor.execute(followTask);
+    new TaskExecutor<>(followTask);
   }
 
   public void unfollowTask(AuthToken authtoken, User selectedUser,
@@ -274,8 +269,7 @@ public class FollowService {
     this.selectedUser = selectedUser;
     UnfollowTask unfollowTask = new UnfollowTask(authtoken,
             selectedUser, new UnfollowHandler(observer, followeeCountObserver, followerCountObserver));
-    ExecutorService executor = Executors.newSingleThreadExecutor();
-    executor.execute(unfollowTask);
+    new TaskExecutor<>(unfollowTask);
   }
 
   private static class GetFollowersCountHandler extends Handler {
@@ -327,14 +321,10 @@ public class FollowService {
   }
 
   public void updateSelectedUserFollowingAndFollowers(GetFollowerCountObserver followerCountObserver, GetFolloweeCountObserver followeeCountObserver) {
-    ExecutorService executor = Executors.newFixedThreadPool(2);
-
     GetFollowersCountTask followersCountTask = new GetFollowersCountTask(authToken,
             selectedUser, new GetFollowersCountHandler(followerCountObserver));
-    executor.execute(followersCountTask);
-
     GetFollowingCountTask followingCountTask = new GetFollowingCountTask(authToken,
             selectedUser, new GetFollowingCountHandler(followeeCountObserver));
-    executor.execute(followingCountTask);
+    new TaskExecutor<>(followersCountTask, followingCountTask);
   }
 }

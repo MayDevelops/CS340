@@ -12,12 +12,11 @@ import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 
 import edu.byu.cs.tweeter.client.backgroundTask.GetFeedTask;
 import edu.byu.cs.tweeter.client.backgroundTask.PagedTask;
 import edu.byu.cs.tweeter.client.backgroundTask.PostStatusTask;
+import edu.byu.cs.tweeter.client.backgroundTask.handler.TaskExecutor;
 import edu.byu.cs.tweeter.client.cache.Cache;
 import edu.byu.cs.tweeter.model.domain.AuthToken;
 import edu.byu.cs.tweeter.model.domain.Status;
@@ -32,8 +31,7 @@ public class FeedService {
     int PAGE_SIZE = 10;
     GetFeedTask getFeedTask = new GetFeedTask(authToken,
             user, PAGE_SIZE, lastStatus, new GetFeedHandler(observer));
-    ExecutorService executor = Executors.newSingleThreadExecutor();
-    executor.execute(getFeedTask);
+    new TaskExecutor<>(getFeedTask);
   }
 
   public void postStatus(String post, User user, StatusObserver observer) {
@@ -41,8 +39,7 @@ public class FeedService {
       Status newStatus = new Status(post, user, getFormattedDateTime(), parseURLs(post), parseMentions(post));
       PostStatusTask statusTask = new PostStatusTask(Cache.getInstance().getCurrUserAuthToken(),
               newStatus, new PostStatusHandler(observer));
-      ExecutorService executor = Executors.newSingleThreadExecutor();
-      executor.execute(statusTask);
+      new TaskExecutor<>(statusTask);
     } catch (Exception ex) {
       observer.statusThrewException(ex);
     }

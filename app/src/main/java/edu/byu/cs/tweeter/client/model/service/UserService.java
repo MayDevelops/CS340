@@ -5,13 +5,11 @@ import android.os.Message;
 
 import androidx.annotation.NonNull;
 
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-
 import edu.byu.cs.tweeter.client.backgroundTask.GetUserTask;
 import edu.byu.cs.tweeter.client.backgroundTask.LoginTask;
 import edu.byu.cs.tweeter.client.backgroundTask.LogoutTask;
 import edu.byu.cs.tweeter.client.backgroundTask.RegisterTask;
+import edu.byu.cs.tweeter.client.backgroundTask.handler.TaskExecutor;
 import edu.byu.cs.tweeter.client.cache.Cache;
 import edu.byu.cs.tweeter.client.presenter.FollowersPresenter;
 import edu.byu.cs.tweeter.model.domain.AuthToken;
@@ -60,23 +58,19 @@ public class UserService {
 
   public void logout(LogoutObserver observer) {
     LogoutTask logoutTask = new LogoutTask(Cache.getInstance().getCurrUserAuthToken(), new LogoutHandler(observer));
-    ExecutorService executor = Executors.newSingleThreadExecutor();
-    executor.execute(logoutTask);
+    new TaskExecutor<>(logoutTask);
   }
 
   public void register(String firstName, String lastName, String alias, String password, String imageBytes, RegisterObserver observer) {
     RegisterTask registerTask = new RegisterTask(firstName, lastName,
             alias, password, imageBytes, new RegisterHandler(observer));
 
-    ExecutorService executor = Executors.newSingleThreadExecutor();
-    executor.execute(registerTask);
+    new TaskExecutor<>(registerTask);
   }
 
   public void getUser(AuthToken authToken, String alias, GetUserObserver observer) {
     GetUserTask getUserTask = new GetUserTask(authToken, alias, new GetUserHandler(observer));
-    ExecutorService executor = Executors.newSingleThreadExecutor();
-    executor.execute(getUserTask);
-
+    new TaskExecutor<>(getUserTask);
   }
 
   private static class GetUserHandler extends Handler {
@@ -103,10 +97,8 @@ public class UserService {
   }
 
   public void login(String alias, String password, LoginObserver observer) {
-    // Send the login request.
     LoginTask loginTask = new LoginTask(alias, password, new LoginHandler(observer));
-    ExecutorService executor = Executors.newSingleThreadExecutor();
-    executor.execute(loginTask);
+    new TaskExecutor<>(loginTask);
   }
 
   private static class LoginHandler extends Handler {

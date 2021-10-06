@@ -6,11 +6,10 @@ import android.os.Message;
 import androidx.annotation.NonNull;
 
 import java.util.List;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 
 import edu.byu.cs.tweeter.client.backgroundTask.GetStoryTask;
 import edu.byu.cs.tweeter.client.backgroundTask.PagedTask;
+import edu.byu.cs.tweeter.client.backgroundTask.handler.TaskExecutor;
 import edu.byu.cs.tweeter.model.domain.AuthToken;
 import edu.byu.cs.tweeter.model.domain.Status;
 import edu.byu.cs.tweeter.model.domain.User;
@@ -31,8 +30,7 @@ public class StatusService {
   public void getStatus(AuthToken authToken, User user, Status lastStatus, GetStatusObserver observer) {
     GetStoryTask getStoryTask = new GetStoryTask(authToken,
             user, PAGE_SIZE, lastStatus, new GetStoryHandler(observer));
-    ExecutorService executor = Executors.newSingleThreadExecutor();
-    executor.execute(getStoryTask);
+    new TaskExecutor<>(getStoryTask);
   }
 
   private static class GetStoryHandler extends Handler {
