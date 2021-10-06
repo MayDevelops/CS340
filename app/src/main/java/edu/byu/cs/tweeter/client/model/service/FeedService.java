@@ -16,6 +16,7 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 import edu.byu.cs.tweeter.client.backgroundTask.GetFeedTask;
+import edu.byu.cs.tweeter.client.backgroundTask.PagedTask;
 import edu.byu.cs.tweeter.client.backgroundTask.PostStatusTask;
 import edu.byu.cs.tweeter.client.cache.Cache;
 import edu.byu.cs.tweeter.model.domain.AuthToken;
@@ -58,7 +59,7 @@ public class FeedService {
     public void handleMessage(@NonNull Message msg) {
       boolean success = msg.getData().getBoolean(GetFeedTask.SUCCESS_KEY);
       if (success) {
-        List<Status> statuses = (List<Status>) msg.getData().getSerializable(GetFeedTask.STATUSES_KEY);
+        List<Status> statuses = (List<Status>) msg.getData().getSerializable(PagedTask.ITEMS_KEY);
         boolean hasMorePages = msg.getData().getBoolean(GetFeedTask.MORE_PAGES_KEY);
 
         observer.setLastStatus(statuses, hasMorePages);
