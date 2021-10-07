@@ -1,13 +1,15 @@
-package edu.byu.cs.tweeter.client.presenter;
+package edu.byu.cs.tweeter.client.presenter.paged;
 
+import java.net.MalformedURLException;
 import java.util.List;
 
 import edu.byu.cs.tweeter.client.model.service.FollowService;
 import edu.byu.cs.tweeter.client.model.service.UserService;
+import edu.byu.cs.tweeter.client.presenter.PagedView;
 import edu.byu.cs.tweeter.model.domain.AuthToken;
 import edu.byu.cs.tweeter.model.domain.User;
 
-public class FollowersPresenter implements FollowService.GetFollowerObserver, UserService.GetUserObserver {
+public class FollowingPresenter implements FollowService.GetFollowingObserver, UserService.GetUserObserver {
 
   private static final int PAGE_SIZE = 10;
   private User lastFollowee;
@@ -15,29 +17,24 @@ public class FollowersPresenter implements FollowService.GetFollowerObserver, Us
   private boolean hasMorePages = true;
   private boolean isLoading = false;
 
-  private View view;
+  private FollowingView view;
   private User user;
   private AuthToken authToken;
 
-  public FollowersPresenter(View view, AuthToken authToken, User targetUser) {
+  public FollowingPresenter(FollowingView view, AuthToken authToken, User targetUser) {
     this.view = view;
     this.authToken = authToken;
     this.user = targetUser;
   }
 
   @Override
-  public void getFollowerSucceeded(List<User> users) {
+  public void getFollowingSucceeded(List<User> users) {
     view.addItems(users);
   }
 
   @Override
   public void setLastFollowee(List<User> followees, boolean hasMorepages) {
     this.hasMorePages = hasMorepages;
-
-    if (hasMorepages) {
-      isLoading = false;
-    }
-
     lastFollowee = (followees.size() > 0) ? followees.get(followees.size() - 1) : null;
   }
 
@@ -51,11 +48,11 @@ public class FollowersPresenter implements FollowService.GetFollowerObserver, Us
     view.displayToast(message);
   }
 
-  public void loadMoreItems() {
+  public void loadMoreItems() throws MalformedURLException {
     if (!isLoading && hasMorePages) {
       isLoading = true;
       view.setLoading(true);
-      new FollowService().getFollowers(authToken, user, lastFollowee, this);
+      new FollowService().getFollowing(authToken, user, lastFollowee, this);
       isLoading = false;
       view.setLoading(false);
     }
@@ -65,15 +62,6 @@ public class FollowersPresenter implements FollowService.GetFollowerObserver, Us
     new UserService().getUser(authToken, alias, this);
   }
 
-  public interface View {
-
-    void addItems(List<User> followees);
-
-    void setLoading(boolean value);
-
-    void navigateToUser(User user);
-
-    void displayToast(String message);
-
+  public interface FollowingView extends PagedView<User> {
   }
 }

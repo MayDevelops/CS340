@@ -18,12 +18,13 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import org.jetbrains.annotations.NotNull;
 
+import java.net.MalformedURLException;
 import java.util.ArrayList;
 import java.util.List;
 
 import edu.byu.cs.client.R;
 import edu.byu.cs.tweeter.client.cache.Cache;
-import edu.byu.cs.tweeter.client.presenter.FollowingPresenter;
+import edu.byu.cs.tweeter.client.presenter.paged.FollowingPresenter;
 import edu.byu.cs.tweeter.client.view.main.MainActivity;
 import edu.byu.cs.tweeter.client.view.util.ImageUtils;
 import edu.byu.cs.tweeter.model.domain.User;
@@ -31,15 +32,13 @@ import edu.byu.cs.tweeter.model.domain.User;
 /**
  * Implements the "Following" tab.
  */
-public class FollowingFragment extends Fragment implements FollowingPresenter.View {
+public class FollowingFragment extends Fragment implements FollowingPresenter.FollowingView {
 
   private static final String LOG_TAG = "FollowingFragment";
   private static final String USER_KEY = "UserKey";
 
   private static final int LOADING_DATA_VIEW = 0;
   private static final int ITEM_VIEW = 1;
-
-
   private boolean isLoading = false;
 
   private FollowingPresenter presenter;
@@ -113,7 +112,11 @@ public class FollowingFragment extends Fragment implements FollowingPresenter.Vi
   private void loadMoreItems() {
     final Handler handler = new Handler(Looper.getMainLooper());
     handler.postDelayed(() -> {
-      presenter.loadMoreItems();
+      try {
+        presenter.loadMoreItems();
+      } catch (MalformedURLException e) {
+        e.printStackTrace();
+      }
     }, 0);
   }
 

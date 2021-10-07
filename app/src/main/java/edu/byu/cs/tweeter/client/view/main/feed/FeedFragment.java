@@ -31,7 +31,7 @@ import java.util.List;
 
 import edu.byu.cs.client.R;
 import edu.byu.cs.tweeter.client.cache.Cache;
-import edu.byu.cs.tweeter.client.presenter.FeedPresenter;
+import edu.byu.cs.tweeter.client.presenter.paged.FeedPresenter;
 import edu.byu.cs.tweeter.client.view.main.MainActivity;
 import edu.byu.cs.tweeter.client.view.util.ImageUtils;
 import edu.byu.cs.tweeter.model.domain.Status;
@@ -40,7 +40,7 @@ import edu.byu.cs.tweeter.model.domain.User;
 /**
  * Implements the "Feed" tab.
  */
-public class FeedFragment extends Fragment implements FeedPresenter.View {
+public class FeedFragment extends Fragment implements FeedPresenter.FeedView {
   private static final String LOG_TAG = "FeedFragment";
   private static final String USER_KEY = "UserKey";
 
@@ -51,6 +51,8 @@ public class FeedFragment extends Fragment implements FeedPresenter.View {
 
   private User user;
   private FeedPresenter presenter;
+  private boolean isLoading = false;
+
 
 
   private FeedRecyclerViewAdapter feedRecyclerViewAdapter;
@@ -115,12 +117,10 @@ public class FeedFragment extends Fragment implements FeedPresenter.View {
     intent.putExtra(MainActivity.CURRENT_USER_KEY, user);
     startActivity(intent);
   }
-
   @Override
-  public void setLoading(boolean value, boolean pages) throws MalformedURLException {
-    feedRecyclerViewAdapter.isLoading = value;
-    feedRecyclerViewAdapter.hasMorePages = pages;
-    if (feedRecyclerViewAdapter.isLoading) {
+  public void setLoading(boolean value) throws MalformedURLException {
+    isLoading = value;
+    if (isLoading) {
       feedRecyclerViewAdapter.addLoadingFooter();
     } else {
       feedRecyclerViewAdapter.removeLoadingFooter();
@@ -133,9 +133,14 @@ public class FeedFragment extends Fragment implements FeedPresenter.View {
   }
 
   @Override
-  public void addStatuses(List<Status> statuses) {
+  public void addItems(List<Status> statuses) {
     feedRecyclerViewAdapter.addItems(statuses);
   }
+//
+//  @Override
+//  public void addStatuses(List<Status> statuses) {
+//    feedRecyclerViewAdapter.addItems(statuses);
+//  }
 
   /**
    * The ViewHolder for the RecyclerView that displays the feed data.

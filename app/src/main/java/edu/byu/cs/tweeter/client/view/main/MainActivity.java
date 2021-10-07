@@ -19,7 +19,7 @@ import com.google.android.material.tabs.TabLayout;
 
 import edu.byu.cs.client.R;
 import edu.byu.cs.tweeter.client.cache.Cache;
-import edu.byu.cs.tweeter.client.presenter.MainPresenter;
+import edu.byu.cs.tweeter.client.presenter.single.MainPresenter;
 import edu.byu.cs.tweeter.client.view.login.LoginActivity;
 import edu.byu.cs.tweeter.client.view.login.StatusDialogFragment;
 import edu.byu.cs.tweeter.client.view.util.ImageUtils;

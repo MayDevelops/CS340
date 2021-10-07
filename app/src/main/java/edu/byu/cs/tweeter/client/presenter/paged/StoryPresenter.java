@@ -1,22 +1,24 @@
-package edu.byu.cs.tweeter.client.presenter;
+package edu.byu.cs.tweeter.client.presenter.paged;
 
+import java.net.MalformedURLException;
 import java.util.List;
 
 import edu.byu.cs.tweeter.client.model.service.StatusService;
 import edu.byu.cs.tweeter.client.model.service.UserService;
+import edu.byu.cs.tweeter.client.presenter.PagedView;
 import edu.byu.cs.tweeter.model.domain.AuthToken;
 import edu.byu.cs.tweeter.model.domain.Status;
 import edu.byu.cs.tweeter.model.domain.User;
 
 public class StoryPresenter implements UserService.GetUserObserver, StatusService.GetStatusObserver {
-  private final View view;
+  private final StoryView view;
   private final User user;
   private final AuthToken authToken;
   private boolean hasMorePages = true;
   private boolean isLoading = false;
 
 
-  public StoryPresenter(View view, AuthToken authToken, User user) {
+  public StoryPresenter(StoryView view, AuthToken authToken, User user) {
     this.view = view;
     this.authToken = authToken;
     this.user = user;
@@ -26,7 +28,7 @@ public class StoryPresenter implements UserService.GetUserObserver, StatusServic
     new UserService().getUser(authToken, alias, this);
   }
 
-  public void loadMoreItems() {
+  public void loadMoreItems() throws MalformedURLException {
     if (!isLoading && hasMorePages) {
       isLoading = true;
       view.setLoading(true);
@@ -51,14 +53,6 @@ public class StoryPresenter implements UserService.GetUserObserver, StatusServic
     view.displayToast(message);
   }
 
-  public interface View {
-    void navigateToUser(User user);
-
-    void setLoading(boolean value);
-
-    void displayToast(String message);
-
-    void addItems(List<Status> statuses);
-
+  public interface StoryView extends PagedView<Status> {
   }
 }

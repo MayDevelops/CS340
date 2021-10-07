@@ -1,4 +1,4 @@
-package edu.byu.cs.tweeter.client.presenter;
+package edu.byu.cs.tweeter.client.presenter.single;
 
 import edu.byu.cs.tweeter.client.model.service.UserService;
 import edu.byu.cs.tweeter.model.domain.AuthToken;

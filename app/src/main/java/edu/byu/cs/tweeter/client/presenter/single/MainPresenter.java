@@ -1,4 +1,4 @@
-package edu.byu.cs.tweeter.client.presenter;
+package edu.byu.cs.tweeter.client.presenter.single;
 
 import edu.byu.cs.tweeter.client.model.service.FeedService;
 import edu.byu.cs.tweeter.client.model.service.FollowService;
@@ -88,14 +88,10 @@ public class MainPresenter implements FollowService.GetFollowObserver,
   public void checkFollowerSucceeded(boolean isFollower) {
     if (isFollower) {
       view.updateFollowButtonColor(isFollower);
-
     } else {
       view.updateFollowButtonColor(isFollower);
-
-
     }
   }
-
 
   @Override
   public void handleFailure(String message) {

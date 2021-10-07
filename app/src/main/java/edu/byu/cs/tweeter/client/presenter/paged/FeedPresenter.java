@@ -1,10 +1,11 @@
-package edu.byu.cs.tweeter.client.presenter;
+package edu.byu.cs.tweeter.client.presenter.paged;
 
 import java.net.MalformedURLException;
 import java.util.List;
 
 import edu.byu.cs.tweeter.client.model.service.FeedService;
 import edu.byu.cs.tweeter.client.model.service.UserService;
+import edu.byu.cs.tweeter.client.presenter.PagedView;
 import edu.byu.cs.tweeter.model.domain.AuthToken;
 import edu.byu.cs.tweeter.model.domain.Status;
 import edu.byu.cs.tweeter.model.domain.User;
@@ -13,13 +14,13 @@ public class FeedPresenter implements FeedService.FeedObserver, UserService.GetU
   private boolean hasMorePages = true;
   private boolean isLoading = false;
 
-  private View view;
+  private FeedView view;
   private User user;
   private AuthToken authToken;
   private Status lastStatus;
 
 
-  public FeedPresenter(View view, AuthToken authToken, User user) {
+  public FeedPresenter(FeedView view, AuthToken authToken, User user) {
     this.view = view;
     this.authToken = authToken;
     this.user = user;
@@ -32,17 +33,17 @@ public class FeedPresenter implements FeedService.FeedObserver, UserService.GetU
   public void loadMoreItems() throws MalformedURLException {
     if (!isLoading && hasMorePages) {
       isLoading = true;
-      view.setLoading(true, hasMorePages);
+      view.setLoading(true);
       new FeedService().getFeed(authToken, user, lastStatus, this);
       isLoading = false;
-      view.setLoading(false, hasMorePages);
+      view.setLoading(false);
     }
   }
 
   //FeedObserver Implementation
   @Override
   public void feedSucceeded(List<Status> statuses) {
-    view.addStatuses(statuses);
+    view.addItems(statuses);
   }
 
   @Override
@@ -62,15 +63,6 @@ public class FeedPresenter implements FeedService.FeedObserver, UserService.GetU
   }
 
   //View Implementation
-  public interface View {
-
-    void navigateToUser(User user);
-
-    void setLoading(boolean value, boolean pages) throws MalformedURLException;
-
-    void displayToast(String message);
-
-    void addStatuses(List<Status> statuses);
-
+  public interface FeedView extends PagedView<Status> {
   }
 }
