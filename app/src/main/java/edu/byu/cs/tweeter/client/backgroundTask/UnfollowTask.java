@@ -11,24 +11,24 @@ import edu.byu.cs.tweeter.model.domain.User;
  */
 public class UnfollowTask extends AuthorizedTask {
 
-    /**
-     * The user that is being followed.
-     */
-    private final User followee;
+  /**
+   * The user that is being followed.
+   */
+  private final User followee;
 
-    public UnfollowTask(AuthToken authToken, User followee, Handler messageHandler) {
-        super(authToken, messageHandler);
-        this.followee = followee;
-    }
+  public UnfollowTask(AuthToken authToken, User followee, Handler messageHandler) {
+    super(authToken, messageHandler);
+    this.followee = followee;
+  }
 
-    @Override
-    protected void runTask() {
-        // We could do this from the presenter, without a task and handler, but we will
-        // eventually access the database from here when we aren't using dummy data.
-    }
+  @Override
+  protected void runTask() {
+    // We could do this from the presenter, without a task and handler, but we will
+    // eventually access the database from here when we aren't using dummy data.
+  }
 
-    @Override
-    protected void loadBundle(Bundle msgBundle) {
-        // Nothing to load
-    }
+  @Override
+  protected void loadBundle(Bundle msgBundle) {
+    // Nothing to load
+  }
 }

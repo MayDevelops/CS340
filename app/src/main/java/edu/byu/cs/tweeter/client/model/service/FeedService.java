@@ -1,9 +1,6 @@
 package edu.byu.cs.tweeter.client.model.service;
 
-import android.os.Handler;
-import android.os.Message;
-
-import androidx.annotation.NonNull;
+import android.os.Bundle;
 
 import java.net.MalformedURLException;
 import java.text.ParseException;
@@ -16,16 +13,15 @@ import java.util.List;
 import edu.byu.cs.tweeter.client.backgroundTask.GetFeedTask;
 import edu.byu.cs.tweeter.client.backgroundTask.PagedTask;
 import edu.byu.cs.tweeter.client.backgroundTask.PostStatusTask;
+import edu.byu.cs.tweeter.client.backgroundTask.handler.BackgroundTaskHandler;
 import edu.byu.cs.tweeter.client.backgroundTask.handler.TaskExecutor;
+import edu.byu.cs.tweeter.client.backgroundTask.observer.ServiceObserver;
 import edu.byu.cs.tweeter.client.cache.Cache;
 import edu.byu.cs.tweeter.model.domain.AuthToken;
 import edu.byu.cs.tweeter.model.domain.Status;
 import edu.byu.cs.tweeter.model.domain.User;
 
 public class FeedService {
-  private AuthToken authToken;
-  private User user;
-  private Status lastStatus;
 
   public void getFeed(AuthToken authToken, User user, Status lastStatus, FeedObserver observer) {
     int PAGE_SIZE = 10;
@@ -41,55 +37,8 @@ public class FeedService {
               newStatus, new PostStatusHandler(observer));
       new TaskExecutor<>(statusTask);
     } catch (Exception ex) {
-      observer.statusThrewException(ex);
-    }
-  }
-
-  private static class GetFeedHandler extends Handler {
-    private final FeedObserver observer;
-
-    public GetFeedHandler(FeedObserver observer) {
-      this.observer = observer;
-    }
-
-    @Override
-    public void handleMessage(@NonNull Message msg) {
-      boolean success = msg.getData().getBoolean(GetFeedTask.SUCCESS_KEY);
-      if (success) {
-        List<Status> statuses = (List<Status>) msg.getData().getSerializable(PagedTask.ITEMS_KEY);
-        boolean hasMorePages = msg.getData().getBoolean(GetFeedTask.MORE_PAGES_KEY);
-
-        observer.setLastStatus(statuses, hasMorePages);
-        observer.feedSucceeded(statuses);
-      } else if (msg.getData().containsKey(GetFeedTask.MESSAGE_KEY)) {
-        String message = msg.getData().getString(GetFeedTask.MESSAGE_KEY);
-        observer.feedFailed(message);
-      } else if (msg.getData().containsKey(GetFeedTask.EXCEPTION_KEY)) {
-        Exception ex = (Exception) msg.getData().getSerializable(GetFeedTask.EXCEPTION_KEY);
-        observer.feedThrewException(ex);
-      }
-    }
-  }
-
-  private static class PostStatusHandler extends Handler {
-    private final StatusObserver observer;
-
-    public PostStatusHandler(StatusObserver observer) {
-      this.observer = observer;
-    }
-
-    @Override
-    public void handleMessage(@NonNull Message msg) {
-      boolean success = msg.getData().getBoolean(PostStatusTask.SUCCESS_KEY);
-      if (success) {
-        observer.statusSucceeded();
-      } else if (msg.getData().containsKey(PostStatusTask.MESSAGE_KEY)) {
-        String message = msg.getData().getString(PostStatusTask.MESSAGE_KEY);
-        observer.statusFailed(message);
-      } else if (msg.getData().containsKey(PostStatusTask.EXCEPTION_KEY)) {
-        Exception ex = (Exception) msg.getData().getSerializable(PostStatusTask.EXCEPTION_KEY);
-        observer.statusThrewException(ex);
-      }
+      String message = "Status post failed because of exception: " + ex.getMessage();
+      observer.handleFailure(message);
     }
   }
 
@@ -157,22 +106,53 @@ public class FeedService {
     }
   }
 
-  public interface FeedObserver {
+  public interface FeedObserver extends ServiceObserver {
     void feedSucceeded(List<Status> statuses);
-
-    void feedFailed(String message);
-
-    void feedThrewException(Exception ex);
 
     void setLastStatus(List<Status> statuses, boolean hasMorePages);
   }
 
-  public interface StatusObserver {
+  public interface StatusObserver extends ServiceObserver {
     void statusSucceeded();
-
-    void statusFailed(String message);
-
-    void statusThrewException(Exception ex);
-
   }
+
+  private static class GetFeedHandler extends BackgroundTaskHandler {
+
+    public GetFeedHandler(FeedObserver observer) {
+      super(observer);
+    }
+
+    @Override
+    protected String getFailedMessagePrefix() {
+      return "Feed Service";
+    }
+
+    @Override
+    protected void handleSuccessMessage(ServiceObserver observer, Bundle data) {
+      List<Status> statuses = (List<Status>) data.getSerializable(PagedTask.ITEMS_KEY);
+      boolean hasMorePages = data.getBoolean(GetFeedTask.MORE_PAGES_KEY);
+
+      ((FeedObserver) observer).setLastStatus(statuses, hasMorePages);
+      ((FeedObserver) observer).feedSucceeded(statuses);
+    }
+  }
+
+  private static class PostStatusHandler extends BackgroundTaskHandler {
+
+    public PostStatusHandler(StatusObserver observer) {
+      super(observer);
+    }
+
+    @Override
+    protected String getFailedMessagePrefix() {
+      return "Feed Service";
+    }
+
+    @Override
+    protected void handleSuccessMessage(ServiceObserver observer, Bundle data) {
+      ((StatusObserver) observer).statusSucceeded();
+    }
+  }
+
+
 }

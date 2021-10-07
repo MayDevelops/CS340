@@ -6,18 +6,15 @@ import edu.byu.cs.tweeter.model.domain.User;
 
 public class LoginPresenter implements UserService.LoginObserver {
 
-  public interface View {
+  private View view;
 
-    void navigateToUser(User user);
+  public LoginPresenter(View v) {
+    this.view = v;
+  }
 
-    void displayErrorMessage(String message);
-
-    void clearErrorMessage();
-
-    void displayInfoMessage(String message);
-
-    void clearInfoMessage();
-
+  @Override
+  public void handleFailure(String message) {
+    view.displayErrorMessage(message);
   }
 
   private String validateLogin(String alias, String password) {
@@ -40,23 +37,6 @@ public class LoginPresenter implements UserService.LoginObserver {
     view.displayInfoMessage("Hello " + user);
   }
 
-  @Override
-  public void loginFailed(String message) {
-    view.displayErrorMessage("Login failed: " + message);
-  }
-
-  @Override
-  public void loginThrewException(Exception e) {
-    view.displayErrorMessage("Login failed: " + e.getMessage());
-  }
-
-  private View view;
-
-  public LoginPresenter(View v) {
-    this.view = v;
-  }
-
-
   public void login(String alias, String pw) {
     view.clearErrorMessage();
     view.clearInfoMessage();
@@ -67,6 +47,21 @@ public class LoginPresenter implements UserService.LoginObserver {
     } else {
       view.displayErrorMessage("Login failed: " + message);
     }
+  }
+
+
+  public interface View {
+
+    void navigateToUser(User user);
+
+    void displayErrorMessage(String message);
+
+    void clearErrorMessage();
+
+    void displayInfoMessage(String message);
+
+    void clearInfoMessage();
+
   }
 
 

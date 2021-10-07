@@ -13,13 +13,13 @@ import edu.byu.cs.tweeter.util.Pair;
  */
 public class GetFollowersTask extends PagedUserTask {
 
-    public GetFollowersTask(AuthToken authToken, User targetUser, int limit, User lastFollower,
-                            Handler messageHandler) {
-        super(authToken, targetUser, limit, lastFollower, messageHandler);
-    }
+  public GetFollowersTask(AuthToken authToken, User targetUser, int limit, User lastFollower,
+                          Handler messageHandler) {
+    super(authToken, targetUser, limit, lastFollower, messageHandler);
+  }
 
-    @Override
-    protected Pair<List<User>, Boolean> getItems() {
-        return getFakeData().getPageOfUsers(getLastItem(), getLimit(), getTargetUser());
-    }
+  @Override
+  protected Pair<List<User>, Boolean> getItems() {
+    return getFakeData().getPageOfUsers(getLastItem(), getLimit(), getTargetUser());
+  }
 }

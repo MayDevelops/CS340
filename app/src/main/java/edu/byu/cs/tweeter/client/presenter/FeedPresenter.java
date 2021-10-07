@@ -46,37 +46,19 @@ public class FeedPresenter implements FeedService.FeedObserver, UserService.GetU
   }
 
   @Override
-  public void feedFailed(String message) {
-    String failMessage = "Failed to get feed: " + message;
-    view.displayToast(failMessage);
-  }
-
-  @Override
-  public void feedThrewException(Exception ex) {
-    String exceptionMessage = "Failed to get feed because of exception: " + ex.getMessage();
-    view.displayToast(exceptionMessage);
-  }
-
-  @Override
   public void setLastStatus(List<Status> statuses, boolean hasMorePages) {
     this.hasMorePages = hasMorePages;
     lastStatus = (statuses.size() > 0) ? statuses.get(statuses.size() - 1) : null;
   }
 
-  //GetUserObserver Implementation
   @Override
   public void getUserSucceeded(User user) {
     view.navigateToUser(user);
   }
 
   @Override
-  public void getUserFailed(String string) {
-
-  }
-
-  @Override
-  public void getUserThrewException(Exception ex) {
-
+  public void handleFailure(String message) {
+    view.displayToast(message);
   }
 
   //View Implementation

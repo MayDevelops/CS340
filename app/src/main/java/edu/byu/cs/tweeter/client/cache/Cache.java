@@ -8,11 +8,6 @@ import edu.byu.cs.tweeter.model.domain.User;
  */
 public class Cache {
   private static Cache instance = new Cache();
-
-  public static Cache getInstance() {
-    return instance;
-  }
-
   /**
    * The currently logged-in user.
    */
@@ -21,9 +16,12 @@ public class Cache {
    * The auth token for the current user session.
    */
   private AuthToken currUserAuthToken;
-
   private Cache() {
     initialize();
+  }
+
+  public static Cache getInstance() {
+    return instance;
   }
 
   private void initialize() {

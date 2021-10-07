@@ -11,14 +11,14 @@ import edu.byu.cs.tweeter.util.Pair;
  */
 public class LoginTask extends AuthenticationTask {
 
-    public LoginTask(String username, String password, Handler messageHandler) {
-        super(messageHandler, username, password);
-    }
+  public LoginTask(String username, String password, Handler messageHandler) {
+    super(messageHandler, username, password);
+  }
 
-    @Override
-    protected Pair<User, AuthToken> runAuthenticationTask() {
-        User loggedInUser = getFakeData().getFirstUser();
-        AuthToken authToken = getFakeData().getAuthToken();
-        return new Pair<>(loggedInUser, authToken);
-    }
+  @Override
+  protected Pair<User, AuthToken> runAuthenticationTask() {
+    User loggedInUser = getFakeData().getFirstUser();
+    AuthToken authToken = getFakeData().getAuthToken();
+    return new Pair<>(loggedInUser, authToken);
+  }
 }

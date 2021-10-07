@@ -24,15 +24,8 @@ public class RegisterPresenter implements UserService.RegisterObserver {
   }
 
   @Override
-  public void registerFailed(String message) {
-    String failMessage = "Failed to register: " + message;
-    view.displayToast(failMessage);
-  }
-
-  @Override
-  public void registerThrewException(Exception ex) {
-    String exceptionMessage = "Failed to register because of exception: " + ex.getMessage();
-    view.displayToast(exceptionMessage);
+  public void handleFailure(String message) {
+    view.displayToast(message);
   }
 
 

@@ -45,6 +45,22 @@ public class FollowersFragment extends Fragment implements FollowersPresenter.Vi
   private FollowersPresenter presenter;
   private FollowersRecyclerViewAdapter FollowersRecyclerViewAdapter;
 
+  /**
+   * Creates an instance of the fragment and places the target user in an arguments
+   * bundle assigned to the fragment.
+   *
+   * @param user the user whose Followers is being displayed (not necessarily the logged-in user).
+   * @return the fragment.
+   */
+  public static FollowersFragment newInstance(User user) {
+    FollowersFragment fragment = new FollowersFragment();
+
+    Bundle args = new Bundle(1);
+    args.putSerializable(USER_KEY, user);
+
+    fragment.setArguments(args);
+    return fragment;
+  }
 
   @Override
   public void addItems(List<User> followees) {
@@ -69,32 +85,8 @@ public class FollowersFragment extends Fragment implements FollowersPresenter.Vi
   }
 
   @Override
-  public void displayErrorMessage(String message) {
-    Toast.makeText(getActivity(), message, Toast.LENGTH_LONG).show();
-  }
-
-
-  @Override
-  public void displayInfoMessage(String message) {
-    Toast.makeText(getActivity(), message, Toast.LENGTH_LONG).show();
-  }
-
-
-  /**
-   * Creates an instance of the fragment and places the target user in an arguments
-   * bundle assigned to the fragment.
-   *
-   * @param user the user whose Followers is being displayed (not necessarily the logged-in user).
-   * @return the fragment.
-   */
-  public static FollowersFragment newInstance(User user) {
-    FollowersFragment fragment = new FollowersFragment();
-
-    Bundle args = new Bundle(1);
-    args.putSerializable(USER_KEY, user);
-
-    fragment.setArguments(args);
-    return fragment;
+  public void displayToast(String message) {
+    Toast.makeText(getContext(), message, Toast.LENGTH_LONG).show();
   }
 
   @Override

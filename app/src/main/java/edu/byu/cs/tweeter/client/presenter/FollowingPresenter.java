@@ -31,16 +31,6 @@ public class FollowingPresenter implements FollowService.GetFollowingObserver, U
   }
 
   @Override
-  public void getFollowingFailed(String e) {
-
-  }
-
-  @Override
-  public void getFollowingThrewException(Exception e) {
-
-  }
-
-  @Override
   public void setLastFollowee(List<User> followees, boolean hasMorepages) {
     this.hasMorePages = hasMorepages;
     lastFollowee = (followees.size() > 0) ? followees.get(followees.size() - 1) : null;
@@ -52,28 +42,9 @@ public class FollowingPresenter implements FollowService.GetFollowingObserver, U
   }
 
   @Override
-  public void getUserFailed(String string) {
-
+  public void handleFailure(String message) {
+    view.displayToast(message);
   }
-
-  @Override
-  public void getUserThrewException(Exception ex) {
-
-  }
-
-  public interface View {
-
-    void addItems(List<User> followees);
-
-    void setLoading(boolean value);
-
-    void navigateToUser(User user);
-
-    void displayErrorMessage(String message);
-
-    void displayInfoMessage(String message);
-  }
-
 
   public void loadMoreItems() {
     if (!isLoading && hasMorePages) {
@@ -87,5 +58,17 @@ public class FollowingPresenter implements FollowService.GetFollowingObserver, U
 
   public void getUsers(String alias) {
     new UserService().getUser(authToken, alias, this);
+  }
+
+  public interface View {
+
+    void addItems(List<User> followees);
+
+    void setLoading(boolean value);
+
+    void navigateToUser(User user);
+
+    void displayToast(String message);
+
   }
 }

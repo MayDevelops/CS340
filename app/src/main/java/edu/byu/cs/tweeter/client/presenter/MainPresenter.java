@@ -41,18 +41,6 @@ public class MainPresenter implements FollowService.GetFollowObserver,
   }
 
   @Override
-  public void getFollowFailed(String message) {
-    String failMessage = "Failed to follow: " + message;
-    view.displayToast(failMessage);
-  }
-
-  @Override
-  public void getFollowThrewException(Exception ex) {
-    String exceptionMessage = "Failed to follow because of exception: " + ex.getMessage();
-    view.displayToast(exceptionMessage);
-  }
-
-  @Override
   public void follow(AuthToken authToken, User user) {
     new FollowService().followTask(authToken, user, this, this, this);
   }
@@ -65,33 +53,9 @@ public class MainPresenter implements FollowService.GetFollowObserver,
   }
 
   @Override
-  public void getUnfollowFailed(String message) {
-    String failMessage = "Failed to unfollow: " + message;
-    view.displayToast(failMessage);
-  }
-
-  @Override
-  public void getUnfollowThrewException(Exception ex) {
-    String exceptionMessage = "Failed to unfollow because of exception: " + ex.getMessage();
-    view.displayToast(exceptionMessage);
-  }
-
-  @Override
   public void unfollow(AuthToken authToken, User user) {
     new FollowService().unfollowTask(authToken, user, this, this, this);
 
-  }
-
-  @Override
-  public void getFollowerCountFailed(String message) {
-    String failMessage = "Failed to get follower count: " + message;
-    view.displayToast(failMessage);
-  }
-
-  @Override
-  public void getFollowerCountThrewException(Exception ex) {
-    String exceptionMessage = "Failed to get follower count because of exception: " + ex.getMessage();
-    view.displayToast(exceptionMessage);
   }
 
   @Override
@@ -100,37 +64,13 @@ public class MainPresenter implements FollowService.GetFollowObserver,
   }
 
   @Override
-  public void getFolloweeCountFailed(String message) {
-    String failMessage = "Failed to get follower count: " + message;
-    view.displayToast(failMessage);
-  }
-
-  @Override
-  public void getFolloweeCountThrewException(Exception ex) {
-    String exceptionMessage = "Failed to get following count because of exception: " + ex.getMessage();
-    view.displayToast(exceptionMessage);
-  }
-
-  @Override
   public void setFolloweeCount(int count) {
     view.setFolloweeCount(count);
   }
 
   @Override
-  public void logoutSuceeded() {
+  public void logoutSucceeded() {
     view.logout();
-  }
-
-  @Override
-  public void logoutFailed(String message) {
-    String failMessage = "Failed to logout: " + message;
-    view.displayToast(failMessage);
-  }
-
-  @Override
-  public void logoutThrewException(Exception ex) {
-    String exceptionMessage = "Failed to logout because of exception: " + ex.getMessage();
-    view.displayToast(exceptionMessage);
   }
 
   @Override
@@ -141,18 +81,6 @@ public class MainPresenter implements FollowService.GetFollowObserver,
   @Override
   public void statusSucceeded() {
     view.displayToast("Successfully Posted!");
-  }
-
-  @Override
-  public void statusFailed(String message) {
-    String failMessage = "Failed to post status: " + message;
-    view.displayToast(failMessage);
-  }
-
-  @Override
-  public void statusThrewException(Exception ex) {
-    String exceptionMessage = "Failed to post status because of exception: " + ex.getMessage();
-    view.displayToast(exceptionMessage);
   }
 
   //CheckFollowerObserver Implementation
@@ -168,16 +96,11 @@ public class MainPresenter implements FollowService.GetFollowObserver,
     }
   }
 
-  @Override
-  public void checkFollowerFailed(String message) {
-    String failMessage = "Failed to determine following relationship: " + message;
-    view.displayToast(failMessage);
-  }
 
   @Override
-  public void checkFollowerThrewException(Exception ex) {
-    String exceptionMessage = "Failed to determine following relationship because of exception: " + ex.getMessage();
-    view.displayToast(exceptionMessage);
+  public void handleFailure(String message) {
+    view.displayToast(message);
+
   }
 
   //View Implementation

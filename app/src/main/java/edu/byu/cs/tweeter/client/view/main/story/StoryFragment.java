@@ -99,6 +99,32 @@ public class StoryFragment extends Fragment implements StoryPresenter.View {
     }, 0);
   }
 
+  @Override
+  public void navigateToUser(User user) {
+    Intent intent = new Intent(getContext(), MainActivity.class);
+    intent.putExtra(MainActivity.CURRENT_USER_KEY, user);
+    startActivity(intent);
+  }
+
+  @Override
+  public void setLoading(boolean value) {
+    isLoading = value;
+    if (isLoading) {
+      storyRecyclerViewAdapter.addLoadingFooter();
+    } else {
+      storyRecyclerViewAdapter.removeLoadingFooter();
+    }
+  }
+
+  @Override
+  public void displayToast(String message) {
+    Toast.makeText(getContext(), message, Toast.LENGTH_LONG).show();
+  }
+
+  @Override
+  public void addItems(List<Status> statuses) {
+    storyRecyclerViewAdapter.addItems(statuses);
+  }
 
   /**
    * The ViewHolder for the RecyclerView that displays the story data.
@@ -356,34 +382,6 @@ public class StoryFragment extends Fragment implements StoryPresenter.View {
         loadMoreItems();
       }
     }
-  }
-
-  @Override
-  public void navigateToUser(User user) {
-    Intent intent = new Intent(getContext(), MainActivity.class);
-    intent.putExtra(MainActivity.CURRENT_USER_KEY, user);
-    startActivity(intent);
-  }
-
-  @Override
-  public void setLoading(boolean value) {
-    isLoading = value;
-    if (isLoading) {
-      storyRecyclerViewAdapter.addLoadingFooter();
-    } else {
-      storyRecyclerViewAdapter.removeLoadingFooter();
-    }
-  }
-
-
-  @Override
-  public void displayToast(String message) {
-    Toast.makeText(getContext(), message, Toast.LENGTH_LONG).show();
-  }
-
-  @Override
-  public void addItems(List<Status> statuses) {
-    storyRecyclerViewAdapter.addItems(statuses);
   }
 
 }

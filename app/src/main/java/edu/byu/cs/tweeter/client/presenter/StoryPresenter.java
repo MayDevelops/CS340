@@ -10,11 +10,10 @@ import edu.byu.cs.tweeter.model.domain.User;
 
 public class StoryPresenter implements UserService.GetUserObserver, StatusService.GetStatusObserver {
   private final View view;
-  private User user;
-  private AuthToken authToken;
+  private final User user;
+  private final AuthToken authToken;
   private boolean hasMorePages = true;
   private boolean isLoading = false;
-  private Status lastStatus;
 
 
   public StoryPresenter(View view, AuthToken authToken, User user) {
@@ -31,50 +30,25 @@ public class StoryPresenter implements UserService.GetUserObserver, StatusServic
     if (!isLoading && hasMorePages) {
       isLoading = true;
       view.setLoading(true);
-      new StatusService().getStatus(authToken, user, lastStatus, this);
+      new StatusService().getStatus(authToken, user, this);
       isLoading = false;
       view.setLoading(false);
     }
   }
 
-  //GetUserObserver Implementation
   @Override
   public void getUserSucceeded(User user) {
     view.navigateToUser(user);
   }
 
   @Override
-  public void getUserFailed(String string) {
-
-  }
-
-  @Override
-  public void getUserThrewException(Exception ex) {
-
-  }
-
-  //GetStatusObserver Implementation
-  @Override
-  public void getStatusSucceeded(List<Status> statuses, boolean hasMorePages) {
+  public void getStatusSucceeded(List<Status> statuses) {
     view.addItems(statuses);
   }
 
   @Override
-  public void getStatusFailed(String message) {
-    String failedMessage = "Failed to get story: " + message;
-    view.displayToast(failedMessage);
-  }
-
-  @Override
-  public void getStatusThrewException(Exception ex) {
-    String exceptionMessage = "Failed to get story because of exception: " + ex.getMessage();
-    view.displayToast(exceptionMessage);
-  }
-
-  @Override
-  public void setLastStatus(Status lastStatus, boolean hasMorePages) {
-    this.hasMorePages = hasMorePages;
-    this.lastStatus = lastStatus;
+  public void handleFailure(String message) {
+    view.displayToast(message);
   }
 
   public interface View {

@@ -98,6 +98,45 @@ public class FeedFragment extends Fragment implements FeedPresenter.View {
     return view;
   }
 
+  private void loadMoreItems() {
+    final Handler handler = new Handler(Looper.getMainLooper());
+    handler.postDelayed(() -> {
+      try {
+        presenter.loadMoreItems();
+      } catch (MalformedURLException e) {
+        e.printStackTrace();
+      }
+    }, 0);
+  }
+
+  @Override
+  public void navigateToUser(User user) {
+    Intent intent = new Intent(getContext(), MainActivity.class);
+    intent.putExtra(MainActivity.CURRENT_USER_KEY, user);
+    startActivity(intent);
+  }
+
+  @Override
+  public void setLoading(boolean value, boolean pages) throws MalformedURLException {
+    feedRecyclerViewAdapter.isLoading = value;
+    feedRecyclerViewAdapter.hasMorePages = pages;
+    if (feedRecyclerViewAdapter.isLoading) {
+      feedRecyclerViewAdapter.addLoadingFooter();
+    } else {
+      feedRecyclerViewAdapter.removeLoadingFooter();
+    }
+  }
+
+  @Override
+  public void displayToast(String message) {
+    Toast.makeText(getContext(), message, Toast.LENGTH_LONG).show();
+  }
+
+  @Override
+  public void addStatuses(List<Status> statuses) {
+    feedRecyclerViewAdapter.addItems(statuses);
+  }
+
   /**
    * The ViewHolder for the RecyclerView that displays the feed data.
    */
@@ -369,44 +408,5 @@ public class FeedFragment extends Fragment implements FeedPresenter.View {
         }
       }
     }
-  }
-
-  private void loadMoreItems() {
-    final Handler handler = new Handler(Looper.getMainLooper());
-    handler.postDelayed(() -> {
-      try {
-        presenter.loadMoreItems();
-      } catch (MalformedURLException e) {
-        e.printStackTrace();
-      }
-    }, 0);
-  }
-
-  @Override
-  public void navigateToUser(User user) {
-    Intent intent = new Intent(getContext(), MainActivity.class);
-    intent.putExtra(MainActivity.CURRENT_USER_KEY, user);
-    startActivity(intent);
-  }
-
-  @Override
-  public void setLoading(boolean value, boolean pages) throws MalformedURLException {
-    feedRecyclerViewAdapter.isLoading = value;
-    feedRecyclerViewAdapter.hasMorePages = pages;
-    if (feedRecyclerViewAdapter.isLoading) {
-      feedRecyclerViewAdapter.addLoadingFooter();
-    } else {
-      feedRecyclerViewAdapter.removeLoadingFooter();
-    }
-  }
-
-  @Override
-  public void displayToast(String message) {
-    Toast.makeText(getContext(), message, Toast.LENGTH_LONG).show();
-  }
-
-  @Override
-  public void addStatuses(List<Status> statuses) {
-    feedRecyclerViewAdapter.addItems(statuses);
   }
 }

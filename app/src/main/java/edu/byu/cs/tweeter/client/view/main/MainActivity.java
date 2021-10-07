@@ -30,18 +30,15 @@ import edu.byu.cs.tweeter.model.domain.User;
  */
 public class MainActivity extends AppCompatActivity implements StatusDialogFragment.Observer, MainPresenter.View {
 
-  private static final String LOG_TAG = "MainActivity";
-
   public static final String CURRENT_USER_KEY = "CurrentUser";
-
+  private static final String LOG_TAG = "MainActivity";
+  private final MainPresenter presenter = new MainPresenter(this);
   private Toast logOutToast;
   private Toast postingToast;
   private User selectedUser;
   private TextView followeeCount;
   private TextView followerCount;
   private Button followButton;
-
-  private final MainPresenter presenter = new MainPresenter(this);
 
   @Override
   protected void onCreate(Bundle savedInstanceState) {
