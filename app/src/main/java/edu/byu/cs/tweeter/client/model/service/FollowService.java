@@ -73,13 +73,13 @@ public class FollowService {
   }
 
   public interface GetFollowingObserver extends ServiceObserver {
-    void getFollowingSucceeded(List<User> users, boolean hasMorePages);
+    void getFollowingSucceeded(List<User> users);
 
     void setLastFollowee(List<User> followees, boolean hasMorepages);
   }
 
   public interface GetFollowerObserver extends ServiceObserver {
-    void getFollowerSucceeded(List<User> users, boolean hasMorePages);
+    void getFollowerSucceeded(List<User> users);
 
     void setLastFollowee(List<User> followees, boolean hasMorepages);
   }
@@ -95,7 +95,6 @@ public class FollowService {
 
     void unfollow(AuthToken authToken, User user);
   }
-
 
   public interface GetFollowerCountObserver extends ServiceObserver {
     void setFollowerCount(int count);
@@ -145,7 +144,7 @@ public class FollowService {
       List<User> followers = (List<User>) data.getSerializable(PagedTask.ITEMS_KEY);
       boolean hasMorePages = data.getBoolean(GetFollowersTask.MORE_PAGES_KEY);
       ((GetFollowerObserver) observer).setLastFollowee(followers, hasMorePages);
-      ((GetFollowerObserver) observer).getFollowerSucceeded(followers, hasMorePages);
+      ((GetFollowerObserver) observer).getFollowerSucceeded(followers);
     }
   }
 
@@ -165,7 +164,7 @@ public class FollowService {
       List<User> followees = (List<User>) data.getSerializable(PagedTask.ITEMS_KEY);
       boolean hasMorePages = data.getBoolean(GetFollowingTask.MORE_PAGES_KEY);
       ((GetFollowingObserver) observer).setLastFollowee(followees, hasMorePages);
-      ((GetFollowingObserver) observer).getFollowingSucceeded(followees, hasMorePages);
+      ((GetFollowingObserver) observer).getFollowingSucceeded(followees);
     }
   }
 

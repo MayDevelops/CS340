@@ -26,10 +26,9 @@ public class FollowersPresenter implements FollowService.GetFollowerObserver, Us
   }
 
   @Override
-  public void getFollowerSucceeded(List<User> users, boolean hasMorePages) {
+  public void getFollowerSucceeded(List<User> users) {
     view.addItems(users);
   }
-
 
   @Override
   public void setLastFollowee(List<User> followees, boolean hasMorepages) {

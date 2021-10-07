@@ -18,29 +18,6 @@ public class UserService {
   public static void getUsers() {
   }
 
-  public void login(String alias, String password, LoginObserver observer) {
-    LoginTask loginTask = new LoginTask(alias, password, new LoginHandler(observer));
-    new TaskExecutor<>(loginTask);
-  }
-
-  public void logout(LogoutObserver observer) {
-    LogoutTask logoutTask = new LogoutTask(Cache.getInstance().getCurrUserAuthToken(), new LogoutHandler(observer));
-    new TaskExecutor<>(logoutTask);
-  }
-
-  public void register(String firstName, String lastName, String alias, String password, String imageBytes, RegisterObserver observer) {
-    RegisterTask registerTask = new RegisterTask(firstName, lastName,
-            alias, password, imageBytes, new RegisterHandler(observer));
-
-    new TaskExecutor<>(registerTask);
-  }
-
-  public void getUser(AuthToken authToken, String alias, GetUserObserver observer) {
-    GetUserTask getUserTask = new GetUserTask(authToken, alias, new GetUserHandler(observer));
-    new TaskExecutor<>(getUserTask);
-  }
-
-
   public interface LoginObserver extends ServiceObserver {
     void loginSucceeded(AuthToken authToken, User user);
   }
@@ -51,7 +28,6 @@ public class UserService {
     void logout();
   }
 
-
   public interface GetUserObserver extends ServiceObserver {
     void getUserSucceeded(User user);
   }
@@ -59,6 +35,7 @@ public class UserService {
   public interface RegisterObserver extends ServiceObserver {
     void registerSucceeded(User registeredUser, AuthToken authToken);
   }
+
 
   private static class LoginHandler extends BackgroundTaskHandler {
 
@@ -83,6 +60,12 @@ public class UserService {
     }
   }
 
+  public void login(String alias, String password, LoginObserver observer) {
+    LoginTask loginTask = new LoginTask(alias, password, new LoginHandler(observer));
+    new TaskExecutor<>(loginTask);
+  }
+
+
   private static class LogoutHandler extends BackgroundTaskHandler {
 
     public LogoutHandler(LogoutObserver observer) {
@@ -99,6 +82,12 @@ public class UserService {
       ((LogoutObserver) observer).logoutSucceeded();
     }
   }
+
+  public void logout(LogoutObserver observer) {
+    LogoutTask logoutTask = new LogoutTask(Cache.getInstance().getCurrUserAuthToken(), new LogoutHandler(observer));
+    new TaskExecutor<>(logoutTask);
+  }
+
 
   private static class RegisterHandler extends BackgroundTaskHandler {
 
@@ -119,6 +108,14 @@ public class UserService {
     }
   }
 
+  public void register(String firstName, String lastName, String alias, String password, String imageBytes, RegisterObserver observer) {
+    RegisterTask registerTask = new RegisterTask(firstName, lastName,
+            alias, password, imageBytes, new RegisterHandler(observer));
+
+    new TaskExecutor<>(registerTask);
+  }
+
+
   private static class GetUserHandler extends BackgroundTaskHandler {
 
     public GetUserHandler(GetUserObserver observer) {
@@ -137,6 +134,8 @@ public class UserService {
     }
   }
 
+  public void getUser(AuthToken authToken, String alias, GetUserObserver observer) {
+    GetUserTask getUserTask = new GetUserTask(authToken, alias, new GetUserHandler(observer));
+    new TaskExecutor<>(getUserTask);
+  }
 }
-
-
