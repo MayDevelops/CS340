@@ -74,8 +74,6 @@ public class FollowService {
 
   public interface GetFollowingObserver extends ServiceObserver {
     void getFollowingSucceeded(List<User> users);
-
-    void setLastFollowee(List<User> followees, boolean hasMorepages);
   }
 
   public interface GetFollowerObserver extends ServiceObserver {
@@ -158,8 +156,6 @@ public class FollowService {
     @Override
     protected void handleSuccessMessage(ServiceObserver observer, Bundle data) {
       List<User> followees = (List<User>) data.getSerializable(PagedTask.ITEMS_KEY);
-      boolean hasMorePages = data.getBoolean(GetFollowingTask.MORE_PAGES_KEY);
-      ((GetFollowingObserver) observer).setLastFollowee(followees, hasMorePages);
       ((GetFollowingObserver) observer).getFollowingSucceeded(followees);
     }
   }

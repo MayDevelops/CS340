@@ -23,8 +23,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import edu.byu.cs.client.R;
-import edu.byu.cs.tweeter.client.cache.Cache;
 import edu.byu.cs.tweeter.client.presenter.paged.FollowingPresenter;
+import edu.byu.cs.tweeter.client.state.State;
 import edu.byu.cs.tweeter.client.view.main.MainActivity;
 import edu.byu.cs.tweeter.client.view.util.ImageUtils;
 import edu.byu.cs.tweeter.model.domain.User;
@@ -94,7 +94,7 @@ public class FollowingFragment extends Fragment implements FollowingPresenter.Fo
     View view = inflater.inflate(R.layout.fragment_following, container, false);
 
     User user = (User) getArguments().getSerializable(USER_KEY);
-    presenter = new FollowingPresenter(this, Cache.getInstance().getCurrUserAuthToken(), user);
+    presenter = new FollowingPresenter(this);
 
     RecyclerView followingRecyclerView = view.findViewById(R.id.followingRecyclerView);
 
@@ -113,7 +113,7 @@ public class FollowingFragment extends Fragment implements FollowingPresenter.Fo
     final Handler handler = new Handler(Looper.getMainLooper());
     handler.postDelayed(() -> {
       try {
-        presenter.loadMoreItems();
+        presenter.loadMoreItems(State.authToken, State.user);
       } catch (MalformedURLException e) {
         e.printStackTrace();
       }
@@ -145,7 +145,7 @@ public class FollowingFragment extends Fragment implements FollowingPresenter.Fo
       itemView.setOnClickListener(new View.OnClickListener() {
         @Override
         public void onClick(View view) {
-          presenter.getUsers(userAlias.getText().toString());
+          presenter.getUser(State.authToken, userAlias.getText().toString());
         }
       });
     }
