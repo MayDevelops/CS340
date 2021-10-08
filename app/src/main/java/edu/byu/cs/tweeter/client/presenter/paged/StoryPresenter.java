@@ -10,7 +10,6 @@ public class StoryPresenter extends PagedPresenter<Status> {
 
   public StoryPresenter(StoryView view) {
     super(view);
-
   }
 
   public interface StoryView extends PagedView<Status> {
@@ -24,14 +23,10 @@ public class StoryPresenter extends PagedPresenter<Status> {
         view.addItems(statuses);
       }
 
-
       @Override
       public void handleFailure(String message) {
         view.displayToast(message);
       }
     });
-
   }
-
-
 }

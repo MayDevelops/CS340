@@ -49,7 +49,7 @@ public class MainPresenter implements FollowService.GetFollowObserver,
   @Override
   public void getUnfollowSucceeded() {
     view.followButtonUpdates(true);
-    view.setFollowButton(true);
+    view.setFollowButton(false);
   }
 
   @Override

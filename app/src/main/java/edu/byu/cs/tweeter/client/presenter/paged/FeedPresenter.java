@@ -7,6 +7,12 @@ import edu.byu.cs.tweeter.client.state.State;
 import edu.byu.cs.tweeter.model.domain.Status;
 
 public class FeedPresenter extends PagedPresenter<Status> {
+  public FeedPresenter(FeedView view) {
+    super(view);
+  }
+
+  public interface FeedView extends PagedView<Status> {
+  }
 
   @Override
   void ServiceLoader() {
@@ -25,12 +31,5 @@ public class FeedPresenter extends PagedPresenter<Status> {
     });
   }
 
-  //View Implementation
-  public interface FeedView extends PagedView<Status> {
-  }
-
-  public FeedPresenter(FeedView view) {
-    super(view);
-  }
 
 }
