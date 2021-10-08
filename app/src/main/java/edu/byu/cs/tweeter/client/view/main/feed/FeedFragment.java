@@ -32,6 +32,7 @@ import java.util.List;
 import edu.byu.cs.client.R;
 import edu.byu.cs.tweeter.client.cache.Cache;
 import edu.byu.cs.tweeter.client.presenter.paged.FeedPresenter;
+import edu.byu.cs.tweeter.client.presenter.paged.PagedPresenter;
 import edu.byu.cs.tweeter.client.view.main.MainActivity;
 import edu.byu.cs.tweeter.client.view.util.ImageUtils;
 import edu.byu.cs.tweeter.model.domain.Status;
@@ -46,8 +47,6 @@ public class FeedFragment extends Fragment implements FeedPresenter.FeedView {
 
   private static final int LOADING_DATA_VIEW = 0;
   private static final int ITEM_VIEW = 1;
-
-  private static final int PAGE_SIZE = 10;
 
   private User user;
   private FeedPresenter presenter;
@@ -81,7 +80,7 @@ public class FeedFragment extends Fragment implements FeedPresenter.FeedView {
 
     //noinspection ConstantConditions
     user = (User) getArguments().getSerializable(USER_KEY);
-    presenter = new FeedPresenter(this, Cache.getInstance().getCurrUserAuthToken(), user);
+    presenter = new FeedPresenter(this/*, Cache.getInstance().getCurrUserAuthToken(), user*/);
 
     RecyclerView feedRecyclerView = view.findViewById(R.id.feedRecyclerView);
 
@@ -104,7 +103,7 @@ public class FeedFragment extends Fragment implements FeedPresenter.FeedView {
     final Handler handler = new Handler(Looper.getMainLooper());
     handler.postDelayed(() -> {
       try {
-        presenter.loadMoreItems();
+        presenter.loadMoreItems(Cache.getInstance().getCurrUserAuthToken(), user);
       } catch (MalformedURLException e) {
         e.printStackTrace();
       }
@@ -136,11 +135,7 @@ public class FeedFragment extends Fragment implements FeedPresenter.FeedView {
   public void addItems(List<Status> statuses) {
     feedRecyclerViewAdapter.addItems(statuses);
   }
-//
-//  @Override
-//  public void addStatuses(List<Status> statuses) {
-//    feedRecyclerViewAdapter.addItems(statuses);
-//  }
+
 
   /**
    * The ViewHolder for the RecyclerView that displays the feed data.
