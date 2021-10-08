@@ -6,15 +6,15 @@ import edu.byu.cs.tweeter.model.domain.User;
 
 public class LoginPresenter implements UserService.LoginObserver {
 
-  private View view;
+  private LoginView view;
 
-  public LoginPresenter(View v) {
+  public LoginPresenter(LoginView v) {
     this.view = v;
   }
 
   @Override
   public void handleFailure(String message) {
-    view.displayErrorMessage(message);
+    view.displayToast(message);
   }
 
   private String validateLogin(String alias, String password) {
@@ -32,37 +32,21 @@ public class LoginPresenter implements UserService.LoginObserver {
 
   @Override
   public void loginSucceeded(AuthToken authToken, User user) {
-    view.navigateToUser(user);
-    view.clearErrorMessage();
-    view.displayInfoMessage("Hello " + user);
+    view.launchIntent(user);
+    view.displayToast("Hello " + user.getFirstName());
   }
 
   public void login(String alias, String pw) {
-    view.clearErrorMessage();
-    view.clearInfoMessage();
     String message = validateLogin(alias, pw);
     if (message == null) {
-      view.displayInfoMessage("Logging In...:");
+      view.displayToast("Logging In...:");
       new UserService().login(alias, pw, this);
     } else {
-      view.displayErrorMessage("Login failed: " + message);
+      view.displayToast("Login failed: " + message);
     }
   }
 
-
-  public interface View {
-
-    void navigateToUser(User user);
-
-    void displayErrorMessage(String message);
-
-    void clearErrorMessage();
-
-    void displayInfoMessage(String message);
-
-    void clearInfoMessage();
-
+  public interface LoginView extends SingleView {
+    void launchIntent(User user);
   }
-
-
 }

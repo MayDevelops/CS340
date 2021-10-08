@@ -5,9 +5,9 @@ import edu.byu.cs.tweeter.model.domain.AuthToken;
 import edu.byu.cs.tweeter.model.domain.User;
 
 public class RegisterPresenter implements UserService.RegisterObserver {
-  private View view;
+  private RegisterView view;
 
-  public RegisterPresenter(View view) {
+  public RegisterPresenter(RegisterView view) {
     this.view = view;
   }
 
@@ -28,11 +28,7 @@ public class RegisterPresenter implements UserService.RegisterObserver {
     view.displayToast(message);
   }
 
-
-  public interface View {
-    void displayToast(String message);
-
+  public interface RegisterView extends SingleView {
     void register(User registeredUser, AuthToken authToken);
-
   }
 }

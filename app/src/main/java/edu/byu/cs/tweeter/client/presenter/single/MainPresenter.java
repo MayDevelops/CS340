@@ -14,10 +14,10 @@ public class MainPresenter implements FollowService.GetFollowObserver,
         FeedService.StatusObserver,
         FollowService.CheckFollowerObserver {
 
-  private View view;
+  private MainView view;
 
 
-  public MainPresenter(View view) {
+  public MainPresenter(MainView view) {
     this.view = view;
   }
 
@@ -55,7 +55,6 @@ public class MainPresenter implements FollowService.GetFollowObserver,
   @Override
   public void unfollow(AuthToken authToken, User user) {
     new FollowService().unfollowTask(authToken, user, this, this, this);
-
   }
 
   @Override
@@ -100,8 +99,7 @@ public class MainPresenter implements FollowService.GetFollowObserver,
   }
 
   //View Implementation
-  public interface View {
-    void displayToast(String message);
+  public interface MainView extends SingleView{
 
     void followButtonUpdates(boolean value);
 
