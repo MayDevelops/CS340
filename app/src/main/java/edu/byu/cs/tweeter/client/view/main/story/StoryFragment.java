@@ -32,6 +32,7 @@ import java.util.List;
 import edu.byu.cs.client.R;
 import edu.byu.cs.tweeter.client.cache.Cache;
 import edu.byu.cs.tweeter.client.presenter.paged.StoryPresenter;
+import edu.byu.cs.tweeter.client.state.State;
 import edu.byu.cs.tweeter.client.view.main.MainActivity;
 import edu.byu.cs.tweeter.client.view.util.ImageUtils;
 import edu.byu.cs.tweeter.model.domain.Status;
@@ -78,7 +79,7 @@ public class StoryFragment extends Fragment implements StoryPresenter.StoryView 
 
     //noinspection ConstantConditions
     user = (User) getArguments().getSerializable(USER_KEY);
-    presenter = new StoryPresenter(this, Cache.getInstance().getCurrUserAuthToken(), user);
+    presenter = new StoryPresenter(this);
 
     RecyclerView storyRecyclerView = view.findViewById(R.id.storyRecyclerView);
 
@@ -97,7 +98,7 @@ public class StoryFragment extends Fragment implements StoryPresenter.StoryView 
     final Handler handler = new Handler(Looper.getMainLooper());
     handler.postDelayed(() -> {
       try {
-        presenter.loadMoreItems();
+        presenter.loadMoreItems(State.authToken, State.user);
       } catch (MalformedURLException e) {
         e.printStackTrace();
       }
