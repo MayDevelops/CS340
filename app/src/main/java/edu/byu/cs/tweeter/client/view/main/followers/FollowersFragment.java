@@ -25,6 +25,7 @@ import java.util.List;
 import edu.byu.cs.client.R;
 import edu.byu.cs.tweeter.client.cache.Cache;
 import edu.byu.cs.tweeter.client.presenter.paged.FollowersPresenter;
+import edu.byu.cs.tweeter.client.state.State;
 import edu.byu.cs.tweeter.client.view.main.MainActivity;
 import edu.byu.cs.tweeter.client.view.util.ImageUtils;
 import edu.byu.cs.tweeter.model.domain.User;
@@ -63,10 +64,6 @@ public class FollowersFragment extends Fragment implements FollowersPresenter.Fo
     return fragment;
   }
 
-  @Override
-  public void addItems(List<User> followees) {
-    FollowersRecyclerViewAdapter.addItems(followees);
-  }
 
   @Override
   public void setLoading(boolean value) {
@@ -91,12 +88,17 @@ public class FollowersFragment extends Fragment implements FollowersPresenter.Fo
   }
 
   @Override
+  public void addItems(List<User> list) {
+    FollowersRecyclerViewAdapter.addItems(list);
+  }
+
+  @Override
   public View onCreateView(LayoutInflater inflater, ViewGroup container,
                            Bundle savedInstanceState) {
     View view = inflater.inflate(R.layout.fragment_followers, container, false);
 
     User user = (User) getArguments().getSerializable(USER_KEY);
-    presenter = new FollowersPresenter(this, Cache.getInstance().getCurrUserAuthToken(), user);
+    presenter = new FollowersPresenter(this);
 
     RecyclerView FollowersRecyclerView = view.findViewById(R.id.followersRecyclerView);
 
@@ -115,7 +117,7 @@ public class FollowersFragment extends Fragment implements FollowersPresenter.Fo
     final Handler handler = new Handler(Looper.getMainLooper());
     handler.postDelayed(() -> {
       try {
-        presenter.loadMoreItems();
+        presenter.loadMoreItems(Cache.getInstance().getCurrUserAuthToken(), State.user);
       } catch (MalformedURLException e) {
         e.printStackTrace();
       }
@@ -147,7 +149,7 @@ public class FollowersFragment extends Fragment implements FollowersPresenter.Fo
       itemView.setOnClickListener(new View.OnClickListener() {
         @Override
         public void onClick(View view) {
-          presenter.getUsers(userAlias.getText().toString());
+          presenter.getUser(State.authToken, userAlias.getText().toString());
         }
       });
     }

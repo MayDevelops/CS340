@@ -108,8 +108,6 @@ public class FeedService {
 
   public interface FeedObserver extends ServiceObserver {
     void feedSucceeded(List<Status> statuses);
-
-    void setLastStatus(List<Status> statuses, boolean hasMorePages);
   }
 
   public interface StatusObserver extends ServiceObserver {
@@ -132,7 +130,6 @@ public class FeedService {
       List<Status> statuses = (List<Status>) data.getSerializable(PagedTask.ITEMS_KEY);
       boolean hasMorePages = data.getBoolean(GetFeedTask.MORE_PAGES_KEY);
 
-      ((FeedObserver) observer).setLastStatus(statuses, hasMorePages);
       ((FeedObserver) observer).feedSucceeded(statuses);
     }
   }

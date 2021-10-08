@@ -11,7 +11,7 @@ import edu.byu.cs.tweeter.model.domain.AuthToken;
 import edu.byu.cs.tweeter.model.domain.Status;
 import edu.byu.cs.tweeter.model.domain.User;
 
-public class PagedPresenter<T> extends Presenter {
+public abstract class PagedPresenter<T> extends Presenter {
   View view;
   public T lastItem;
   private boolean hasMorePages = true;
@@ -26,28 +26,13 @@ public class PagedPresenter<T> extends Presenter {
     if (!isLoading && hasMorePages) {
       isLoading = true;
       view.setLoading(true);
-      new FeedService().getFeed(authToken, user, ((Status) lastItem), new FeedService.FeedObserver() {
-
-        @Override
-        public void handleFailure(String message) {
-          view.displayToast(message);
-        }
-
-        @Override
-        public void feedSucceeded(List<Status> statuses) {
-          view.addItems(statuses);
-        }
-
-        @Override
-        public void setLastStatus(List<Status> statuses, boolean pages) {
-          hasMorePages = pages;
-          lastItem = (statuses.size() > 0) ? (T) statuses.get(statuses.size() - 1) : null;
-        }
-      });
+      ServiceLoader();
       isLoading = false;
       view.setLoading(false);
     }
   }
+
+  abstract void ServiceLoader();
 
   @Override
   public void getUser(AuthToken authToken, String alias) {
