@@ -11,25 +11,25 @@ import edu.byu.cs.tweeter.model.domain.Status;
  */
 public class PostStatusTask extends AuthorizedTask {
 
-    /**
-     * The new status being sent. Contains all properties of the status,
-     * including the identity of the user sending the status.
-     */
-    private final Status status;
+  /**
+   * The new status being sent. Contains all properties of the status,
+   * including the identity of the user sending the status.
+   */
+  private final Status status;
 
-    public PostStatusTask(AuthToken authToken, Status status, Handler messageHandler) {
-        super(authToken, messageHandler);
-        this.status = status;
-    }
+  public PostStatusTask(AuthToken authToken, Status status, Handler messageHandler) {
+    super(authToken, messageHandler);
+    this.status = status;
+  }
 
-    @Override
-    protected void runTask() {
-        // We could do this from the presenter, without a task and handler, but we will
-        // eventually access the database from here when we aren't using dummy data.
-    }
+  @Override
+  protected void runTask() {
+    // We could do this from the presenter, without a task and handler, but we will
+    // eventually access the database from here when we aren't using dummy data.
+  }
 
-    @Override
-    protected void loadBundle(Bundle msgBundle) {
-        // Nothing to load
-    }
+  @Override
+  protected void loadBundle(Bundle msgBundle) {
+    // Nothing to load
+  }
 }

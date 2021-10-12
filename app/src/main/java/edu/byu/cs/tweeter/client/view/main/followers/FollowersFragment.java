@@ -18,12 +18,14 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import org.jetbrains.annotations.NotNull;
 
+import java.net.MalformedURLException;
 import java.util.ArrayList;
 import java.util.List;
 
 import edu.byu.cs.client.R;
 import edu.byu.cs.tweeter.client.cache.Cache;
-import edu.byu.cs.tweeter.client.presenter.FollowersPresenter;
+import edu.byu.cs.tweeter.client.presenter.paged.FollowersPresenter;
+import edu.byu.cs.tweeter.client.state.State;
 import edu.byu.cs.tweeter.client.view.main.MainActivity;
 import edu.byu.cs.tweeter.client.view.util.ImageUtils;
 import edu.byu.cs.tweeter.model.domain.User;
@@ -31,7 +33,7 @@ import edu.byu.cs.tweeter.model.domain.User;
 /**
  * Implements the "Followers" tab.
  */
-public class FollowersFragment extends Fragment implements FollowersPresenter.View {
+public class FollowersFragment extends Fragment implements FollowersPresenter.FollowersView {
 
   private static final String LOG_TAG = "FollowersFragment";
   private static final String USER_KEY = "UserKey";
@@ -45,11 +47,23 @@ public class FollowersFragment extends Fragment implements FollowersPresenter.Vi
   private FollowersPresenter presenter;
   private FollowersRecyclerViewAdapter FollowersRecyclerViewAdapter;
 
+  /**
+   * Creates an instance of the fragment and places the target user in an arguments
+   * bundle assigned to the fragment.
+   *
+   * @param user the user whose Followers is being displayed (not necessarily the logged-in user).
+   * @return the fragment.
+   */
+  public static FollowersFragment newInstance(User user) {
+    FollowersFragment fragment = new FollowersFragment();
 
-  @Override
-  public void addItems(List<User> followees) {
-    FollowersRecyclerViewAdapter.addItems(followees);
+    Bundle args = new Bundle(1);
+    args.putSerializable(USER_KEY, user);
+
+    fragment.setArguments(args);
+    return fragment;
   }
+
 
   @Override
   public void setLoading(boolean value) {
@@ -69,32 +83,13 @@ public class FollowersFragment extends Fragment implements FollowersPresenter.Vi
   }
 
   @Override
-  public void displayErrorMessage(String message) {
-    Toast.makeText(getActivity(), message, Toast.LENGTH_LONG).show();
+  public void displayToast(String message) {
+    Toast.makeText(getContext(), message, Toast.LENGTH_LONG).show();
   }
-
 
   @Override
-  public void displayInfoMessage(String message) {
-    Toast.makeText(getActivity(), message, Toast.LENGTH_LONG).show();
-  }
-
-
-  /**
-   * Creates an instance of the fragment and places the target user in an arguments
-   * bundle assigned to the fragment.
-   *
-   * @param user the user whose Followers is being displayed (not necessarily the logged-in user).
-   * @return the fragment.
-   */
-  public static FollowersFragment newInstance(User user) {
-    FollowersFragment fragment = new FollowersFragment();
-
-    Bundle args = new Bundle(1);
-    args.putSerializable(USER_KEY, user);
-
-    fragment.setArguments(args);
-    return fragment;
+  public void addItems(List<User> list) {
+    FollowersRecyclerViewAdapter.addItems(list);
   }
 
   @Override
@@ -103,7 +98,7 @@ public class FollowersFragment extends Fragment implements FollowersPresenter.Vi
     View view = inflater.inflate(R.layout.fragment_followers, container, false);
 
     User user = (User) getArguments().getSerializable(USER_KEY);
-    presenter = new FollowersPresenter(this, Cache.getInstance().getCurrUserAuthToken(), user);
+    presenter = new FollowersPresenter(this);
 
     RecyclerView FollowersRecyclerView = view.findViewById(R.id.followersRecyclerView);
 
@@ -121,7 +116,11 @@ public class FollowersFragment extends Fragment implements FollowersPresenter.Vi
   private void loadMoreItems() {
     final Handler handler = new Handler(Looper.getMainLooper());
     handler.postDelayed(() -> {
-      presenter.loadMoreItems();
+      try {
+        presenter.loadMoreItems(Cache.getInstance().getCurrUserAuthToken(), State.user);
+      } catch (MalformedURLException e) {
+        e.printStackTrace();
+      }
     }, 0);
   }
 
@@ -150,7 +149,7 @@ public class FollowersFragment extends Fragment implements FollowersPresenter.Vi
       itemView.setOnClickListener(new View.OnClickListener() {
         @Override
         public void onClick(View view) {
-          presenter.getUsers(userAlias.getText().toString());
+          presenter.getUser(State.authToken, userAlias.getText().toString());
         }
       });
     }

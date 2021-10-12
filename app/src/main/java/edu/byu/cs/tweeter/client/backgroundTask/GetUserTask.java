@@ -11,31 +11,31 @@ import edu.byu.cs.tweeter.model.domain.User;
  */
 public class GetUserTask extends AuthorizedTask {
 
-    public static final String USER_KEY = "user";
+  public static final String USER_KEY = "user";
 
-    /**
-     * Alias (or handle) for user whose profile is being retrieved.
-     */
-    private final String alias;
+  /**
+   * Alias (or handle) for user whose profile is being retrieved.
+   */
+  private final String alias;
 
-    private User user;
+  private User user;
 
-    public GetUserTask(AuthToken authToken, String alias, Handler messageHandler) {
-        super(authToken, messageHandler);
-        this.alias = alias;
-    }
+  public GetUserTask(AuthToken authToken, String alias, Handler messageHandler) {
+    super(authToken, messageHandler);
+    this.alias = alias;
+  }
 
-    @Override
-    protected void runTask() {
-        user = getUser();
-    }
+  @Override
+  protected void runTask() {
+    user = getUser();
+  }
 
-    @Override
-    protected void loadBundle(Bundle msgBundle) {
-        msgBundle.putSerializable(USER_KEY, user);
-    }
+  @Override
+  protected void loadBundle(Bundle msgBundle) {
+    msgBundle.putSerializable(USER_KEY, user);
+  }
 
-    private User getUser() {
-        return getFakeData().findUserByAlias(alias);
-    }
+  private User getUser() {
+    return getFakeData().findUserByAlias(alias);
+  }
 }

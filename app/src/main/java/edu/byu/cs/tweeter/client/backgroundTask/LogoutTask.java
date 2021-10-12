@@ -10,18 +10,18 @@ import edu.byu.cs.tweeter.model.domain.AuthToken;
  */
 public class LogoutTask extends AuthorizedTask {
 
-    public LogoutTask(AuthToken authToken, Handler messageHandler) {
-        super(authToken, messageHandler);
-    }
+  public LogoutTask(AuthToken authToken, Handler messageHandler) {
+    super(authToken, messageHandler);
+  }
 
-    @Override
-    protected void runTask() {
-        // We could do this from the presenter, without a task and handler, but we will
-        // eventually remove the auth token from  the DB and will need this then.
-    }
+  @Override
+  protected void runTask() {
+    // We could do this from the presenter, without a task and handler, but we will
+    // eventually remove the auth token from  the DB and will need this then.
+  }
 
-    @Override
-    protected void loadBundle(Bundle msgBundle) {
-        // Nothing to load
-    }
+  @Override
+  protected void loadBundle(Bundle msgBundle) {
+    // Nothing to load
+  }
 }

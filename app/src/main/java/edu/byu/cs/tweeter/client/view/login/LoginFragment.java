@@ -13,17 +13,17 @@ import android.widget.Toast;
 import androidx.fragment.app.Fragment;
 
 import edu.byu.cs.client.R;
-import edu.byu.cs.tweeter.client.presenter.LoginPresenter;
+import edu.byu.cs.tweeter.client.presenter.single.LoginPresenter;
 import edu.byu.cs.tweeter.client.view.main.MainActivity;
 import edu.byu.cs.tweeter.model.domain.User;
 
 /**
  * Implements the login screen.
  */
-public class LoginFragment extends Fragment implements LoginPresenter.View {
+public class LoginFragment extends Fragment implements LoginPresenter.LoginView {
   private static final String LOG_TAG = "LoginFragment";
 
-  private Toast loginInToast;
+//  private Toast loginInToast;
   private EditText alias;
   private EditText password;
   private TextView errorView;
@@ -60,35 +60,15 @@ public class LoginFragment extends Fragment implements LoginPresenter.View {
     return view;
   }
 
+  @Override
+  public void displayToast(String message) {
+    Toast.makeText(getContext(), message, Toast.LENGTH_LONG).show();
+  }
 
   @Override
-  public void navigateToUser(User user) {
+  public void launchIntent(User user) {
     Intent intent = new Intent(getContext(), MainActivity.class);
     intent.putExtra(MainActivity.CURRENT_USER_KEY, user);
     startActivity(intent);
-  }
-
-  @Override
-  public void displayErrorMessage(String message) {
-    errorView.setText(message);
-  }
-
-  @Override
-  public void clearErrorMessage() {
-    errorView.setText("");
-  }
-
-  @Override
-  public void displayInfoMessage(String message) {
-    loginInToast = Toast.makeText(getContext(), message, Toast.LENGTH_LONG);
-    loginInToast.show();
-  }
-
-  @Override
-  public void clearInfoMessage() {
-    if (loginInToast != null) {
-      loginInToast.cancel();
-      loginInToast = null;
-    }
   }
 }

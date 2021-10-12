@@ -8,34 +8,34 @@ import edu.byu.cs.tweeter.model.domain.User;
 
 public abstract class GetCountTask extends AuthorizedTask {
 
-    public static final String COUNT_KEY = "count";
+  public static final String COUNT_KEY = "count";
 
-    /**
-     * The user whose count is being retrieved.
-     * (This can be any user, not just the currently logged-in user.)
-     */
-    private final User targetUser;
+  /**
+   * The user whose count is being retrieved.
+   * (This can be any user, not just the currently logged-in user.)
+   */
+  private final User targetUser;
 
-    private int count;
+  private int count;
 
-    protected GetCountTask(AuthToken authToken, User targetUser, Handler messageHandler) {
-        super(authToken, messageHandler);
-        this.targetUser = targetUser;
-    }
+  protected GetCountTask(AuthToken authToken, User targetUser, Handler messageHandler) {
+    super(authToken, messageHandler);
+    this.targetUser = targetUser;
+  }
 
-    protected User getTargetUser() {
-        return targetUser;
-    }
+  protected User getTargetUser() {
+    return targetUser;
+  }
 
-    @Override
-    protected void runTask() {
-        count = runCountTask();
-    }
+  @Override
+  protected void runTask() {
+    count = runCountTask();
+  }
 
-    protected abstract int runCountTask();
+  protected abstract int runCountTask();
 
-    @Override
-    protected void loadBundle(Bundle msgBundle) {
-        msgBundle.putInt(COUNT_KEY, count);
-    }
+  @Override
+  protected void loadBundle(Bundle msgBundle) {
+    msgBundle.putInt(COUNT_KEY, count);
+  }
 }
