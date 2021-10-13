@@ -1,60 +1,92 @@
 package edu.byu.cs.tweeter.client;
 
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.Assertions.*;
-import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Nested;
+import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestInstance;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 import org.mockito.Mockito;
+import org.mockito.invocation.InvocationOnMock;
+import org.mockito.stubbing.Answer;
 
-import java.util.Date;
+import java.util.stream.Stream;
 
+import edu.byu.cs.tweeter.client.cache.Cache;
 import edu.byu.cs.tweeter.client.model.service.FeedService;
 import edu.byu.cs.tweeter.client.presenter.single.MainPresenter;
-import edu.byu.cs.tweeter.model.domain.Status;
 import edu.byu.cs.tweeter.model.domain.User;
 
+@TestInstance(TestInstance.Lifecycle.PER_CLASS)
 public class PostStatusTest {
-//  MainPresenter presenter;
-//  MainPresenter.MainView view;
-
-
-  private MainPresenter mockPresenter;
+  private MainPresenter presenterSpy;
+  private MainPresenter.MainView mockMainView;
+  private FeedService mockFeedService;
+  private Cache mockCache;
 
   User user;
-  Status status1;
 
 
-  @BeforeEach
+  @BeforeAll
   void setUp() {
-//    mockPresenter = Mockito.mock(MainPresenter.class);
-//    user = new User("Optimus", "Prime", "MegatronStanks", null);
-//    status1 = new Status("He Do Be", user, new Date().toString(), null, null);
+    mockMainView = Mockito.mock(MainPresenter.MainView.class);
+    mockFeedService = Mockito.mock(FeedService.class);
+    mockCache = Mockito.mock(Cache.class);
+
+    presenterSpy = Mockito.spy(new MainPresenter(mockMainView));
+    Mockito.when(presenterSpy.getFeedService()).thenReturn(mockFeedService);
+
+    Cache.setInstance(mockCache);
+
   }
-
-  @AfterEach
-  void tearDown() {
-
-  }
-
 
   @Test
   void PostSuccessful() {
-//    mockPresenter.postStatus("He Do Be Stanky", user);
-//    assertNotNull(mockPresenter);
+    Answer<Void> callHandleSucceeded = new Answer<Void>() {
+      @Override
+      public Void answer(InvocationOnMock invocation) throws Throwable {
+        FeedService.StatusObserver observer = invocation.getArgumentAt(2, FeedService.StatusObserver.class);
+        observer.statusSucceeded();
+        return null;
+      }
+    };
+
+    Mockito.doAnswer(callHandleSucceeded).when(mockFeedService).postStatus(Mockito.any(), Mockito.any(), Mockito.any());
+    presenterSpy.postStatus("Wsup", user);
+    Mockito.verify(mockMainView).displayToast("Successfully Posted!");
 
   }
 
-  @Test
-  void PostThrewException() {
 
+  @TestInstance(TestInstance.Lifecycle.PER_CLASS)
+  @Nested
+  @Tag("handle-fails")
+  class FailTests {
+    @ParameterizedTest(name = "Should display message {0} as toast")
+    @MethodSource("failMessages")
+    void failMessages(String msg) {
+      Answer<Void> callHandleException = new Answer<Void>() {
+        @Override
+        public Void answer(InvocationOnMock invocation) throws Throwable {
+          FeedService.StatusObserver observer = invocation.getArgumentAt(2, FeedService.StatusObserver.class);
+          observer.handleFailure(msg);
+          return null;
+        }
+      };
+
+      Mockito.doAnswer(callHandleException).when(mockFeedService).postStatus(Mockito.any(), Mockito.any(), Mockito.any());
+      presenterSpy.postStatus("Wsup", user);
+      Mockito.verify(mockMainView).displayToast(msg);
+    }
+
+    Stream<Arguments> failMessages() {
+      return Stream.of(
+              Arguments.arguments("exceptionMessage"),
+              Arguments.arguments("failMessage")
+      );
+    }
   }
-
-  @Test
-  void PostFailed() {
-
-  }
-
 
 }

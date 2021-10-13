@@ -15,18 +15,27 @@ public class MainPresenter implements FollowService.GetFollowObserver,
         FollowService.CheckFollowerObserver {
 
   private MainView view;
+  private FeedService feedService = null;
 
 
   public MainPresenter(MainView view) {
     this.view = view;
   }
 
+  public FeedService getFeedService() {
+    if (feedService == null) {
+      feedService = new FeedService();
+    }
+    return feedService;
+  }
+
+
   public void updateFollowingAndFollowers() {
     new FollowService().updateSelectedUserFollowingAndFollowers(this, this);
   }
 
   public void postStatus(String post, User user) {
-    new FeedService().postStatus(post, user, this);
+    getFeedService().postStatus(post, user, this);
   }
 
   public void isFollower(AuthToken authToken, User user, User selectedUser) {
