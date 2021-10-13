@@ -1,5 +1,6 @@
 package edu.byu.cs.tweeter.client;
 
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Tag;
@@ -71,6 +72,8 @@ public class PostStatusTest {
         @Override
         public Void answer(InvocationOnMock invocation) throws Throwable {
           FeedService.StatusObserver observer = invocation.getArgumentAt(2, FeedService.StatusObserver.class);
+          Assertions.assertEquals( "Wsup",invocation.getArgumentAt(0, FeedService.class));
+          Assertions.assertEquals( user,invocation.getArgumentAt(1, FeedService.class));
           observer.handleFailure(msg);
           return null;
         }
