@@ -50,6 +50,8 @@ public class PostStatusTest {
       @Override
       public Void answer(InvocationOnMock invocation) throws Throwable {
         FeedService.StatusObserver observer = invocation.getArgumentAt(2, FeedService.StatusObserver.class);
+        Assertions.assertEquals( postString,invocation.getArgumentAt(0, FeedService.class));
+        Assertions.assertEquals( user,invocation.getArgumentAt(1, FeedService.class));
         observer.statusSucceeded();
         return null;
       }
@@ -73,7 +75,7 @@ public class PostStatusTest {
         @Override
         public Void answer(InvocationOnMock invocation) throws Throwable {
           FeedService.StatusObserver observer = invocation.getArgumentAt(2, FeedService.StatusObserver.class);
-          Assertions.assertEquals( postString,invocation.getArgumentAt(0, FeedService.class));
+            Assertions.assertEquals( postString,invocation.getArgumentAt(0, FeedService.class));
           Assertions.assertEquals( user,invocation.getArgumentAt(1, FeedService.class));
           observer.handleFailure(msg);
           return null;
