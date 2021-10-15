@@ -2,7 +2,7 @@ package edu.byu.cs.tweeter.client.presenter.paged;
 
 import java.util.List;
 
-import edu.byu.cs.tweeter.client.model.service.StatusService;
+import edu.byu.cs.tweeter.client.model.service.StoryService;
 import edu.byu.cs.tweeter.client.state.State;
 import edu.byu.cs.tweeter.model.domain.Status;
 
@@ -17,9 +17,9 @@ public class StoryPresenter extends PagedPresenter<Status> {
 
   @Override
   void ServiceLoader() {
-    new StatusService().getStatus(State.authToken, State.user, new StatusService.GetStatusObserver() {
+    new StoryService().getStory(State.authToken, State.user, new StoryService.GetStoryObserver() {
       @Override
-      public void getStatusSucceeded(List<Status> statuses) {
+      public void getStorySucceeded(List<Status> statuses) {
         view.addItems(statuses);
       }
 

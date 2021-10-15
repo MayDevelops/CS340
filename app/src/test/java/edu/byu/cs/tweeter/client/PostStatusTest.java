@@ -28,6 +28,7 @@ public class PostStatusTest {
   private Cache mockCache;
 
   User user;
+  String postString = "Wsup";
 
 
   @BeforeAll
@@ -55,7 +56,7 @@ public class PostStatusTest {
     };
 
     Mockito.doAnswer(callHandleSucceeded).when(mockFeedService).postStatus(Mockito.any(), Mockito.any(), Mockito.any());
-    presenterSpy.postStatus("Wsup", user);
+    presenterSpy.postStatus(postString, user);
     Mockito.verify(mockMainView).displayToast("Successfully Posted!");
 
   }
@@ -72,7 +73,7 @@ public class PostStatusTest {
         @Override
         public Void answer(InvocationOnMock invocation) throws Throwable {
           FeedService.StatusObserver observer = invocation.getArgumentAt(2, FeedService.StatusObserver.class);
-          Assertions.assertEquals( "Wsup",invocation.getArgumentAt(0, FeedService.class));
+          Assertions.assertEquals( postString,invocation.getArgumentAt(0, FeedService.class));
           Assertions.assertEquals( user,invocation.getArgumentAt(1, FeedService.class));
           observer.handleFailure(msg);
           return null;
@@ -80,7 +81,7 @@ public class PostStatusTest {
       };
 
       Mockito.doAnswer(callHandleException).when(mockFeedService).postStatus(Mockito.any(), Mockito.any(), Mockito.any());
-      presenterSpy.postStatus("Wsup", user);
+      presenterSpy.postStatus(postString, user);
       Mockito.verify(mockMainView).displayToast(msg);
     }
 
