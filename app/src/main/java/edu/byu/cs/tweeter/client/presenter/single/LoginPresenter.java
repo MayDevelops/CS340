@@ -3,6 +3,7 @@ package edu.byu.cs.tweeter.client.presenter.single;
 import edu.byu.cs.tweeter.client.model.service.UserService;
 import edu.byu.cs.tweeter.model.domain.AuthToken;
 import edu.byu.cs.tweeter.model.domain.User;
+import edu.byu.cs.tweeter.model.net.request.LoginRequest;
 
 public class LoginPresenter implements UserService.LoginObserver {
 
@@ -40,7 +41,12 @@ public class LoginPresenter implements UserService.LoginObserver {
     String message = validateLogin(alias, pw);
     if (message == null) {
       view.displayToast("Logging In...:");
-      new UserService().login(alias, pw, this);
+
+      UserService service = new UserService(this);
+      LoginRequest loginRequest = new LoginRequest(alias, pw);
+
+      service.login(loginRequest);
+
     } else {
       view.displayToast("Login failed: " + message);
     }

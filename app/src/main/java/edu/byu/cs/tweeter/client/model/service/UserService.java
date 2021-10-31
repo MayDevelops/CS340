@@ -12,10 +12,17 @@ import edu.byu.cs.tweeter.client.backgroundTask.observer.ServiceObserver;
 import edu.byu.cs.tweeter.client.cache.Cache;
 import edu.byu.cs.tweeter.model.domain.AuthToken;
 import edu.byu.cs.tweeter.model.domain.User;
+import edu.byu.cs.tweeter.model.net.request.LoginRequest;
 
 public class UserService {
+  ServiceObserver observer;
 
-  public static void getUsers() {
+  public UserService(ServiceObserver observer) {
+    this.observer = observer;
+  }
+
+  public UserService() {
+
   }
 
   public interface LoginObserver extends ServiceObserver {
@@ -36,6 +43,12 @@ public class UserService {
     void registerSucceeded(User registeredUser, AuthToken authToken);
   }
 
+  public void login(LoginRequest loginRequest) {
+
+
+    LoginTask loginTask = new LoginTask(loginRequest, new LoginHandler((LoginObserver) observer));
+    new TaskExecutor<>(loginTask);
+  }
 
   private static class LoginHandler extends BackgroundTaskHandler {
 
@@ -58,11 +71,6 @@ public class UserService {
 
       ((LoginObserver) observer).loginSucceeded(authToken, loggedInUser);
     }
-  }
-
-  public void login(String alias, String password, LoginObserver observer) {
-    LoginTask loginTask = new LoginTask(alias, password, new LoginHandler(observer));
-    new TaskExecutor<>(loginTask);
   }
 
 
