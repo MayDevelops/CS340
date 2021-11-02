@@ -5,9 +5,11 @@ import java.io.IOException;
 import edu.byu.cs.tweeter.model.net.TweeterRemoteException;
 import edu.byu.cs.tweeter.model.net.request.FollowingRequest;
 import edu.byu.cs.tweeter.model.net.request.LoginRequest;
+import edu.byu.cs.tweeter.model.net.request.LogoutRequest;
 import edu.byu.cs.tweeter.model.net.request.RegisterRequest;
 import edu.byu.cs.tweeter.model.net.response.FollowingResponse;
 import edu.byu.cs.tweeter.model.net.response.LoginResponse;
+import edu.byu.cs.tweeter.model.net.response.LogoutResponse;
 import edu.byu.cs.tweeter.model.net.response.RegisterResponse;
 
 /**
@@ -49,6 +51,16 @@ public class ServerFacade {
 
   public RegisterResponse register(RegisterRequest registerRequest, String urlPath) throws IOException, TweeterRemoteException {
     RegisterResponse response = clientCommunicator.doPost(urlPath, registerRequest, null, RegisterResponse.class);
+
+    if (response.isSuccess()) {
+      return response;
+    } else {
+      throw new RuntimeException(response.getMessage());
+    }
+  }
+
+  public LogoutResponse logout(LogoutRequest logoutRequest, String urlPath) throws IOException, TweeterRemoteException {
+    LogoutResponse response = clientCommunicator.doPost(urlPath, logoutRequest, null, LogoutResponse.class);
 
     if (response.isSuccess()) {
       return response;

@@ -13,6 +13,7 @@ import edu.byu.cs.tweeter.client.cache.Cache;
 import edu.byu.cs.tweeter.model.domain.AuthToken;
 import edu.byu.cs.tweeter.model.domain.User;
 import edu.byu.cs.tweeter.model.net.request.LoginRequest;
+import edu.byu.cs.tweeter.model.net.request.LogoutRequest;
 import edu.byu.cs.tweeter.model.net.request.RegisterRequest;
 
 public class UserService {
@@ -22,9 +23,7 @@ public class UserService {
     this.observer = observer;
   }
 
-  public UserService() {
-
-  }
+  public UserService() {}
 
   public interface LoginObserver extends ServiceObserver {
     void loginSucceeded(AuthToken authToken, User user);
@@ -93,7 +92,8 @@ public class UserService {
   }
 
   public void logout(LogoutObserver observer) {
-    LogoutTask logoutTask = new LogoutTask(Cache.getInstance().getCurrUserAuthToken(), new LogoutHandler(observer));
+    LogoutRequest logoutRequest = new LogoutRequest(Cache.getInstance().getCurrUserAuthToken());
+    LogoutTask logoutTask = new LogoutTask(logoutRequest, new LogoutHandler(observer));
     new TaskExecutor<>(logoutTask);
   }
 
