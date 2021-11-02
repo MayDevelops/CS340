@@ -5,8 +5,10 @@ import java.io.IOException;
 import edu.byu.cs.tweeter.model.net.TweeterRemoteException;
 import edu.byu.cs.tweeter.model.net.request.FollowingRequest;
 import edu.byu.cs.tweeter.model.net.request.LoginRequest;
+import edu.byu.cs.tweeter.model.net.request.RegisterRequest;
 import edu.byu.cs.tweeter.model.net.response.FollowingResponse;
 import edu.byu.cs.tweeter.model.net.response.LoginResponse;
+import edu.byu.cs.tweeter.model.net.response.RegisterResponse;
 
 /**
  * Acts as a Facade to the Tweeter server. All network requests to the server should go through
@@ -20,7 +22,6 @@ public class ServerFacade {
   private static ServerFacade serverFacade;
 
   private final ClientCommunicator clientCommunicator = new ClientCommunicator(SERVER_URL);
-
 
   public static ServerFacade getServerFacade() {
     if (serverFacade == null) {
@@ -38,6 +39,16 @@ public class ServerFacade {
    */
   public LoginResponse login(LoginRequest request, String urlPath) throws IOException, TweeterRemoteException {
     LoginResponse response = clientCommunicator.doPost(urlPath, request, null, LoginResponse.class);
+
+    if (response.isSuccess()) {
+      return response;
+    } else {
+      throw new RuntimeException(response.getMessage());
+    }
+  }
+
+  public RegisterResponse register(RegisterRequest registerRequest, String urlPath) throws IOException, TweeterRemoteException {
+    RegisterResponse response = clientCommunicator.doPost(urlPath, registerRequest, null, RegisterResponse.class);
 
     if (response.isSuccess()) {
       return response;

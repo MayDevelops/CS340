@@ -13,6 +13,7 @@ import edu.byu.cs.tweeter.client.cache.Cache;
 import edu.byu.cs.tweeter.model.domain.AuthToken;
 import edu.byu.cs.tweeter.model.domain.User;
 import edu.byu.cs.tweeter.model.net.request.LoginRequest;
+import edu.byu.cs.tweeter.model.net.request.RegisterRequest;
 
 public class UserService {
   ServiceObserver observer;
@@ -116,9 +117,8 @@ public class UserService {
     }
   }
 
-  public void register(String firstName, String lastName, String alias, String password, String imageBytes, RegisterObserver observer) {
-    RegisterTask registerTask = new RegisterTask(firstName, lastName,
-            alias, password, imageBytes, new RegisterHandler(observer));
+  public void register(RegisterRequest registerRequest) {
+    RegisterTask registerTask = new RegisterTask(registerRequest, new RegisterHandler((RegisterObserver) observer));
 
     new TaskExecutor<>(registerTask);
   }

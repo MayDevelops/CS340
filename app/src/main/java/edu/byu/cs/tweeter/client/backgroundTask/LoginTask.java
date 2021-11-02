@@ -24,7 +24,6 @@ public class LoginTask extends BackgroundTask {
   public static final String USER_KEY = "user";
   public static final String AUTH_TOKEN_KEY = "auth-token";
 
-
   public LoginTask(LoginRequest loginRequest, Handler messageHandler) {
     super(messageHandler);
     this.username = loginRequest.getUsername();
@@ -38,7 +37,6 @@ public class LoginTask extends BackgroundTask {
       LoginResponse response = ServerFacade.getServerFacade().login(request, URL_PATH);
 
       if (response.isSuccess()) {
-        BackgroundTaskUtils.loadImage(response.getUser());
         State.user = response.getUser();
         State.authToken = response.getAuthToken();
         BackgroundTaskUtils.loadImage(State.user);
