@@ -10,21 +10,20 @@ import edu.byu.cs.tweeter.model.domain.User;
 public abstract class PagedPresenter<T> extends Presenter {
   PagedView<T> view;
   public T lastItem;
-  private boolean hasMorePages = true;
-  boolean isLoading = false;
 
   public PagedPresenter(PagedView<T> v) {
     this.view = v;
   }
 
   @Override
-  public void loadMoreItems(AuthToken authToken, User user) throws MalformedURLException {
-    if (!isLoading && hasMorePages) {
-      isLoading = true;
-      view.setLoading(true);
+  public void loadMoreItems(Boolean isLoading, AuthToken authToken, User user) throws MalformedURLException {
+//    view.setFooterAndLoading(true);
+//    view.setFooterAndLoading(false);
+
+    if (!isLoading) {
+      view.setFooterAndLoading(true);
       ServiceLoader();
-      isLoading = false;
-      view.setLoading(false);
+
     }
   }
 
@@ -35,7 +34,9 @@ public abstract class PagedPresenter<T> extends Presenter {
     new UserService().getUser(authToken, alias, new UserService.GetUserObserver() {
 
       @Override
-      public void getUserSucceeded(User user) { view.navigateToUser(user); }
+      public void getUserSucceeded(User user) {
+        view.navigateToUser(user);
+      }
 
       @Override
       public void handleFailure(String message) {

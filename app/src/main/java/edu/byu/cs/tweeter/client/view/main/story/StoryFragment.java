@@ -98,7 +98,7 @@ public class StoryFragment extends Fragment implements StoryPresenter.StoryView 
     final Handler handler = new Handler(Looper.getMainLooper());
     handler.postDelayed(() -> {
       try {
-        presenter.loadMoreItems(State.authToken, State.user);
+        presenter.loadMoreItems(true, State.authToken, State.user);
       } catch (MalformedURLException e) {
         e.printStackTrace();
       }
@@ -113,7 +113,7 @@ public class StoryFragment extends Fragment implements StoryPresenter.StoryView 
   }
 
   @Override
-  public void setLoading(boolean value) {
+  public void setFooterAndLoading(boolean value) {
     isLoading = value;
     if (isLoading) {
       storyRecyclerViewAdapter.addLoadingFooter();

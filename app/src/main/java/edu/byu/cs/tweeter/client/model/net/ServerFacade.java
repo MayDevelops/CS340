@@ -3,10 +3,12 @@ package edu.byu.cs.tweeter.client.model.net;
 import java.io.IOException;
 
 import edu.byu.cs.tweeter.model.net.TweeterRemoteException;
+import edu.byu.cs.tweeter.model.net.request.FeedRequest;
 import edu.byu.cs.tweeter.model.net.request.FollowingRequest;
 import edu.byu.cs.tweeter.model.net.request.LoginRequest;
 import edu.byu.cs.tweeter.model.net.request.LogoutRequest;
 import edu.byu.cs.tweeter.model.net.request.RegisterRequest;
+import edu.byu.cs.tweeter.model.net.response.FeedResponse;
 import edu.byu.cs.tweeter.model.net.response.FollowingResponse;
 import edu.byu.cs.tweeter.model.net.response.LoginResponse;
 import edu.byu.cs.tweeter.model.net.response.LogoutResponse;
@@ -67,6 +69,18 @@ public class ServerFacade {
     } else {
       throw new RuntimeException(response.getMessage());
     }
+  }
+
+  public FeedResponse getFeed(FeedRequest feedRequest, String urlPath) throws IOException, TweeterRemoteException {
+    FeedResponse response = clientCommunicator.doPost(urlPath, feedRequest, null, FeedResponse.class);
+
+//    if(response.isSuccess()) {
+//      return response;
+//    } else {
+//      throw new RuntimeException(response.getMessage());
+//    }
+
+    return null;
   }
 
   /**

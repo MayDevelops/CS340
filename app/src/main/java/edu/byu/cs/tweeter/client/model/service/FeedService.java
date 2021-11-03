@@ -23,7 +23,7 @@ import edu.byu.cs.tweeter.model.domain.User;
 
 public class FeedService {
 
-  public void getFeed(AuthToken authToken, User user, Status lastStatus, FeedObserver observer) {
+  public void getFeedTask(AuthToken authToken, User user, Status lastStatus, FeedObserver observer) {
     int PAGE_SIZE = 10;
     GetFeedTask getFeedTask = new GetFeedTask(authToken,
             user, PAGE_SIZE, lastStatus, new GetFeedHandler(observer));
@@ -107,14 +107,14 @@ public class FeedService {
   }
 
   public interface FeedObserver extends ServiceObserver {
-    void feedSucceeded(List<Status> statuses);
+    void feedSucceeded(List<Status> statuses, boolean pages);
   }
 
   public interface StatusObserver extends ServiceObserver {
     void statusSucceeded();
   }
 
-  private static class GetFeedHandler extends BackgroundTaskHandler {
+  public static class GetFeedHandler extends BackgroundTaskHandler {
 
     public GetFeedHandler(FeedObserver observer) {
       super(observer);
@@ -130,7 +130,7 @@ public class FeedService {
       List<Status> statuses = (List<Status>) data.getSerializable(PagedTask.ITEMS_KEY);
       boolean hasMorePages = data.getBoolean(GetFeedTask.MORE_PAGES_KEY);
 
-      ((FeedObserver) observer).feedSucceeded(statuses);
+      ((FeedObserver) observer).feedSucceeded(statuses, hasMorePages);
     }
   }
 
