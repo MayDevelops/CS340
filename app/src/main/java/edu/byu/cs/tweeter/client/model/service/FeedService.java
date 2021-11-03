@@ -20,14 +20,13 @@ import edu.byu.cs.tweeter.client.cache.Cache;
 import edu.byu.cs.tweeter.model.domain.AuthToken;
 import edu.byu.cs.tweeter.model.domain.Status;
 import edu.byu.cs.tweeter.model.domain.User;
+import edu.byu.cs.tweeter.model.net.request.FeedRequest;
 import edu.byu.cs.tweeter.model.net.request.PostStatusRequest;
 
 public class FeedService {
 
-  public void getFeedTask(AuthToken authToken, User user, Status lastStatus, FeedObserver observer) {
-    int PAGE_SIZE = 10;
-    GetFeedTask getFeedTask = new GetFeedTask(authToken,
-            user, PAGE_SIZE, lastStatus, new GetFeedHandler(observer));
+  public void getFeedTask(FeedRequest feedRequest, FeedObserver observer) {
+    GetFeedTask getFeedTask = new GetFeedTask(feedRequest, new GetFeedHandler(observer));
     new TaskExecutor<>(getFeedTask);
   }
 

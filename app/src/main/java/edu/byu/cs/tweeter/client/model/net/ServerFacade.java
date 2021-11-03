@@ -86,13 +86,11 @@ public class ServerFacade {
   public FeedResponse getFeed(FeedRequest feedRequest, String urlPath) throws IOException, TweeterRemoteException {
     FeedResponse response = clientCommunicator.doPost(urlPath, feedRequest, null, FeedResponse.class);
 
-//    if(response.isSuccess()) {
-//      return response;
-//    } else {
-//      throw new RuntimeException(response.getMessage());
-//    }
-
-    return null;
+    if(response.isSuccess()) {
+      return response;
+    } else {
+      throw new RuntimeException(response.getMessage());
+    }
   }
 
   /**

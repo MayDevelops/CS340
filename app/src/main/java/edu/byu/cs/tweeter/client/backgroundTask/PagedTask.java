@@ -2,19 +2,28 @@ package edu.byu.cs.tweeter.client.backgroundTask;
 
 import android.os.Bundle;
 import android.os.Handler;
+import android.util.Log;
 
 import java.io.IOException;
 import java.io.Serializable;
 import java.util.List;
 
+import edu.byu.cs.tweeter.client.model.net.ServerFacade;
 import edu.byu.cs.tweeter.model.domain.AuthToken;
+import edu.byu.cs.tweeter.model.domain.Status;
 import edu.byu.cs.tweeter.model.domain.User;
+import edu.byu.cs.tweeter.model.net.request.FeedRequest;
+import edu.byu.cs.tweeter.model.net.response.FeedResponse;
+import edu.byu.cs.tweeter.model.net.response.PagedResponse;
 import edu.byu.cs.tweeter.util.Pair;
 
 public abstract class PagedTask<T> extends AuthorizedTask {
 
   public static final String ITEMS_KEY = "items";
   public static final String MORE_PAGES_KEY = "more-pages";
+
+
+
 
   /**
    * The user whose items are being retrieved.
@@ -65,7 +74,7 @@ public abstract class PagedTask<T> extends AuthorizedTask {
 
   @Override
   protected final void runTask() throws IOException {
-    Pair<List<T>, Boolean> pageOfItems = getItems();
+    Pair<List<T>, Boolean> pageOfItems = runSubTask(targetUser, limit, lastItem);
 
     items = pageOfItems.getFirst();
     hasMorePages = pageOfItems.getSecond();
@@ -74,6 +83,8 @@ public abstract class PagedTask<T> extends AuthorizedTask {
       BackgroundTaskUtils.loadImage(user);
     }
   }
+
+  protected abstract Pair<List<T>, Boolean> runSubTask(User targetUser, int limit, T lastItem) throws IOException;
 
   protected abstract Pair<List<T>, Boolean> getItems();
 

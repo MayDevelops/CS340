@@ -5,6 +5,7 @@ import java.util.List;
 import edu.byu.cs.tweeter.client.model.service.FeedService;
 import edu.byu.cs.tweeter.client.state.State;
 import edu.byu.cs.tweeter.model.domain.Status;
+import edu.byu.cs.tweeter.model.net.request.FeedRequest;
 
 public class FeedPresenter extends PagedPresenter<Status> {
 
@@ -17,7 +18,10 @@ public class FeedPresenter extends PagedPresenter<Status> {
 
   @Override
   void ServiceLoader() {
-    new FeedService().getFeedTask(State.authToken, State.user, ((Status) lastItem), new FeedService.FeedObserver() {
+    FeedService service = new FeedService();
+    FeedRequest feedRequest = new FeedRequest(State.authToken, State.user, 10, ((Status) lastItem));
+
+    service.getFeedTask(feedRequest, new FeedService.FeedObserver() {
 
       @Override
       public void feedSucceeded(List<Status> statuses, boolean pages) {
