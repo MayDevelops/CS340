@@ -66,7 +66,7 @@ public class FollowersFragment extends Fragment implements FollowersPresenter.Fo
 
 
   @Override
-  public void setLoading(boolean value) {
+  public void setFooterAndLoading(boolean value) {
     isLoading = value;
     if (isLoading) {
       FollowersRecyclerViewAdapter.addLoadingFooter();
@@ -117,7 +117,7 @@ public class FollowersFragment extends Fragment implements FollowersPresenter.Fo
     final Handler handler = new Handler(Looper.getMainLooper());
     handler.postDelayed(() -> {
       try {
-        presenter.loadMoreItems(Cache.getInstance().getCurrUserAuthToken(), State.user);
+        presenter.loadMoreItems(true, Cache.getInstance().getCurrUserAuthToken(), State.user);
       } catch (MalformedURLException e) {
         e.printStackTrace();
       }

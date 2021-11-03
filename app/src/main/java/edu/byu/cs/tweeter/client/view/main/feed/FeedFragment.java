@@ -5,12 +5,14 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
+import android.os.Message;
 import android.text.SpannableString;
 import android.text.Spanned;
 import android.text.TextPaint;
 import android.text.method.LinkMovementMethod;
 import android.text.style.ClickableSpan;
 import android.text.style.URLSpan;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -28,15 +30,19 @@ import org.jetbrains.annotations.NotNull;
 import java.net.MalformedURLException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 import edu.byu.cs.client.R;
+import edu.byu.cs.tweeter.client.backgroundTask.GetFeedTask;
 import edu.byu.cs.tweeter.client.cache.Cache;
+import edu.byu.cs.tweeter.client.model.service.FeedService;
 import edu.byu.cs.tweeter.client.presenter.paged.FeedPresenter;
-import edu.byu.cs.tweeter.client.presenter.paged.PagedPresenter;
 import edu.byu.cs.tweeter.client.view.main.MainActivity;
 import edu.byu.cs.tweeter.client.view.util.ImageUtils;
 import edu.byu.cs.tweeter.model.domain.Status;
 import edu.byu.cs.tweeter.model.domain.User;
+import edu.byu.cs.tweeter.model.net.response.FeedResponse;
 
 /**
  * Implements the "Feed" tab.
@@ -50,6 +56,7 @@ public class FeedFragment extends Fragment implements FeedPresenter.FeedView {
 
   private User user;
   private FeedPresenter presenter;
+  private boolean hasMorePages;
   private boolean isLoading = false;
 
 
@@ -80,7 +87,7 @@ public class FeedFragment extends Fragment implements FeedPresenter.FeedView {
 
     //noinspection ConstantConditions
     user = (User) getArguments().getSerializable(USER_KEY);
-    presenter = new FeedPresenter(this/*, Cache.getInstance().getCurrUserAuthToken(), user*/);
+    presenter = new FeedPresenter(this);
 
     RecyclerView feedRecyclerView = view.findViewById(R.id.feedRecyclerView);
 
@@ -103,7 +110,7 @@ public class FeedFragment extends Fragment implements FeedPresenter.FeedView {
     final Handler handler = new Handler(Looper.getMainLooper());
     handler.postDelayed(() -> {
       try {
-        presenter.loadMoreItems(Cache.getInstance().getCurrUserAuthToken(), user);
+        presenter.loadMoreItems(isLoading, Cache.getInstance().getCurrUserAuthToken(), user);
       } catch (MalformedURLException e) {
         e.printStackTrace();
       }
@@ -116,9 +123,16 @@ public class FeedFragment extends Fragment implements FeedPresenter.FeedView {
     intent.putExtra(MainActivity.CURRENT_USER_KEY, user);
     startActivity(intent);
   }
+
+
   @Override
-  public void setLoading(boolean value) throws MalformedURLException {
-    isLoading = value;
+  public void displayToast(String message) {
+    Toast.makeText(getContext(), message, Toast.LENGTH_LONG).show();
+  }
+
+  @Override
+  public void setFooterAndLoading(boolean setLoading) {
+    isLoading = setLoading;
     if (isLoading) {
       feedRecyclerViewAdapter.addLoadingFooter();
     } else {
@@ -127,13 +141,13 @@ public class FeedFragment extends Fragment implements FeedPresenter.FeedView {
   }
 
   @Override
-  public void displayToast(String message) {
-    Toast.makeText(getContext(), message, Toast.LENGTH_LONG).show();
+  public void addItems(List<Status> statuses) {
+    feedRecyclerViewAdapter.addItems(statuses);
   }
 
   @Override
-  public void addItems(List<Status> statuses) {
-    feedRecyclerViewAdapter.addItems(statuses);
+  public void setPages(boolean pages) {
+    this.hasMorePages = pages;
   }
 
 
@@ -232,10 +246,6 @@ public class FeedFragment extends Fragment implements FeedPresenter.FeedView {
   private class FeedRecyclerViewAdapter extends RecyclerView.Adapter<FeedHolder> {
 
     private final List<Status> feed = new ArrayList<>();
-    private Status lastStatus;
-
-    private boolean hasMorePages;
-    private boolean isLoading = false;
 
     /**
      * Creates an instance and loads the first page of feed data.
@@ -349,7 +359,7 @@ public class FeedFragment extends Fragment implements FeedPresenter.FeedView {
      * Adds a dummy status to the list of statuses so the RecyclerView will display a view (the
      * loading footer view) at the bottom of the list.
      */
-    private void addLoadingFooter() throws MalformedURLException {
+    private void addLoadingFooter() {
       addItem(new Status("Dummy Post", new User("firstName", "lastName", "@coolAlias"), "2020-10-31 00:00:00", new ArrayList<String>() {{
         add("https://youtube.com");
       }}, new ArrayList<String>() {{
@@ -401,7 +411,7 @@ public class FeedFragment extends Fragment implements FeedPresenter.FeedView {
       int totalItemCount = layoutManager.getItemCount();
       int firstVisibleItemPosition = layoutManager.findFirstVisibleItemPosition();
 
-      if (!feedRecyclerViewAdapter.isLoading && feedRecyclerViewAdapter.hasMorePages) {
+      if (!isLoading && hasMorePages) {
         if ((visibleItemCount + firstVisibleItemPosition) >=
                 totalItemCount && firstVisibleItemPosition >= 0) {
           loadMoreItems();

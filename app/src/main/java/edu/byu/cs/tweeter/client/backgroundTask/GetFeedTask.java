@@ -18,7 +18,7 @@ public class GetFeedTask extends PagedStatusTask {
                      Handler messageHandler) {
     super(authToken, targetUser, limit, lastStatus, messageHandler);
   }
-
+  
   @Override
   protected Pair<List<Status>, Boolean> getItems() {
     return getFakeData().getPageOfStatus(getLastItem(), getLimit());
