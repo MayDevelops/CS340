@@ -10,7 +10,8 @@ public class TaskExecutor<T> {
     ExecutorService executor = Executors.newSingleThreadExecutor();
     executor.execute((Runnable) task);
     try {
-      Thread.sleep(10);
+      //todo fix multithreading issue. Right now the story and feed threads interfere with each other
+      Thread.sleep(250);
     } catch (InterruptedException e) {
       e.printStackTrace();
     }

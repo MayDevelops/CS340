@@ -117,7 +117,7 @@ public class UserService {
     }
   }
 
-  public void register(RegisterRequest registerRequest) {
+  public void registerTask(RegisterRequest registerRequest) {
     RegisterTask registerTask = new RegisterTask(registerRequest, new RegisterHandler((RegisterObserver) observer));
 
     new TaskExecutor<>(registerTask);

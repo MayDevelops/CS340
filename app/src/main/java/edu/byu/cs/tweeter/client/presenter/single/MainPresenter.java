@@ -35,7 +35,7 @@ public class MainPresenter implements FollowService.GetFollowObserver,
   }
 
   public void postStatus(String post, User user) {
-    getFeedService().postStatus(post, user, this);
+    getFeedService().postStatusTask(post, user, this);
   }
 
   public void isFollower(AuthToken authToken, User user, User selectedUser) {

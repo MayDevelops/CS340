@@ -19,7 +19,7 @@ public class RegisterPresenter implements UserService.RegisterObserver {
     UserService service = new UserService(this);
     RegisterRequest registerRequest = new RegisterRequest(firstName, lastName, alias, password, imageBytes, imageURL);
 
-    service.register(registerRequest);
+    service.registerTask(registerRequest);
   }
 
   @Override

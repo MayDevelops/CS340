@@ -20,6 +20,7 @@ import edu.byu.cs.tweeter.client.cache.Cache;
 import edu.byu.cs.tweeter.model.domain.AuthToken;
 import edu.byu.cs.tweeter.model.domain.Status;
 import edu.byu.cs.tweeter.model.domain.User;
+import edu.byu.cs.tweeter.model.net.request.PostStatusRequest;
 
 public class FeedService {
 
@@ -30,12 +31,13 @@ public class FeedService {
     new TaskExecutor<>(getFeedTask);
   }
 
-  public void postStatus(String post, User user, StatusObserver observer) {
+  public void postStatusTask(String post, User user, StatusObserver observer) {
     try {
       Status newStatus = new Status(post, user, getFormattedDateTime(), parseURLs(post), parseMentions(post));
-      PostStatusTask statusTask = new PostStatusTask(Cache.getInstance().getCurrUserAuthToken(),
-              newStatus, new PostStatusHandler(observer));
-      new TaskExecutor<>(statusTask);
+
+      PostStatusRequest postStatusRequest = new PostStatusRequest(newStatus);
+      PostStatusTask postStatusTask = new PostStatusTask(Cache.getInstance().getCurrUserAuthToken(), postStatusRequest, new PostStatusHandler(observer));
+      new TaskExecutor<>(postStatusTask);
     } catch (Exception ex) {
       String message = "Status post failed because of exception: " + ex.getMessage();
       observer.handleFailure(message);
