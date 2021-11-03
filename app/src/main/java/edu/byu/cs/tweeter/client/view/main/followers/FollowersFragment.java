@@ -41,11 +41,10 @@ public class FollowersFragment extends Fragment implements FollowersPresenter.Fo
   private static final int LOADING_DATA_VIEW = 0;
   private static final int ITEM_VIEW = 1;
 
-
-  private boolean isLoading = false;
-  private boolean hasMorePages;
-
+  private User user;
   private FollowersPresenter presenter;
+  private boolean hasMorePages;
+  private boolean isLoading = false;
   private FollowersRecyclerViewAdapter FollowersRecyclerViewAdapter;
 
   /**
@@ -67,8 +66,8 @@ public class FollowersFragment extends Fragment implements FollowersPresenter.Fo
 
 
   @Override
-  public void setFooterAndLoading(boolean value) {
-    isLoading = value;
+  public void setFooterAndLoading(boolean setLoading) {
+    isLoading = setLoading;
     if (isLoading) {
       FollowersRecyclerViewAdapter.addLoadingFooter();
     } else {
@@ -103,7 +102,7 @@ public class FollowersFragment extends Fragment implements FollowersPresenter.Fo
                            Bundle savedInstanceState) {
     View view = inflater.inflate(R.layout.fragment_followers, container, false);
 
-    User user = (User) getArguments().getSerializable(USER_KEY);
+    user = (User) getArguments().getSerializable(USER_KEY);
     presenter = new FollowersPresenter(this);
 
     RecyclerView FollowersRecyclerView = view.findViewById(R.id.followersRecyclerView);
@@ -123,7 +122,7 @@ public class FollowersFragment extends Fragment implements FollowersPresenter.Fo
     final Handler handler = new Handler(Looper.getMainLooper());
     handler.postDelayed(() -> {
       try {
-        presenter.loadMoreItems(true, Cache.getInstance().getCurrUserAuthToken(), State.user);
+        presenter.loadMoreItems(isLoading, Cache.getInstance().getCurrUserAuthToken(), user);
       } catch (MalformedURLException e) {
         e.printStackTrace();
       }
@@ -337,9 +336,11 @@ public class FollowersFragment extends Fragment implements FollowersPresenter.Fo
       int totalItemCount = layoutManager.getItemCount();
       int firstVisibleItemPosition = layoutManager.findFirstVisibleItemPosition();
 
-      if ((visibleItemCount + firstVisibleItemPosition) >=
-              totalItemCount && firstVisibleItemPosition >= 0) {
-        loadMoreItems();
+      if (!isLoading && hasMorePages) {
+        if ((visibleItemCount + firstVisibleItemPosition) >=
+                totalItemCount && firstVisibleItemPosition >= 0) {
+          loadMoreItems();
+        }
       }
     }
   }

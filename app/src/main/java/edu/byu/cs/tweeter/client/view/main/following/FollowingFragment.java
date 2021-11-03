@@ -23,6 +23,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import edu.byu.cs.client.R;
+import edu.byu.cs.tweeter.client.cache.Cache;
 import edu.byu.cs.tweeter.client.presenter.paged.FollowingPresenter;
 import edu.byu.cs.tweeter.client.state.State;
 import edu.byu.cs.tweeter.client.view.main.MainActivity;
@@ -39,10 +40,13 @@ public class FollowingFragment extends Fragment implements FollowingPresenter.Fo
 
   private static final int LOADING_DATA_VIEW = 0;
   private static final int ITEM_VIEW = 1;
-  private boolean isLoading = false;
-private boolean hasMorePages;
+
+  private User user;
   private FollowingPresenter presenter;
+  private boolean hasMorePages;
+  private boolean isLoading = false;
   private FollowingRecyclerViewAdapter followingRecyclerViewAdapter;
+
 
   /**
    * Creates an instance of the fragment and places the target user in an arguments
@@ -67,8 +71,8 @@ private boolean hasMorePages;
   }
 
   @Override
-  public void setFooterAndLoading(boolean value) {
-    isLoading = value;
+  public void setFooterAndLoading(boolean setLoading) {
+    isLoading = setLoading;
     if (isLoading) {
       followingRecyclerViewAdapter.addLoadingFooter();
     } else {
@@ -98,7 +102,7 @@ private boolean hasMorePages;
                            Bundle savedInstanceState) {
     View view = inflater.inflate(R.layout.fragment_following, container, false);
 
-    User user = (User) getArguments().getSerializable(USER_KEY);
+    user = (User) getArguments().getSerializable(USER_KEY);
     presenter = new FollowingPresenter(this);
 
     RecyclerView followingRecyclerView = view.findViewById(R.id.followingRecyclerView);
@@ -118,7 +122,7 @@ private boolean hasMorePages;
     final Handler handler = new Handler(Looper.getMainLooper());
     handler.postDelayed(() -> {
       try {
-        presenter.loadMoreItems(true, State.authToken, State.user);
+        presenter.loadMoreItems(isLoading, Cache.getInstance().getCurrUserAuthToken(), user);
       } catch (MalformedURLException e) {
         e.printStackTrace();
       }
@@ -332,9 +336,11 @@ private boolean hasMorePages;
       int totalItemCount = layoutManager.getItemCount();
       int firstVisibleItemPosition = layoutManager.findFirstVisibleItemPosition();
 
-      if ((visibleItemCount + firstVisibleItemPosition) >=
-              totalItemCount && firstVisibleItemPosition >= 0) {
-        loadMoreItems();
+      if (!isLoading && hasMorePages) {
+        if ((visibleItemCount + firstVisibleItemPosition) >=
+                totalItemCount && firstVisibleItemPosition >= 0) {
+          loadMoreItems();
+        }
       }
     }
   }

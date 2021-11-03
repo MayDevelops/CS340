@@ -33,6 +33,4 @@ public class FeedPresenter extends PagedPresenter<Status> {
       }
     });
   }
-
-
 }

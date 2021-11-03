@@ -5,6 +5,7 @@ import android.os.Bundle;
 import java.util.List;
 
 import edu.byu.cs.tweeter.client.backgroundTask.FollowTask;
+import edu.byu.cs.tweeter.client.backgroundTask.GetFeedTask;
 import edu.byu.cs.tweeter.client.backgroundTask.GetFollowersCountTask;
 import edu.byu.cs.tweeter.client.backgroundTask.GetFollowersTask;
 import edu.byu.cs.tweeter.client.backgroundTask.GetFollowingCountTask;
@@ -73,11 +74,11 @@ public class FollowService {
   }
 
   public interface GetFollowingObserver extends ServiceObserver {
-    void getFollowingSucceeded(List<User> users);
+    void getFollowingSucceeded(List<User> users, boolean pages);
   }
 
   public interface GetFollowerObserver extends ServiceObserver {
-    void getFollowerSucceeded(List<User> users);
+    void getFollowerSucceeded(List<User> users, boolean pages);
   }
 
   public interface GetFollowObserver extends ServiceObserver {
@@ -98,7 +99,6 @@ public class FollowService {
 
   public interface GetFolloweeCountObserver extends ServiceObserver {
     void setFolloweeCount(int count);
-
   }
 
   public interface CheckFollowerObserver extends ServiceObserver {
@@ -129,7 +129,6 @@ public class FollowService {
       super(observer);
     }
 
-
     @Override
     protected String getFailedMessagePrefix() {
       return "Follow Service";
@@ -138,7 +137,9 @@ public class FollowService {
     @Override
     protected void handleSuccessMessage(ServiceObserver observer, Bundle data) {
       List<User> followers = (List<User>) data.getSerializable(PagedTask.ITEMS_KEY);
-      ((GetFollowerObserver) observer).getFollowerSucceeded(followers);
+      boolean hasMorePages = data.getBoolean(GetFeedTask.MORE_PAGES_KEY);
+
+      ((GetFollowerObserver) observer).getFollowerSucceeded(followers, hasMorePages);
     }
   }
 
@@ -156,12 +157,13 @@ public class FollowService {
     @Override
     protected void handleSuccessMessage(ServiceObserver observer, Bundle data) {
       List<User> followees = (List<User>) data.getSerializable(PagedTask.ITEMS_KEY);
-      ((GetFollowingObserver) observer).getFollowingSucceeded(followees);
+      boolean hasMorePages = data.getBoolean(GetFeedTask.MORE_PAGES_KEY);
+
+      ((GetFollowingObserver) observer).getFollowingSucceeded(followees, hasMorePages);
     }
   }
 
   private static class GetFollowersCountHandler extends BackgroundTaskHandler {
-
 
     public GetFollowersCountHandler(GetFollowerCountObserver observer) {
       super(observer);
@@ -180,7 +182,6 @@ public class FollowService {
   }
 
   private static class GetFollowingCountHandler extends BackgroundTaskHandler {
-
 
     public GetFollowingCountHandler(GetFolloweeCountObserver observer) {
       super(observer);

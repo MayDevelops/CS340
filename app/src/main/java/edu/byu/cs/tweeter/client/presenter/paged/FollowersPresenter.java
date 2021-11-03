@@ -18,9 +18,11 @@ public class FollowersPresenter extends PagedPresenter<User> {
   void ServiceLoader() {
     new FollowService().getFollowers(State.authToken, State.user, ((User) lastItem), new FollowService.GetFollowerObserver() {
       @Override
-      public void getFollowerSucceeded(List<User> users) {
-        view.addItems(users);
+      public void getFollowerSucceeded(List<User> users, boolean pages) {
+        view.setFooterAndLoading(false);
+        view.setPages(pages);
         lastItem = (users.size() > 0) ? users.get(users.size() - 1) : null;
+        view.addItems(users);
       }
 
       @Override
@@ -29,6 +31,4 @@ public class FollowersPresenter extends PagedPresenter<User> {
       }
     });
   }
-
-
 }
