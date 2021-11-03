@@ -43,6 +43,7 @@ public class FollowersFragment extends Fragment implements FollowersPresenter.Fo
 
 
   private boolean isLoading = false;
+  private boolean hasMorePages;
 
   private FollowersPresenter presenter;
   private FollowersRecyclerViewAdapter FollowersRecyclerViewAdapter;
@@ -90,6 +91,11 @@ public class FollowersFragment extends Fragment implements FollowersPresenter.Fo
   @Override
   public void addItems(List<User> list) {
     FollowersRecyclerViewAdapter.addItems(list);
+  }
+
+  @Override
+  public void setPages(boolean pages) {
+    this.hasMorePages = pages;
   }
 
   @Override

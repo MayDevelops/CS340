@@ -15,18 +15,11 @@ public class FeedPresenter extends PagedPresenter<Status> {
   }
 
   public interface FeedView extends PagedView<Status> {
-    void setPages(boolean pages);
   }
 
   @Override
   void ServiceLoader() {
     new FeedService().getFeedTask(State.authToken, State.user, ((Status) lastItem), new FeedService.FeedObserver() {
-
-
-      @Override
-      public void handleFailure(String message) {
-        view.displayToast(message);
-      }
 
       @Override
       public void feedSucceeded(List<Status> statuses, boolean pages) {
@@ -34,6 +27,11 @@ public class FeedPresenter extends PagedPresenter<Status> {
         feedView.setPages(pages);
         lastItem = (statuses.size() > 0) ? statuses.get(statuses.size() - 1) : null;
         view.addItems(statuses);
+      }
+
+      @Override
+      public void handleFailure(String message) {
+        view.displayToast(message);
       }
     });
   }

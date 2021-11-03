@@ -40,7 +40,7 @@ public class FollowingFragment extends Fragment implements FollowingPresenter.Fo
   private static final int LOADING_DATA_VIEW = 0;
   private static final int ITEM_VIEW = 1;
   private boolean isLoading = false;
-
+private boolean hasMorePages;
   private FollowingPresenter presenter;
   private FollowingRecyclerViewAdapter followingRecyclerViewAdapter;
 
@@ -86,6 +86,11 @@ public class FollowingFragment extends Fragment implements FollowingPresenter.Fo
   @Override
   public void displayToast(String message) {
     Toast.makeText(getContext(), message, Toast.LENGTH_LONG).show();
+  }
+
+  @Override
+  public void setPages(boolean pages) {
+    this.hasMorePages = pages;
   }
 
   @Override

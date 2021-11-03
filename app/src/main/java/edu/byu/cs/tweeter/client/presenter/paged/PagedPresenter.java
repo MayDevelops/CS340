@@ -17,13 +17,9 @@ public abstract class PagedPresenter<T> extends Presenter {
 
   @Override
   public void loadMoreItems(Boolean isLoading, AuthToken authToken, User user) throws MalformedURLException {
-//    view.setFooterAndLoading(true);
-//    view.setFooterAndLoading(false);
-
     if (!isLoading) {
       view.setFooterAndLoading(true);
       ServiceLoader();
-
     }
   }
 

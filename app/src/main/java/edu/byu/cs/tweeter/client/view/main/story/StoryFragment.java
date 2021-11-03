@@ -49,6 +49,7 @@ public class StoryFragment extends Fragment implements StoryPresenter.StoryView 
   private static final int ITEM_VIEW = 1;
 
   private boolean isLoading = false;
+  private boolean hasMorePages;
 
   private User user;
   private StoryPresenter presenter;
@@ -130,6 +131,11 @@ public class StoryFragment extends Fragment implements StoryPresenter.StoryView 
   @Override
   public void addItems(List<Status> statuses) {
     storyRecyclerViewAdapter.addItems(statuses);
+  }
+
+  @Override
+  public void setPages(boolean pages) {
+    this.hasMorePages = pages;
   }
 
   /**

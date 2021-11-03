@@ -12,4 +12,7 @@ public interface PagedView<T> extends View<T> {
   void addItems(List<T> list);
 
   void navigateToUser(User user);
+
+  void setPages(boolean pages);
+
 }
