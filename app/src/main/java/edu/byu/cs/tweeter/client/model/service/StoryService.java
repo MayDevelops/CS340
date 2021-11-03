@@ -15,17 +15,16 @@ import edu.byu.cs.tweeter.model.domain.User;
 
 public class StoryService {
   private static final int PAGE_SIZE = 10;
-  private static Status lastStatus = null;
 
-  public void getStory(AuthToken authToken, User user, ServiceObserver observer) {
+  public void getStoryTask(AuthToken authToken, User user, Status lastStatus, ServiceObserver observer) {
     GetStoryTask getStoryTask = new GetStoryTask(authToken,
             user, PAGE_SIZE, lastStatus, new GetStoryHandler(observer));
     new TaskExecutor<>(getStoryTask);
   }
 
 
-  public interface GetStoryObserver extends ServiceObserver {
-    void getStorySucceeded(List<Status> statuses);
+  public interface StoryObserver extends ServiceObserver {
+    void storySucceeded(List<Status> statuses, boolean pages);
   }
 
   private static class GetStoryHandler extends BackgroundTaskHandler {
@@ -42,9 +41,9 @@ public class StoryService {
     @Override
     protected void handleSuccessMessage(ServiceObserver observer, Bundle data) {
       List<Status> statuses = (List<Status>) data.getSerializable(PagedTask.ITEMS_KEY);
+      boolean hasMorePages = data.getBoolean(GetStoryTask.MORE_PAGES_KEY);
 
-      lastStatus = (statuses.size() > 0) ? statuses.get(statuses.size() - 1) : null;
-      ((GetStoryObserver) observer).getStorySucceeded(statuses);
+      ((StoryObserver) observer).storySucceeded(statuses, hasMorePages);
     }
   }
 }

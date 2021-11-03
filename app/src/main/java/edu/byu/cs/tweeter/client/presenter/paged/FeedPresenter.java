@@ -7,11 +7,9 @@ import edu.byu.cs.tweeter.client.state.State;
 import edu.byu.cs.tweeter.model.domain.Status;
 
 public class FeedPresenter extends PagedPresenter<Status> {
-  FeedView feedView;
 
   public FeedPresenter(FeedView view) {
     super(view);
-    this.feedView = view;
   }
 
   public interface FeedView extends PagedView<Status> {
@@ -24,7 +22,7 @@ public class FeedPresenter extends PagedPresenter<Status> {
       @Override
       public void feedSucceeded(List<Status> statuses, boolean pages) {
         view.setFooterAndLoading(false);
-        feedView.setPages(pages);
+        view.setPages(pages);
         lastItem = (statuses.size() > 0) ? statuses.get(statuses.size() - 1) : null;
         view.addItems(statuses);
       }

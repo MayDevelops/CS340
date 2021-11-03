@@ -9,6 +9,11 @@ public class TaskExecutor<T> {
   public TaskExecutor(T task) {
     ExecutorService executor = Executors.newSingleThreadExecutor();
     executor.execute((Runnable) task);
+    try {
+      Thread.sleep(10);
+    } catch (InterruptedException e) {
+      e.printStackTrace();
+    }
   }
 
   public TaskExecutor(T taskOne, T taskTwo) {

@@ -17,9 +17,12 @@ public class StoryPresenter extends PagedPresenter<Status> {
 
   @Override
   void ServiceLoader() {
-    new StoryService().getStory(State.authToken, State.user, new StoryService.GetStoryObserver() {
+    new StoryService().getStoryTask(State.authToken, State.user, ((Status) lastItem), new StoryService.StoryObserver() {
       @Override
-      public void getStorySucceeded(List<Status> statuses) {
+      public void storySucceeded(List<Status> statuses, boolean pages) {
+        view.setFooterAndLoading(false);
+        view.setPages(pages);
+        lastItem = (statuses.size() > 0) ? statuses.get(statuses.size() - 1) : null;
         view.addItems(statuses);
       }
 

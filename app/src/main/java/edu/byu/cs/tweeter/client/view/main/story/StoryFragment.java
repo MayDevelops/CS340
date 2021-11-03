@@ -99,7 +99,7 @@ public class StoryFragment extends Fragment implements StoryPresenter.StoryView 
     final Handler handler = new Handler(Looper.getMainLooper());
     handler.postDelayed(() -> {
       try {
-        presenter.loadMoreItems(true, State.authToken, State.user);
+        presenter.loadMoreItems(isLoading, Cache.getInstance().getCurrUserAuthToken(), user);
       } catch (MalformedURLException e) {
         e.printStackTrace();
       }
@@ -114,8 +114,8 @@ public class StoryFragment extends Fragment implements StoryPresenter.StoryView 
   }
 
   @Override
-  public void setFooterAndLoading(boolean value) {
-    isLoading = value;
+  public void setFooterAndLoading(boolean setLoading) {
+    isLoading = setLoading;
     if (isLoading) {
       storyRecyclerViewAdapter.addLoadingFooter();
     } else {
@@ -389,11 +389,12 @@ public class StoryFragment extends Fragment implements StoryPresenter.StoryView 
       int totalItemCount = layoutManager.getItemCount();
       int firstVisibleItemPosition = layoutManager.findFirstVisibleItemPosition();
 
-      if ((visibleItemCount + firstVisibleItemPosition) >=
-              totalItemCount && firstVisibleItemPosition >= 0) {
-        loadMoreItems();
+      if(!isLoading && hasMorePages) {
+        if ((visibleItemCount + firstVisibleItemPosition) >=
+                totalItemCount && firstVisibleItemPosition >= 0) {
+          loadMoreItems();
+        }
       }
     }
   }
-
 }
