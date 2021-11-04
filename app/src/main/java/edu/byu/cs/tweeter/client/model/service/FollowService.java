@@ -18,6 +18,7 @@ import edu.byu.cs.tweeter.client.backgroundTask.handler.TaskExecutor;
 import edu.byu.cs.tweeter.client.backgroundTask.observer.ServiceObserver;
 import edu.byu.cs.tweeter.model.domain.AuthToken;
 import edu.byu.cs.tweeter.model.domain.User;
+import edu.byu.cs.tweeter.model.net.request.FollowCountRequest;
 import edu.byu.cs.tweeter.model.net.request.FollowUserRequest;
 
 public class FollowService {
@@ -65,10 +66,11 @@ public class FollowService {
   }
 
   public void updateSelectedUserFollowingAndFollowers(GetFollowerCountObserver followerCountObserver, GetFolloweeCountObserver followeeCountObserver) {
-    GetFollowersCountTask followersCountTask = new GetFollowersCountTask(authToken,
-            selectedUser, new GetFollowersCountHandler(followerCountObserver));
-    GetFollowingCountTask followingCountTask = new GetFollowingCountTask(authToken,
-            selectedUser, new GetFollowingCountHandler(followeeCountObserver));
+    FollowCountRequest followerCount = new FollowCountRequest(authToken, selectedUser);
+    FollowCountRequest followingCount = new FollowCountRequest(authToken, selectedUser);
+
+    GetFollowersCountTask followersCountTask = new GetFollowersCountTask(followerCount, new GetFollowersCountHandler(followerCountObserver));
+    GetFollowingCountTask followingCountTask = new GetFollowingCountTask(followingCount, new GetFollowingCountHandler(followeeCountObserver));
     new TaskExecutor<>(followersCountTask, followingCountTask);
   }
 

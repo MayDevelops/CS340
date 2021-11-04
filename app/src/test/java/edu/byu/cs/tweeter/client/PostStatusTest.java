@@ -30,7 +30,6 @@
 //  User user;
 //  String postString = "Wsup";
 //
-//  //todo update tests to reflect the new changes for request / response
 //
 //  @BeforeAll
 //  void setUp() {
@@ -58,7 +57,7 @@
 //      }
 //    };
 //
-//    Mockito.doAnswer(callHandleSucceeded).when(mockFeedService).postStatus(Mockito.any(), Mockito.any());
+//    Mockito.doAnswer(callHandleSucceeded).when(mockFeedService).postStatusTask(Mockito.any(), Mockito.any(), Mockito.any());
 //    presenterSpy.postStatus(postString, user);
 //    Mockito.verify(mockMainView).displayToast("Successfully Posted!");
 //
@@ -83,7 +82,7 @@
 //        }
 //      };
 //
-//      Mockito.doAnswer(callHandleException).when(mockFeedService).postStatus(Mockito.any(), Mockito.any());
+//      Mockito.doAnswer(callHandleException).when(mockFeedService).postStatusTask(Mockito.any(), Mockito.any(), Mockito.any());
 //      presenterSpy.postStatus(postString, user);
 //      Mockito.verify(mockMainView).displayToast(msg);
 //    }
