@@ -7,7 +7,7 @@ import edu.byu.cs.tweeter.model.net.request.FeedRequest;
 import edu.byu.cs.tweeter.model.net.response.FeedResponse;
 import edu.byu.cs.tweeter.server.service.FeedService;
 
-public class GetFeedHandler implements RequestHandler<FeedRequest, FeedResponse> {
+public class FeedHandler implements RequestHandler<FeedRequest, FeedResponse> {
 
   @Override
   public FeedResponse handleRequest(FeedRequest feedRequest, Context context) {

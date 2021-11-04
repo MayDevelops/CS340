@@ -102,7 +102,7 @@ public class ServerFacade {
    *                other information required to satisfy the request.
    * @return the followees.
    */
-  public FollowingResponse getFollowees(FollowingRequest request, String urlPath)
+  public FollowingResponse getFollowing(FollowingRequest request, String urlPath)
           throws IOException, TweeterRemoteException {
 
     FollowingResponse response = clientCommunicator.doPost(urlPath, request, null, FollowingResponse.class);
