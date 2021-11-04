@@ -4,13 +4,15 @@ import java.io.IOException;
 
 import edu.byu.cs.tweeter.model.net.TweeterRemoteException;
 import edu.byu.cs.tweeter.model.net.request.FeedRequest;
-import edu.byu.cs.tweeter.model.net.request.FollowingRequest;
+import edu.byu.cs.tweeter.model.net.request.FollowPageRequest;
+import edu.byu.cs.tweeter.model.net.request.FollowUserRequest;
 import edu.byu.cs.tweeter.model.net.request.LoginRequest;
 import edu.byu.cs.tweeter.model.net.request.LogoutRequest;
 import edu.byu.cs.tweeter.model.net.request.PostStatusRequest;
 import edu.byu.cs.tweeter.model.net.request.RegisterRequest;
 import edu.byu.cs.tweeter.model.net.response.FeedResponse;
-import edu.byu.cs.tweeter.model.net.response.FollowingResponse;
+import edu.byu.cs.tweeter.model.net.response.FollowPageResponse;
+import edu.byu.cs.tweeter.model.net.response.FollowUserResponse;
 import edu.byu.cs.tweeter.model.net.response.LoginResponse;
 import edu.byu.cs.tweeter.model.net.response.LogoutResponse;
 import edu.byu.cs.tweeter.model.net.response.PostStatusResponse;
@@ -93,19 +95,10 @@ public class ServerFacade {
     }
   }
 
-  /**
-   * Returns the users that the user specified in the request is following. Uses information in
-   * the request object to limit the number of followees returned and to return the next set of
-   * followees after any that were returned in a previous request.
-   *
-   * @param request contains information about the user whose followees are to be returned and any
-   *                other information required to satisfy the request.
-   * @return the followees.
-   */
-  public FollowingResponse getFollowing(FollowingRequest request, String urlPath)
+  public FollowPageResponse followPage(FollowPageRequest request, String urlPath)
           throws IOException, TweeterRemoteException {
 
-    FollowingResponse response = clientCommunicator.doPost(urlPath, request, null, FollowingResponse.class);
+    FollowPageResponse response = clientCommunicator.doPost(urlPath, request, null, FollowPageResponse.class);
 
     if (response.isSuccess()) {
       return response;
@@ -113,4 +106,17 @@ public class ServerFacade {
       throw new RuntimeException(response.getMessage());
     }
   }
+
+  public FollowUserResponse followUser(FollowUserRequest request, String urlPath) throws IOException, TweeterRemoteException{
+    FollowUserResponse response = clientCommunicator.doPost(urlPath, request, null, FollowUserResponse.class);
+
+    if (response.isSuccess()){
+      return response;
+    } else {
+      throw new RuntimeException(response.getMessage());
+    }
+  }
+
+
+
 }

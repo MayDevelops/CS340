@@ -3,14 +3,14 @@ package edu.byu.cs.tweeter.server.lambda;
 import com.amazonaws.services.lambda.runtime.Context;
 import com.amazonaws.services.lambda.runtime.RequestHandler;
 
-import edu.byu.cs.tweeter.model.net.request.FollowingRequest;
-import edu.byu.cs.tweeter.model.net.response.FollowingResponse;
+import edu.byu.cs.tweeter.model.net.request.FollowPageRequest;
+import edu.byu.cs.tweeter.model.net.response.FollowPageResponse;
 import edu.byu.cs.tweeter.server.service.FollowService;
 
 /**
  * An AWS lambda function that returns the users a user is following.
  */
-public class FollowsHandler implements RequestHandler<FollowingRequest, FollowingResponse> {
+public class FollowPageHandler implements RequestHandler<FollowPageRequest, FollowPageResponse> {
 
     /**
      * Returns the users that the user specified in the request is following. Uses information in
@@ -22,8 +22,8 @@ public class FollowsHandler implements RequestHandler<FollowingRequest, Followin
      * @return the followees.
      */
     @Override
-    public FollowingResponse handleRequest(FollowingRequest request, Context context) {
+    public FollowPageResponse handleRequest(FollowPageRequest request, Context context) {
         FollowService service = new FollowService();
-        return service.getFollowees(request);
+        return service.getFollowPage(request);
     }
 }

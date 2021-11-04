@@ -18,6 +18,7 @@ import edu.byu.cs.tweeter.client.backgroundTask.handler.TaskExecutor;
 import edu.byu.cs.tweeter.client.backgroundTask.observer.ServiceObserver;
 import edu.byu.cs.tweeter.model.domain.AuthToken;
 import edu.byu.cs.tweeter.model.domain.User;
+import edu.byu.cs.tweeter.model.net.request.FollowUserRequest;
 
 public class FollowService {
 
@@ -44,13 +45,12 @@ public class FollowService {
     new TaskExecutor<>(getFollowingTask);
   }
 
-  public void followTask(AuthToken authtoken, User selectedUser, GetFollowObserver observer,
+  public void followTask(FollowUserRequest followUserRequest, GetFollowObserver observer,
                          GetFolloweeCountObserver followeeCountObserver,
                          GetFollowerCountObserver followerCountObserver) {
-    this.authToken = authtoken;
-    this.selectedUser = selectedUser;
-    FollowTask followTask = new FollowTask(authtoken,
-            selectedUser, new FollowHandler(observer, followeeCountObserver, followerCountObserver));
+    this.authToken = followUserRequest.getAuthToken();
+    this.selectedUser = followUserRequest.getUser();
+    FollowTask followTask = new FollowTask(followUserRequest, new FollowHandler(observer, followeeCountObserver, followerCountObserver));
     new TaskExecutor<>(followTask);
   }
 

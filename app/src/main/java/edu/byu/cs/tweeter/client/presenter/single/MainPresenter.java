@@ -5,6 +5,7 @@ import edu.byu.cs.tweeter.client.model.service.FollowService;
 import edu.byu.cs.tweeter.client.model.service.UserService;
 import edu.byu.cs.tweeter.model.domain.AuthToken;
 import edu.byu.cs.tweeter.model.domain.User;
+import edu.byu.cs.tweeter.model.net.request.FollowUserRequest;
 
 public class MainPresenter implements FollowService.GetFollowObserver,
         FollowService.GetUnfollowObserver,
@@ -51,7 +52,9 @@ public class MainPresenter implements FollowService.GetFollowObserver,
 
   @Override
   public void follow(AuthToken authToken, User user) {
-    new FollowService().followTask(authToken, user, this, this, this);
+    FollowService followService = new FollowService();
+    FollowUserRequest followUserRequest = new FollowUserRequest(authToken, user);
+    followService.followTask(followUserRequest, this, this, this);
   }
 
   //GetUnfollowObserver Implementation

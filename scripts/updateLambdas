@@ -5,7 +5,8 @@ arr=(
   "Logout"
   "PostStatus"
   "GetFeed"
-  "Follows"
+  "GetFollowPages"
+  "FollowUser"
 )
 for FUNCTION_NAME in "${arr[@]}"; do
   aws lambda update-function-code --function-name "$FUNCTION_NAME" --zip-file fileb:////Users/fms/BYU_CS340/tweeter/server/build/libs/server-all.jar &

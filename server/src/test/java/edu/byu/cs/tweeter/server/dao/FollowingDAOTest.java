@@ -11,8 +11,8 @@ import java.util.List;
 
 import edu.byu.cs.tweeter.model.domain.AuthToken;
 import edu.byu.cs.tweeter.model.domain.User;
-import edu.byu.cs.tweeter.model.net.request.FollowingRequest;
-import edu.byu.cs.tweeter.model.net.response.FollowingResponse;
+import edu.byu.cs.tweeter.model.net.request.FollowPageRequest;
+import edu.byu.cs.tweeter.model.net.response.FollowPageResponse;
 
 class FollowingDAOTest {
     private final AuthToken testUserAuthToken = new AuthToken();
@@ -38,10 +38,10 @@ class FollowingDAOTest {
         List<User> followees = Collections.emptyList();
         Mockito.when(followDAOSpy.getDummyFollowees()).thenReturn(followees);
 
-        FollowingRequest request = new FollowingRequest(testUserAuthToken, user1.getAlias(), 10, null);
-        FollowingResponse response = followDAOSpy.getFollowees(request);
+        FollowPageRequest request = new FollowPageRequest(testUserAuthToken, user1.getAlias(), 10, null);
+        FollowPageResponse response = followDAOSpy.getFollowPage(request);
 
-        Assertions.assertEquals(0, response.getFollowees().size());
+        Assertions.assertEquals(0, response.getFollows().size());
         Assertions.assertFalse(response.getHasMorePages());
     }
 
@@ -50,11 +50,11 @@ class FollowingDAOTest {
         List<User> followees = Collections.singletonList(user2);
         Mockito.when(followDAOSpy.getDummyFollowees()).thenReturn(followees);
 
-        FollowingRequest request = new FollowingRequest(testUserAuthToken, user1.getAlias(), 10, null);
-        FollowingResponse response = followDAOSpy.getFollowees(request);
+        FollowPageRequest request = new FollowPageRequest(testUserAuthToken, user1.getAlias(), 10, null);
+        FollowPageResponse response = followDAOSpy.getFollowPage(request);
 
-        Assertions.assertEquals(1, response.getFollowees().size());
-        Assertions.assertTrue(response.getFollowees().contains(user2));
+        Assertions.assertEquals(1, response.getFollows().size());
+        Assertions.assertTrue(response.getFollows().contains(user2));
         Assertions.assertFalse(response.getHasMorePages());
     }
 
@@ -63,12 +63,12 @@ class FollowingDAOTest {
         List<User> followees = Arrays.asList(user2, user3);
         Mockito.when(followDAOSpy.getDummyFollowees()).thenReturn(followees);
 
-        FollowingRequest request = new FollowingRequest(testUserAuthToken, user3.getAlias(), 2, null);
-        FollowingResponse response = followDAOSpy.getFollowees(request);
+        FollowPageRequest request = new FollowPageRequest(testUserAuthToken, user3.getAlias(), 2, null);
+        FollowPageResponse response = followDAOSpy.getFollowPage(request);
 
-        Assertions.assertEquals(2, response.getFollowees().size());
-        Assertions.assertTrue(response.getFollowees().contains(user2));
-        Assertions.assertTrue(response.getFollowees().contains(user3));
+        Assertions.assertEquals(2, response.getFollows().size());
+        Assertions.assertTrue(response.getFollows().contains(user2));
+        Assertions.assertTrue(response.getFollows().contains(user3));
         Assertions.assertFalse(response.getHasMorePages());
     }
 
@@ -77,31 +77,31 @@ class FollowingDAOTest {
         List<User> followees = Arrays.asList(user2, user3, user4, user5, user6, user7);
         Mockito.when(followDAOSpy.getDummyFollowees()).thenReturn(followees);
 
-        FollowingRequest request = new FollowingRequest(testUserAuthToken, user5.getAlias(), 2, null);
-        FollowingResponse response = followDAOSpy.getFollowees(request);
+        FollowPageRequest request = new FollowPageRequest(testUserAuthToken, user5.getAlias(), 2, null);
+        FollowPageResponse response = followDAOSpy.getFollowPage(request);
 
         // Verify first page
-        Assertions.assertEquals(2, response.getFollowees().size());
-        Assertions.assertTrue(response.getFollowees().contains(user2));
-        Assertions.assertTrue(response.getFollowees().contains(user3));
+        Assertions.assertEquals(2, response.getFollows().size());
+        Assertions.assertTrue(response.getFollows().contains(user2));
+        Assertions.assertTrue(response.getFollows().contains(user3));
         Assertions.assertTrue(response.getHasMorePages());
 
         // Get and verify second page
-        request = new FollowingRequest(testUserAuthToken, user5.getAlias(), 2, response.getFollowees().get(1).getAlias());
-        response = followDAOSpy.getFollowees(request);
+        request = new FollowPageRequest(testUserAuthToken, user5.getAlias(), 2, response.getFollows().get(1).getAlias());
+        response = followDAOSpy.getFollowPage(request);
 
-        Assertions.assertEquals(2, response.getFollowees().size());
-        Assertions.assertTrue(response.getFollowees().contains(user4));
-        Assertions.assertTrue(response.getFollowees().contains(user5));
+        Assertions.assertEquals(2, response.getFollows().size());
+        Assertions.assertTrue(response.getFollows().contains(user4));
+        Assertions.assertTrue(response.getFollows().contains(user5));
         Assertions.assertTrue(response.getHasMorePages());
 
         // Get and verify third page
-        request = new FollowingRequest(testUserAuthToken, user5.getAlias(), 2, response.getFollowees().get(1).getAlias());
-        response = followDAOSpy.getFollowees(request);
+        request = new FollowPageRequest(testUserAuthToken, user5.getAlias(), 2, response.getFollows().get(1).getAlias());
+        response = followDAOSpy.getFollowPage(request);
 
-        Assertions.assertEquals(2, response.getFollowees().size());
-        Assertions.assertTrue(response.getFollowees().contains(user6));
-        Assertions.assertTrue(response.getFollowees().contains(user7));
+        Assertions.assertEquals(2, response.getFollows().size());
+        Assertions.assertTrue(response.getFollows().contains(user6));
+        Assertions.assertTrue(response.getFollows().contains(user7));
         Assertions.assertFalse(response.getHasMorePages());
     }
 
@@ -111,39 +111,39 @@ class FollowingDAOTest {
         List<User> followees = Arrays.asList(user2, user3, user4, user5, user6, user7, user8);
         Mockito.when(followDAOSpy.getDummyFollowees()).thenReturn(followees);
 
-        FollowingRequest request = new FollowingRequest(testUserAuthToken, user6.getAlias(), 2, null);
-        FollowingResponse response = followDAOSpy.getFollowees(request);
+        FollowPageRequest request = new FollowPageRequest(testUserAuthToken, user6.getAlias(), 2, null);
+        FollowPageResponse response = followDAOSpy.getFollowPage(request);
 
         // Verify first page
-        Assertions.assertEquals(2, response.getFollowees().size());
-        Assertions.assertTrue(response.getFollowees().contains(user2));
-        Assertions.assertTrue(response.getFollowees().contains(user3));
+        Assertions.assertEquals(2, response.getFollows().size());
+        Assertions.assertTrue(response.getFollows().contains(user2));
+        Assertions.assertTrue(response.getFollows().contains(user3));
         Assertions.assertTrue(response.getHasMorePages());
 
         // Get and verify second page
-        request = new FollowingRequest(testUserAuthToken, user6.getAlias(), 2, response.getFollowees().get(1).getAlias());
-        response = followDAOSpy.getFollowees(request);
+        request = new FollowPageRequest(testUserAuthToken, user6.getAlias(), 2, response.getFollows().get(1).getAlias());
+        response = followDAOSpy.getFollowPage(request);
 
-        Assertions.assertEquals(2, response.getFollowees().size());
-        Assertions.assertTrue(response.getFollowees().contains(user4));
-        Assertions.assertTrue(response.getFollowees().contains(user5));
+        Assertions.assertEquals(2, response.getFollows().size());
+        Assertions.assertTrue(response.getFollows().contains(user4));
+        Assertions.assertTrue(response.getFollows().contains(user5));
         Assertions.assertTrue(response.getHasMorePages());
 
         // Get and verify third page
-        request = new FollowingRequest(testUserAuthToken, user6.getAlias(), 2, response.getFollowees().get(1).getAlias());
-        response = followDAOSpy.getFollowees(request);
+        request = new FollowPageRequest(testUserAuthToken, user6.getAlias(), 2, response.getFollows().get(1).getAlias());
+        response = followDAOSpy.getFollowPage(request);
 
-        Assertions.assertEquals(2, response.getFollowees().size());
-        Assertions.assertTrue(response.getFollowees().contains(user6));
-        Assertions.assertTrue(response.getFollowees().contains(user7));
+        Assertions.assertEquals(2, response.getFollows().size());
+        Assertions.assertTrue(response.getFollows().contains(user6));
+        Assertions.assertTrue(response.getFollows().contains(user7));
         Assertions.assertTrue(response.getHasMorePages());
 
         // Get and verify fourth page
-        request = new FollowingRequest(testUserAuthToken, user6.getAlias(), 2, response.getFollowees().get(1).getAlias());
-        response = followDAOSpy.getFollowees(request);
+        request = new FollowPageRequest(testUserAuthToken, user6.getAlias(), 2, response.getFollows().get(1).getAlias());
+        response = followDAOSpy.getFollowPage(request);
 
-        Assertions.assertEquals(1, response.getFollowees().size());
-        Assertions.assertTrue(response.getFollowees().contains(user8));
+        Assertions.assertEquals(1, response.getFollows().size());
+        Assertions.assertTrue(response.getFollows().contains(user8));
         Assertions.assertFalse(response.getHasMorePages());
     }
 }
