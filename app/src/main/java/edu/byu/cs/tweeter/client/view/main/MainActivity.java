@@ -96,6 +96,7 @@ public class MainActivity extends AppCompatActivity implements StatusDialogFragm
     followButton.setOnClickListener(new View.OnClickListener() {
       @Override
       public void onClick(View v) {
+        //todo this does not get hit when I click the button, only works once before button becomes unresponsive???
         followButton.setEnabled(false);
 
         if (followButton.getText().toString().equals(v.getContext().getString(R.string.following))) {

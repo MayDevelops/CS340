@@ -54,14 +54,13 @@ public class FollowService {
     new TaskExecutor<>(followTask);
   }
 
-  public void unfollowTask(AuthToken authtoken, User selectedUser,
+  public void unfollowTask(FollowUserRequest followUserRequest,
                            GetUnfollowObserver observer,
                            GetFolloweeCountObserver followeeCountObserver,
                            GetFollowerCountObserver followerCountObserver) {
-    this.authToken = authtoken;
-    this.selectedUser = selectedUser;
-    UnfollowTask unfollowTask = new UnfollowTask(authtoken,
-            selectedUser, new UnfollowHandler(observer, followeeCountObserver, followerCountObserver));
+    this.authToken = followUserRequest.getAuthToken();
+    this.selectedUser = followUserRequest.getUser();
+    UnfollowTask unfollowTask = new UnfollowTask(followUserRequest, new UnfollowHandler(observer, followeeCountObserver, followerCountObserver));
     new TaskExecutor<>(unfollowTask);
   }
 

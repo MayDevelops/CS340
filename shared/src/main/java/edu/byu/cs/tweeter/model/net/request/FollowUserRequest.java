@@ -13,6 +13,8 @@ public class FollowUserRequest {
   public FollowUserRequest(AuthToken authToken, User user) {
     this.authToken = authToken;
     this.user = user;
+    //todo what is going on with these image bytes?
+    this.user.setImageBytes(null);
   }
 
   public AuthToken getAuthToken() {
@@ -30,6 +32,6 @@ public class FollowUserRequest {
   public void setUser(User user) {
     this.user = user;
   }
-  
+
 
 }

@@ -66,7 +66,9 @@ public class MainPresenter implements FollowService.GetFollowObserver,
 
   @Override
   public void unfollow(AuthToken authToken, User user) {
-    new FollowService().unfollowTask(authToken, user, this, this, this);
+    FollowService followService = new FollowService();
+    FollowUserRequest followUserRequest = new FollowUserRequest(authToken, user);
+    followService.unfollowTask(followUserRequest, this, this, this);
   }
 
   @Override

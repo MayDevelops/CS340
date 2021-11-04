@@ -35,11 +35,12 @@ public class FollowTask extends AuthorizedTask {
 
     try {
       FollowUserRequest request = new FollowUserRequest(authToken, user);
-      user.getImageBytes().toString();
       FollowUserResponse response = ServerFacade.getServerFacade().followUser(request, URL_PATH);
 
       if (response.isSuccess()) {
         //do the logic here
+        BackgroundTaskUtils.loadImage(user);
+
       } else {
         sendFailedMessage(response.getMessage());
       }
