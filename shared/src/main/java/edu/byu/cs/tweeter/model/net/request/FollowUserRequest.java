@@ -3,7 +3,7 @@ package edu.byu.cs.tweeter.model.net.request;
 import edu.byu.cs.tweeter.model.domain.AuthToken;
 import edu.byu.cs.tweeter.model.domain.User;
 
-public class FollowUserRequest {
+public class FollowUserRequest extends Request{
   AuthToken authToken;
   User user;
 

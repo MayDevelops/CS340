@@ -7,6 +7,7 @@ import edu.byu.cs.tweeter.model.net.request.RegisterRequest;
 
 public class RegisterPresenter implements UserService.RegisterObserver {
   private RegisterView view;
+  //todo fix this to get the actual image byte array from the user when they log in
   private final String imageURL = "https://faculty.cs.byu.edu/~jwilkerson/cs340/tweeter/images/donald_duck.png";
 
 

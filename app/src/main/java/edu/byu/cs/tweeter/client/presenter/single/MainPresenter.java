@@ -17,6 +17,7 @@ public class MainPresenter implements FollowService.GetFollowObserver,
 
   private MainView view;
   private FeedService feedService = null;
+  private UserService userService = null;
 
 
   public MainPresenter(MainView view) {
@@ -28,6 +29,13 @@ public class MainPresenter implements FollowService.GetFollowObserver,
       feedService = new FeedService();
     }
     return feedService;
+  }
+
+  public UserService getUserService() {
+    if (userService == null) {
+      userService = new UserService();
+    }
+    return userService;
   }
 
 
@@ -61,7 +69,7 @@ public class MainPresenter implements FollowService.GetFollowObserver,
   @Override
   public void getUnfollowSucceeded() {
     view.followButtonUpdates(true);
-    view.setFollowButton(false);
+    view.setFollowButton(true);
   }
 
   @Override

@@ -2,7 +2,7 @@ package edu.byu.cs.tweeter.model.net.request;
 
 import edu.byu.cs.tweeter.model.domain.Status;
 
-public class PostStatusRequest {
+public class PostStatusRequest extends Request{
 
   public PostStatusRequest() {
   }

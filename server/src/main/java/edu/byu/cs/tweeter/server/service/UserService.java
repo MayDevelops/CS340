@@ -8,23 +8,20 @@ import edu.byu.cs.tweeter.model.net.request.RegisterRequest;
 import edu.byu.cs.tweeter.model.net.response.LoginResponse;
 import edu.byu.cs.tweeter.model.net.response.LogoutResponse;
 import edu.byu.cs.tweeter.model.net.response.RegisterResponse;
+import edu.byu.cs.tweeter.server.factories.AbstractFactory;
+import edu.byu.cs.tweeter.server.factories.UserDAOFactory;
 import edu.byu.cs.tweeter.server.util.FakeData;
 
 public class UserService {
 
   public LoginResponse login(LoginRequest request) {
-
-    // TODO: Generates dummy data. Replace with a real implementation.
-    User user = getDummyUser();
-    AuthToken authToken = getDummyAuthToken();
-    return new LoginResponse(user, authToken);
+    AbstractFactory abstractFactory = new UserDAOFactory();
+    return (LoginResponse) abstractFactory.query(request);
   }
 
   public RegisterResponse register(RegisterRequest request) {
-    User user = new User(request.getFirstName(), request.getLastName(), request.getUsername(), request.getImageURL());
-    AuthToken authToken = getDummyAuthToken();
-
-    return new RegisterResponse(user, authToken);
+    AbstractFactory abstractFactory = new UserDAOFactory();
+    return (RegisterResponse) abstractFactory.put(request);
   }
 
   public LogoutResponse logout(LogoutRequest request) {

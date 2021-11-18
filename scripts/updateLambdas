@@ -5,7 +5,8 @@ arr=(
   "Logout"
   "PostStatus"
   "GetFeed"
-  "GetFollowPages"
+  "GetFollowingPage"
+  "GetFollowersPage"
   "FollowUser"
   "GetFollowCount"
 )
