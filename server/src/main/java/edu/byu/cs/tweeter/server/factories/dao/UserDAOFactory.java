@@ -8,7 +8,7 @@ import edu.byu.cs.tweeter.model.net.request.FollowerCountRequest;
 import edu.byu.cs.tweeter.model.net.request.FollowingCountRequest;
 import edu.byu.cs.tweeter.model.net.request.LoginRequest;
 import edu.byu.cs.tweeter.model.net.request.RegisterRequest;
-import edu.byu.cs.tweeter.model.net.request.Request;
+import edu.byu.cs.tweeter.model.net.request.parents.Request;
 import edu.byu.cs.tweeter.model.net.request.UserRequest;
 import edu.byu.cs.tweeter.server.dao.UserDAO;
 import edu.byu.cs.tweeter.server.factories.abstracts.UserAbstractFactory;

@@ -3,6 +3,7 @@ package edu.byu.cs.tweeter.model.net.request;
 import edu.byu.cs.tweeter.model.domain.AuthToken;
 import edu.byu.cs.tweeter.model.domain.Status;
 import edu.byu.cs.tweeter.model.domain.User;
+import edu.byu.cs.tweeter.model.net.request.parents.Request;
 
 public class FeedRequest extends Request {
   private AuthToken authToken;

@@ -16,13 +16,12 @@ import edu.byu.cs.tweeter.server.factories.abstracts.FollowsAbstractFactory;
 public class FollowsDAOFactory extends FollowsAbstractFactory {
 
   @Override
-  public ItemCollection<QueryOutcome> query(FollowingPageRequest request) {
+  public ItemCollection<QueryOutcome> getFollowing(FollowingPageRequest request) {
     return new FollowsDAO().getFollowing(request);
   }
 
-
   @Override
-  public ItemCollection<QueryOutcome> query(FollowerPageRequest request) {
+  public ItemCollection<QueryOutcome> getFollowers(FollowerPageRequest request) {
     return new FollowsDAO().getFollowers(request);
   }
 

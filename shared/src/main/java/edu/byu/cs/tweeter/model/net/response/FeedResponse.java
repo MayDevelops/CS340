@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.Objects;
 
 import edu.byu.cs.tweeter.model.domain.Status;
+import edu.byu.cs.tweeter.model.net.response.parents.PagedResponse;
 
 public class FeedResponse extends PagedResponse {
 

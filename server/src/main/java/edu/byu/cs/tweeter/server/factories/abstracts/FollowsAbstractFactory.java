@@ -11,9 +11,9 @@ import edu.byu.cs.tweeter.model.net.request.FollowingPageRequest;
 import edu.byu.cs.tweeter.model.net.request.UnfollowUserRequest;
 
 public abstract class FollowsAbstractFactory {
-  public abstract ItemCollection<QueryOutcome> query(FollowerPageRequest request);
+  public abstract ItemCollection<QueryOutcome> getFollowers(FollowerPageRequest request);
 
-  public abstract ItemCollection<QueryOutcome> query(FollowingPageRequest request);
+  public abstract ItemCollection<QueryOutcome> getFollowing(FollowingPageRequest request);
 
   public abstract PutItemOutcome follow(FollowUserRequest request);
 

@@ -6,7 +6,7 @@ import com.amazonaws.services.dynamodbv2.document.QueryOutcome;
 
 import edu.byu.cs.tweeter.model.net.request.FollowerCountRequest;
 import edu.byu.cs.tweeter.model.net.request.FollowingCountRequest;
-import edu.byu.cs.tweeter.model.net.request.Request;
+import edu.byu.cs.tweeter.model.net.request.parents.Request;
 
 public abstract class UserAbstractFactory {
 

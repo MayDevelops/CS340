@@ -8,14 +8,17 @@ import java.io.IOException;
 
 import edu.byu.cs.tweeter.client.model.net.ServerFacade;
 import edu.byu.cs.tweeter.client.state.State;
+import edu.byu.cs.tweeter.model.domain.AuthToken;
+import edu.byu.cs.tweeter.model.domain.User;
 import edu.byu.cs.tweeter.model.net.TweeterRemoteException;
 import edu.byu.cs.tweeter.model.net.request.LoginRequest;
 import edu.byu.cs.tweeter.model.net.response.LoginResponse;
+import edu.byu.cs.tweeter.util.Pair;
 
 /**
  * Background task that logs in a user (i.e., starts a session).
  */
-public class LoginTask extends BackgroundTask {
+public class LoginTask extends AuthenticationTask {
 
   private final String username;
   private final String password;
@@ -25,13 +28,33 @@ public class LoginTask extends BackgroundTask {
   public static final String AUTH_TOKEN_KEY = "auth-token";
 
   public LoginTask(LoginRequest loginRequest, Handler messageHandler) {
-    super(messageHandler);
+    super(messageHandler, loginRequest.getUsername(), loginRequest.getPassword());
     this.username = loginRequest.getUsername();
     this.password = loginRequest.getPassword();
   }
 
+//  @Override
+//  protected void runTask() throws IOException {
+//    try {
+//      LoginRequest request = new LoginRequest(username, password);
+//      LoginResponse response = ServerFacade.getServerFacade().login(request, URL_PATH);
+//
+//      if (response.isSuccess()) {
+//        State.user = response.getUser();
+//        State.authToken = response.getAuthToken();
+//        BackgroundTaskUtils.loadImage(State.user);
+//      } else {
+//        sendFailedMessage(response.getMessage());
+//      }
+//
+//    } catch (IOException | TweeterRemoteException e) {
+//      Log.e("LoginTask", e.getMessage(), e);
+//      sendExceptionMessage(e);
+//    }
+//  }
+
   @Override
-  protected void runTask() throws IOException {
+  protected Pair<User, AuthToken> runAuthenticationTask() {
     try {
       LoginRequest request = new LoginRequest(username, password);
       LoginResponse response = ServerFacade.getServerFacade().login(request, URL_PATH);
@@ -40,6 +63,8 @@ public class LoginTask extends BackgroundTask {
         State.user = response.getUser();
         State.authToken = response.getAuthToken();
         BackgroundTaskUtils.loadImage(State.user);
+
+        return new Pair<>(response.getUser(), response.getAuthToken());
       } else {
         sendFailedMessage(response.getMessage());
       }
@@ -48,6 +73,7 @@ public class LoginTask extends BackgroundTask {
       Log.e("LoginTask", e.getMessage(), e);
       sendExceptionMessage(e);
     }
+    return null;
   }
 
   @Override

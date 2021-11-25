@@ -10,7 +10,7 @@
 //import edu.byu.cs.tweeter.model.domain.AuthToken;
 //import edu.byu.cs.tweeter.model.domain.User;
 //import edu.byu.cs.tweeter.model.net.request.FollowPageRequest;
-//import edu.byu.cs.tweeter.model.net.response.FollowPageResponse;
+//import edu.byu.cs.tweeter.model.net.response.parents.FollowPageResponse;
 //import edu.byu.cs.tweeter.server.dao.FollowDAO;
 //
 //public class FollowsServiceTest {

@@ -13,14 +13,14 @@ import edu.byu.cs.tweeter.model.net.response.LogoutResponse;
 /**
  * Background task that logs out a user (i.e., ends a session).
  */
-public class LogoutTask extends BackgroundTask {
+public class LogoutTask extends AuthorizedTask {
   private final AuthToken authToken;
 
   private static final String URL_PATH = "/logout";
 
 
   public LogoutTask(LogoutRequest logoutRequest, Handler messageHandler) {
-    super(messageHandler);
+    super(logoutRequest.getAuthToken() ,messageHandler);
     this.authToken = logoutRequest.getAuthToken();
   }
 

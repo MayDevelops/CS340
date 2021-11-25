@@ -11,7 +11,7 @@
 //
 //import edu.byu.cs.tweeter.model.domain.AuthToken;
 //import edu.byu.cs.tweeter.model.domain.User;
-//import edu.byu.cs.tweeter.model.net.response.FollowPageResponse;
+//import edu.byu.cs.tweeter.model.net.response.parents.FollowPageResponse;
 //
 //class FollowingDAOTest {
 //    private final AuthToken testUserAuthToken = new AuthToken();

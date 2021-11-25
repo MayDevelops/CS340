@@ -16,7 +16,7 @@
 //import edu.byu.cs.tweeter.model.net.request.FollowPageRequest;
 //import edu.byu.cs.tweeter.model.net.request.RegisterRequest;
 //import edu.byu.cs.tweeter.model.net.response.FollowCountResponse;
-//import edu.byu.cs.tweeter.model.net.response.FollowPageResponse;
+//import edu.byu.cs.tweeter.model.net.response.parents.FollowPageResponse;
 //import edu.byu.cs.tweeter.model.net.response.RegisterResponse;
 //
 //public class ServerFacadeTest {

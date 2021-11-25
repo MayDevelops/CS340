@@ -22,17 +22,16 @@ import edu.byu.cs.tweeter.server.factories.abstracts.StoryAbstractFactory;
 import edu.byu.cs.tweeter.server.factories.abstracts.UserAbstractFactory;
 import edu.byu.cs.tweeter.server.util.Pair;
 
-public class FeedService extends FactoryConfig {
-  FollowsAbstractFactory followDAO = FactoryConfig.followDAO;
-  UserAbstractFactory userDAO = FactoryConfig.userDAO;
-  StoryAbstractFactory storyDAO = FactoryConfig.storyDAO;
+public class FeedService extends ServiceHelper {
+  FollowsAbstractFactory followDAO = ServiceHelper.followDAO;
+  UserAbstractFactory userDAO = ServiceHelper.userDAO;
+  StoryAbstractFactory storyDAO = ServiceHelper.storyDAO;
 
   public FeedService() {
     super();
   }
 
   public PostStatusResponse postStatus(PostStatusRequest request) {
-
     try {
       storyDAO.postStatus(request);
     } catch (Exception e) {
@@ -47,7 +46,7 @@ public class FeedService extends FactoryConfig {
     assert request.getLimit() > 0;
     assert request.getUser() != null;
     List<Status> feedStatuses = new ArrayList<>();
-    ItemCollection<QueryOutcome> allFeed = followDAO.query(new FollowingPageRequest(request.getUser().getAlias()));
+    ItemCollection<QueryOutcome> allFeed = followDAO.getFollowing(new FollowingPageRequest(request.getUser().getAlias()));
     Iterator<Item> iterator = allFeed.iterator();
 
     while (iterator.hasNext()) {
@@ -85,7 +84,7 @@ public class FeedService extends FactoryConfig {
 
     if (request.getLimit() > 0) {
       if (allStatuses != null) {
-        int feedIndex = getFeedStartingIndex(request.getLastStatus(), allStatuses);
+        int feedIndex = getStatusStartingIndex(request.getLastStatus(), allStatuses);
 
         for (int limitCounter = 0; feedIndex < allStatuses.size() && limitCounter < request.getLimit(); feedIndex++, limitCounter++) {
           responseFeed.add(allStatuses.get(feedIndex));
@@ -96,47 +95,47 @@ public class FeedService extends FactoryConfig {
     return new FeedResponse(responseFeed, hasMorePages);
   }
 
-  private int getFeedStartingIndex(Status lastStatus, List<Status> allFeed) {
-
-    int feedIndex = 0;
-
-    if (lastStatus != null) {
-      for (int i = 0; i < allFeed.size(); i++) {
-        if (lastStatus.equals(allFeed.get(i).getUser())) {
-          feedIndex = i + 1;
-          break;
-        }
-      }
-    }
-
-    return feedIndex;
-  }
-
-  public Pair<List<Status>, Boolean> getPageOfStatus(Status lastStatus, int limit, List<Status> feedStatuses) {
-
-    Pair<List<Status>, Boolean> result = new Pair<>(new ArrayList<>(), false);
-
-    int index = 0;
-
-    if (lastStatus != null) {
-      for (int i = 0; i < feedStatuses.size(); ++i) {
-        Status curStatus = feedStatuses.get(i);
-        if (curStatus.getUser().getAlias().equals(lastStatus.getUser().getAlias()) &&
-                curStatus.getDate().equals(lastStatus.getDate())) {
-          index = i + 1;
-          break;
-        }
-      }
-    }
-
-    for (int count = 0; index < feedStatuses.size() && count < limit; ++count, ++index) {
-      Status curStatus = feedStatuses.get(index);
-      result.getFirst().add(curStatus);
-    }
-
-    result.setSecond(index < feedStatuses.size());
-
-    return result;
-  }
+//  private int getFeedStartingIndex(Status lastStatus, List<Status> allFeed) {
+//
+//    int feedIndex = 0;
+//
+//    if (lastStatus != null) {
+//      for (int i = 0; i < allFeed.size(); i++) {
+//        if (lastStatus.equals(allFeed.get(i).getUser())) {
+//          feedIndex = i + 1;
+//          break;
+//        }
+//      }
+//    }
+//
+//    return feedIndex;
+//  }
+//
+//  public Pair<List<Status>, Boolean> getPageOfStatus(Status lastStatus, int limit, List<Status> feedStatuses) {
+//
+//    Pair<List<Status>, Boolean> result = new Pair<>(new ArrayList<>(), false);
+//
+//    int index = 0;
+//
+//    if (lastStatus != null) {
+//      for (int i = 0; i < feedStatuses.size(); ++i) {
+//        Status curStatus = feedStatuses.get(i);
+//        if (curStatus.getUser().getAlias().equals(lastStatus.getUser().getAlias()) &&
+//                curStatus.getDate().equals(lastStatus.getDate())) {
+//          index = i + 1;
+//          break;
+//        }
+//      }
+//    }
+//
+//    for (int count = 0; index < feedStatuses.size() && count < limit; ++count, ++index) {
+//      Status curStatus = feedStatuses.get(index);
+//      result.getFirst().add(curStatus);
+//    }
+//
+//    result.setSecond(index < feedStatuses.size());
+//
+//    return result;
+//  }
 
 }

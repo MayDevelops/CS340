@@ -1,16 +1,12 @@
 package edu.byu.cs.tweeter.server.dao;
 
-import com.amazonaws.services.dynamodbv2.AmazonDynamoDB;
-import com.amazonaws.services.dynamodbv2.AmazonDynamoDBClientBuilder;
 import com.amazonaws.services.dynamodbv2.document.DeleteItemOutcome;
-import com.amazonaws.services.dynamodbv2.document.DynamoDB;
 import com.amazonaws.services.dynamodbv2.document.Index;
 import com.amazonaws.services.dynamodbv2.document.Item;
 import com.amazonaws.services.dynamodbv2.document.ItemCollection;
 import com.amazonaws.services.dynamodbv2.document.PrimaryKey;
 import com.amazonaws.services.dynamodbv2.document.PutItemOutcome;
 import com.amazonaws.services.dynamodbv2.document.QueryOutcome;
-import com.amazonaws.services.dynamodbv2.document.Table;
 import com.amazonaws.services.dynamodbv2.document.spec.DeleteItemSpec;
 import com.amazonaws.services.dynamodbv2.document.spec.QuerySpec;
 import com.amazonaws.services.dynamodbv2.document.spec.UpdateItemSpec;
@@ -22,18 +18,13 @@ import edu.byu.cs.tweeter.model.net.request.FollowUserRequest;
 import edu.byu.cs.tweeter.model.net.request.FollowerPageRequest;
 import edu.byu.cs.tweeter.model.net.request.FollowingPageRequest;
 import edu.byu.cs.tweeter.model.net.request.UnfollowUserRequest;
-import edu.byu.cs.tweeter.server.factories.abstracts.UserAbstractFactory;
+import edu.byu.cs.tweeter.server.dao.config.DAOConfig;
 import edu.byu.cs.tweeter.server.factories.interfaces.FollowsDAOInterface;
-import edu.byu.cs.tweeter.server.service.FactoryConfig;
 
-public class FollowsDAO implements FollowsDAOInterface {
-  AmazonDynamoDB client = AmazonDynamoDBClientBuilder.standard()
-          .withRegion("us-west-2").build();
-  DynamoDB dynamoDB = new DynamoDB(client);
-
-  Table followsTable = dynamoDB.getTable("follows");
+public class FollowsDAO extends DAOConfig implements FollowsDAOInterface {
 
   public FollowsDAO() {
+    super();
   }
 
   @Override
@@ -74,16 +65,7 @@ public class FollowsDAO implements FollowsDAOInterface {
             .withValueMap(new ValueMap().withInt(":p", 1))
             .withReturnValues(ReturnValue.UPDATED_NEW);
 
-    AmazonDynamoDB client = AmazonDynamoDBClientBuilder.standard()
-            .withRegion("us-west-2").build();
-    DynamoDB dynamoDB = new DynamoDB(client);
-
-    Table usersTable = dynamoDB.getTable("users");
-
-
-
     usersTable.updateItem(updateItemSpec);
-
 
     return putItemOutcome;
   }
@@ -103,17 +85,8 @@ public class FollowsDAO implements FollowsDAOInterface {
             .withValueMap(new ValueMap().withInt(":p", 1))
             .withReturnValues(ReturnValue.UPDATED_NEW);
 
-    AmazonDynamoDB client = AmazonDynamoDBClientBuilder.standard()
-            .withRegion("us-west-2").build();
-    DynamoDB dynamoDB = new DynamoDB(client);
-
-    Table usersTable = dynamoDB.getTable("users");
-
-
-
     usersTable.updateItem(updateItemSpec);
 
     return outcome.getDeleteItemResult();
   }
-
 }

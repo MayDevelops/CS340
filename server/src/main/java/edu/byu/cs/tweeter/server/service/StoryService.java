@@ -17,9 +17,9 @@ import edu.byu.cs.tweeter.server.factories.abstracts.StoryAbstractFactory;
 import edu.byu.cs.tweeter.server.factories.abstracts.UserAbstractFactory;
 import edu.byu.cs.tweeter.server.util.Pair;
 
-public class StoryService extends FactoryConfig {
-  StoryAbstractFactory storyDAO = FactoryConfig.storyDAO;
-  UserAbstractFactory userDAO = FactoryConfig.userDAO;
+public class StoryService extends ServiceHelper {
+  StoryAbstractFactory storyDAO = ServiceHelper.storyDAO;
+  UserAbstractFactory userDAO = ServiceHelper.userDAO;
 
   public StoryService() {
     super();
@@ -34,11 +34,13 @@ public class StoryService extends FactoryConfig {
     Iterator<Item> storyIterator = userStories.iterator();
 
     Item userItem = userDAO.getUser(new UserRequest(request.getUser().getAlias()));
-    String userHandle = userItem.getString("user_handle");
-    String firstName = userItem.getString("first_name");
-    String lastName = userItem.getString("last_name");
-    String imageURL = userItem.getString("image_url");
-    User user = new User(firstName, lastName, userHandle, imageURL);
+//    String userHandle = userItem.getString("user_handle");
+//    String firstName = userItem.getString("first_name");
+//    String lastName = userItem.getString("last_name");
+//    String imageURL = userItem.getString("image_url");
+//    User user = new User(firstName, lastName, userHandle, imageURL);
+
+    User user = buildUser(userItem);
 
 
     while (storyIterator.hasNext()) {
@@ -62,7 +64,7 @@ public class StoryService extends FactoryConfig {
 
     if (request.getLimit() > 0) {
       if (allStatuses != null) {
-        int feedIndex = getStoryStartingIndex(request.getLastStatus(), allStatuses);
+        int feedIndex = getStatusStartingIndex(request.getLastStatus(), allStatuses);
 
         for (int limitCounter = 0; feedIndex < allStatuses.size() && limitCounter < request.getLimit(); feedIndex++, limitCounter++) {
           responseFeed.add(allStatuses.get(feedIndex));
@@ -73,47 +75,55 @@ public class StoryService extends FactoryConfig {
     return new StoryResponse(responseFeed, hasMorePages);
   }
 
-  private int getStoryStartingIndex(Status lastStatus, List<Status> allFeed) {
+//  private int getListStartingIndex(Status lastStatus, List<Status> allFeed) {
+//
+//    int feedIndex = 0;
+//
+//    if (lastStatus != null) {
+//      for (int i = 0; i < allFeed.size(); i++) {
+//        if (lastStatus.equals(allFeed.get(i).getUser())) {
+//          feedIndex = i + 1;
+//          break;
+//        }
+//      }
+//    }
+//
+//    return feedIndex;
+//  }
 
-    int feedIndex = 0;
-
-    if (lastStatus != null) {
-      for (int i = 0; i < allFeed.size(); i++) {
-        if (lastStatus.equals(allFeed.get(i).getUser())) {
-          feedIndex = i + 1;
-          break;
-        }
-      }
-    }
-
-    return feedIndex;
-  }
-
-  public Pair<List<Status>, Boolean> getPageOfStatus(Status lastStatus, int limit, List<Status> storyStatuses) {
-
-    Pair<List<Status>, Boolean> result = new Pair<>(new ArrayList<>(), false);
-
-    int index = 0;
-
-    if (lastStatus != null) {
-      for (int i = 0; i < storyStatuses.size(); ++i) {
-        Status curStatus = storyStatuses.get(i);
-        if (curStatus.getUser().getAlias().equals(lastStatus.getUser().getAlias()) &&
-                curStatus.getDate().equals(lastStatus.getDate())) {
-          index = i + 1;
-          break;
-        }
-      }
-    }
-
-    for (int count = 0; index < storyStatuses.size() && count < limit; ++count, ++index) {
-      Status curStatus = storyStatuses.get(index);
-      result.getFirst().add(curStatus);
-    }
-
-    result.setSecond(index < storyStatuses.size());
-
-    return result;
-  }
+//  public Pair<List<Status>, Boolean> getPageOfStatus(Status lastStatus, int limit, List<Status> storyStatuses) {
+//
+//    Pair<List<Status>, Boolean> result = new Pair<>(new ArrayList<>(), false);
+//
+//    int index = 0;
+//
+//    if (lastStatus != null) {
+//      for (int i = 0; i < storyStatuses.size(); ++i) {
+//        Status curStatus = storyStatuses.get(i);
+//        if (curStatus.getUser().getAlias().equals(lastStatus.getUser().getAlias()) &&
+//                curStatus.getDate().equals(lastStatus.getDate())) {
+//          index = i + 1;
+//          break;
+//        }
+//      }
+//    }
+//
+//    for (int count = 0; index < storyStatuses.size() && count < limit; ++count, ++index) {
+//      Status curStatus = storyStatuses.get(index);
+//      result.getFirst().add(curStatus);
+//    }
+//
+//    result.setSecond(index < storyStatuses.size());
+//
+//    return result;
+//  }
+//
+//  User buildUser(Item item) {
+//    String userHandle = item.getString("user_handle");
+//    String firstName = item.getString("first_name");
+//    String lastName = item.getString("last_name");
+//    String imageURL = item.getString("image_url");
+//    return new User(firstName, lastName, userHandle, imageURL);
+//  }
 
 }

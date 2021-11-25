@@ -1,5 +1,7 @@
 package edu.byu.cs.tweeter.model.net.request;
 
+import edu.byu.cs.tweeter.model.net.request.parents.Request;
+
 public class UserRequest extends Request {
 
   private String firstName;

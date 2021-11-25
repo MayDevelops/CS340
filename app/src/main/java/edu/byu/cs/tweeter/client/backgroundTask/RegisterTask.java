@@ -4,17 +4,18 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.util.Log;
 
-import java.io.IOException;
-
 import edu.byu.cs.tweeter.client.model.net.ServerFacade;
 import edu.byu.cs.tweeter.client.state.State;
+import edu.byu.cs.tweeter.model.domain.AuthToken;
+import edu.byu.cs.tweeter.model.domain.User;
 import edu.byu.cs.tweeter.model.net.request.RegisterRequest;
 import edu.byu.cs.tweeter.model.net.response.RegisterResponse;
+import edu.byu.cs.tweeter.util.Pair;
 
 /**
  * Background task that creates a new user account and logs in the new user (i.e., starts a session).
  */
-public class RegisterTask extends BackgroundTask {
+public class RegisterTask extends AuthenticationTask {
 
   private final String firstName;
   private final String lastName;
@@ -27,7 +28,7 @@ public class RegisterTask extends BackgroundTask {
   public static final String AUTH_TOKEN_KEY = "auth-token";
 
   public RegisterTask(RegisterRequest registerRequest, Handler messageHandler) {
-    super(messageHandler);
+    super(messageHandler, registerRequest.getUsername(), registerRequest.getPassword());
     this.firstName = registerRequest.getFirstName();
     this.lastName = registerRequest.getLastName();
     this.username = registerRequest.getUsername();
@@ -35,8 +36,27 @@ public class RegisterTask extends BackgroundTask {
     this.imageBytes = registerRequest.getImageBytes();
   }
 
+//  @Override
+//  protected void runTask() throws IOException {
+//    try {
+//      RegisterRequest request = new RegisterRequest(firstName, lastName, username, password, imageBytes);
+//      RegisterResponse response = ServerFacade.getServerFacade().register(request, URL_PATH);
+//
+//      if (response.isSuccess()) {
+//        State.user = response.getUser();
+//        State.authToken = response.getAuthToken();
+//        BackgroundTaskUtils.loadImage(State.user);
+//      } else {
+//        sendFailedMessage(response.getMessage());
+//      }
+//    } catch (Exception e) {
+//      Log.e("RegisterTask", e.getMessage(), e);
+//      sendExceptionMessage(e);
+//    }
+//  }
+
   @Override
-  protected void runTask() throws IOException {
+  protected Pair<User, AuthToken> runAuthenticationTask() {
     try {
       RegisterRequest request = new RegisterRequest(firstName, lastName, username, password, imageBytes);
       RegisterResponse response = ServerFacade.getServerFacade().register(request, URL_PATH);
@@ -45,6 +65,8 @@ public class RegisterTask extends BackgroundTask {
         State.user = response.getUser();
         State.authToken = response.getAuthToken();
         BackgroundTaskUtils.loadImage(State.user);
+
+        return new Pair<>(response.getUser(), response.getAuthToken());
       } else {
         sendFailedMessage(response.getMessage());
       }
@@ -52,6 +74,7 @@ public class RegisterTask extends BackgroundTask {
       Log.e("RegisterTask", e.getMessage(), e);
       sendExceptionMessage(e);
     }
+    return null;
   }
 
   @Override
