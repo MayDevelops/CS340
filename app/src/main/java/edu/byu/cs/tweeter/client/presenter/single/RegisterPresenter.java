@@ -7,9 +7,6 @@ import edu.byu.cs.tweeter.model.net.request.RegisterRequest;
 
 public class RegisterPresenter implements UserService.RegisterObserver {
   private RegisterView view;
-  //todo fix this to get the actual image byte array from the user when they log in
-  private final String imageURL = "https://faculty.cs.byu.edu/~jwilkerson/cs340/tweeter/images/donald_duck.png";
-
 
   public RegisterPresenter(RegisterView view) {
     this.view = view;
@@ -18,7 +15,7 @@ public class RegisterPresenter implements UserService.RegisterObserver {
   public void register(String firstName, String lastName, String alias, String password, String imageBytes) {
 
     UserService service = new UserService(this);
-    RegisterRequest registerRequest = new RegisterRequest(firstName, lastName, alias, password, imageBytes, imageURL);
+    RegisterRequest registerRequest = new RegisterRequest(firstName, lastName, alias, password, imageBytes);
 
     service.registerTask(registerRequest);
   }

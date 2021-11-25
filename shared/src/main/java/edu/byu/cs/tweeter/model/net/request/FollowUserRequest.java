@@ -3,18 +3,23 @@ package edu.byu.cs.tweeter.model.net.request;
 import edu.byu.cs.tweeter.model.domain.AuthToken;
 import edu.byu.cs.tweeter.model.domain.User;
 
-public class FollowUserRequest extends Request{
+public class FollowUserRequest extends Request {
   AuthToken authToken;
-  User user;
+  User currentUser;
+  User selectedUser;
 
   private FollowUserRequest() {
   }
 
-  public FollowUserRequest(AuthToken authToken, User user) {
+  public FollowUserRequest(AuthToken authToken, User selectedUser) {
     this.authToken = authToken;
-    this.user = user;
-    //todo what is going on with these image bytes?
-    this.user.setImageBytes(null);
+    this.selectedUser = selectedUser;
+  }
+
+  public FollowUserRequest(AuthToken authToken, User selectedUser, User currentUser) {
+    this.authToken = authToken;
+    this.currentUser = currentUser;
+    this.selectedUser = selectedUser;
   }
 
   public AuthToken getAuthToken() {
@@ -25,13 +30,19 @@ public class FollowUserRequest extends Request{
     this.authToken = authToken;
   }
 
-  public User getUser() {
-    return user;
+  public User getCurrentUser() {
+    return currentUser;
   }
 
-  public void setUser(User user) {
-    this.user = user;
+  public void setCurrentUser(User currentUser) {
+    this.currentUser = currentUser;
   }
 
+  public User getSelectedUser() {
+    return selectedUser;
+  }
 
+  public void setSelectedUser(User selectedUser) {
+    this.selectedUser = selectedUser;
+  }
 }

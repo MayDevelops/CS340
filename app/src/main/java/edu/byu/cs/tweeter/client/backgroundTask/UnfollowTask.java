@@ -5,47 +5,30 @@ import android.os.Handler;
 import android.util.Log;
 
 import edu.byu.cs.tweeter.client.model.net.ServerFacade;
-import edu.byu.cs.tweeter.model.domain.AuthToken;
-import edu.byu.cs.tweeter.model.domain.User;
-import edu.byu.cs.tweeter.model.net.request.FollowUserRequest;
-import edu.byu.cs.tweeter.model.net.response.FollowUserResponse;
+import edu.byu.cs.tweeter.model.net.request.UnfollowUserRequest;
+import edu.byu.cs.tweeter.model.net.response.UnfollowUserResponse;
 
-/**
- * Background task that establishes a following relationship between two users.
- */
 public class UnfollowTask extends AuthorizedTask {
-  /**
-   * The user that is being followed.
-   */
-  private final User user;
-  private final AuthToken authToken;
-  private static final String URL_PATH = "/followuser";
+  UnfollowUserRequest unfollowUserRequest;
+  private static final String URL_PATH = "/unfollowuser";
 
-
-  public UnfollowTask(FollowUserRequest followUserRequest, Handler messageHandler) {
-    super(followUserRequest.getAuthToken(), messageHandler);
-    this.authToken = followUserRequest.getAuthToken();
-    this.user = followUserRequest.getUser();
+  public UnfollowTask(UnfollowUserRequest unfollowUserRequest, Handler messageHandler) {
+    super(unfollowUserRequest.getAuthToken(), messageHandler);
+    this.unfollowUserRequest = unfollowUserRequest;
   }
 
   @Override
   protected void runTask() {
-    // We could do this from the presenter, without a task and handler, but we will
-    // eventually access the database from here when we aren't using dummy data.
-
     try {
-      FollowUserRequest request = new FollowUserRequest(authToken, user);
-      FollowUserResponse response = ServerFacade.getServerFacade().followUser(request, URL_PATH);
+      UnfollowUserResponse response = ServerFacade.getServerFacade().unfollowUser(unfollowUserRequest, URL_PATH);
 
       if (response.isSuccess()) {
-        //do the logic here
-        BackgroundTaskUtils.loadImage(user);
-
+        BackgroundTaskUtils.loadImage(unfollowUserRequest.getSelectedUser());
       } else {
-        sendFailedMessage(response.getMessage());
+        sendFailedMessage("Failed to unfollow user");
       }
     } catch (Exception e) {
-      Log.e("FollowTask", e.getMessage(), e);
+      Log.e("UnfollowTask", e.getMessage(), e);
       sendExceptionMessage(e);
     }
   }

@@ -166,4 +166,9 @@ public class RegisterFragment extends Fragment implements RegisterPresenter.Regi
 
     }
   }
+  @Override
+  public void onSaveInstanceState(Bundle oldInstanceState) {
+    super.onSaveInstanceState(oldInstanceState);
+    oldInstanceState.clear();
+  }
 }

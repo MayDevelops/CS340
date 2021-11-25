@@ -2,11 +2,15 @@ package edu.byu.cs.tweeter.client.backgroundTask;
 
 import android.os.Bundle;
 import android.os.Handler;
+import android.util.Log;
 
 import java.io.IOException;
 
+import edu.byu.cs.tweeter.client.model.net.ServerFacade;
 import edu.byu.cs.tweeter.model.domain.AuthToken;
 import edu.byu.cs.tweeter.model.domain.User;
+import edu.byu.cs.tweeter.model.net.request.UserRequest;
+import edu.byu.cs.tweeter.model.net.response.UserResponse;
 
 /**
  * Background task that returns the profile for a specified user.
@@ -14,6 +18,8 @@ import edu.byu.cs.tweeter.model.domain.User;
 public class GetUserTask extends AuthorizedTask {
 
   public static final String USER_KEY = "user";
+  private static final String URL_PATH = "/user";
+
 
   /**
    * Alias (or handle) for user whose profile is being retrieved.
@@ -29,16 +35,27 @@ public class GetUserTask extends AuthorizedTask {
 
   @Override
   protected void runTask() throws IOException {
-    user = getUser();
-    BackgroundTaskUtils.loadImage(user);
+
+    try {
+      UserRequest request = new UserRequest(alias);
+      UserResponse response = ServerFacade.getServerFacade().getUser(request, URL_PATH);
+
+      if (response.isSuccess()) {
+        user = response.getUser();
+        BackgroundTaskUtils.loadImage(user);
+      } else {
+        sendFailedMessage(response.getMessage());
+      }
+    } catch (Exception e) {
+      Log.e("GetStoryTask", e.getMessage(), e);
+      sendExceptionMessage(e);
+    }
   }
+
 
   @Override
   protected void loadBundle(Bundle msgBundle) {
     msgBundle.putSerializable(USER_KEY, user);
   }
 
-  private User getUser() {
-    return getFakeData().findUserByAlias(alias);
-  }
 }

@@ -13,6 +13,6 @@ public class FollowUserHandler implements RequestHandler<FollowUserRequest, Foll
   @Override
   public FollowUserResponse handleRequest(FollowUserRequest request, Context context) {
     FollowsService service = new FollowsService();
-    return service.getFollowUser(request);
+    return service.followUser(request);
   }
 }

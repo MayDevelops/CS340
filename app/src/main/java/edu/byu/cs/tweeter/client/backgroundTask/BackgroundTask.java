@@ -9,8 +9,6 @@ import org.jetbrains.annotations.NotNull;
 
 import java.io.IOException;
 
-import edu.byu.cs.tweeter.util.FakeData;
-
 public abstract class BackgroundTask implements Runnable {
   public static final String SUCCESS_KEY = "success";
   public static final String MESSAGE_KEY = "message";
@@ -37,10 +35,6 @@ public abstract class BackgroundTask implements Runnable {
   }
 
   protected abstract void runTask() throws IOException;
-
-  protected FakeData getFakeData() {
-    return new FakeData();
-  }
 
   private void sendSuccessMessage() {
     Bundle msgBundle = createMessageBundle(true);

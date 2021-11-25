@@ -4,27 +4,27 @@ import android.os.Handler;
 import android.util.Log;
 
 import edu.byu.cs.tweeter.client.model.net.ServerFacade;
-import edu.byu.cs.tweeter.model.net.request.FollowCountRequest;
-import edu.byu.cs.tweeter.model.net.response.FollowCountResponse;
+import edu.byu.cs.tweeter.model.net.request.FollowingCountRequest;
+import edu.byu.cs.tweeter.model.net.response.FollowingCountResponse;
 
 /**
  * Background task that queries how many other users a specified user is following.
  */
 public class GetFollowingCountTask extends GetCountTask {
 
-  FollowCountRequest followCountRequest;
-  private final String URL_PATH = "/count";
+  FollowingCountRequest followingCountRequest;
+  private final String URL_PATH = "/getfollowingcount";
 
-  public GetFollowingCountTask(FollowCountRequest followCountRequest, Handler messageHandler) {
-    super(followCountRequest.getAuthToken(), followCountRequest.getUser(), messageHandler);
-    this.followCountRequest = followCountRequest;
+  public GetFollowingCountTask(FollowingCountRequest followingCountRequest, Handler messageHandler) {
+    super(followingCountRequest.getAuthToken(), followingCountRequest.getUser(), messageHandler);
+    this.followingCountRequest = followingCountRequest;
   }
 
   @Override
   protected int runCountTask() {
     try {
-      FollowCountRequest request = this.followCountRequest;
-      FollowCountResponse response = ServerFacade.getServerFacade().getFollowCount(request, URL_PATH);
+      FollowingCountRequest request = this.followingCountRequest;
+      FollowingCountResponse response = ServerFacade.getServerFacade().getFollowingCount(request, URL_PATH);
 
       if (response.isSuccess()) {
         return response.getFollowingCount();

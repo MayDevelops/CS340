@@ -71,4 +71,10 @@ public class LoginFragment extends Fragment implements LoginPresenter.LoginView 
     intent.putExtra(MainActivity.CURRENT_USER_KEY, user);
     startActivity(intent);
   }
+
+  @Override
+  public void onSaveInstanceState(Bundle oldInstanceState) {
+    super.onSaveInstanceState(oldInstanceState);
+    oldInstanceState.clear();
+  }
 }

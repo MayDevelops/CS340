@@ -21,7 +21,6 @@ public class RegisterTask extends BackgroundTask {
   private final String username;
   private final String password;
   private final String imageBytes;
-  private final String imageURL;
 
   private static final String URL_PATH = "/register";
   public static final String USER_KEY = "user";
@@ -34,13 +33,12 @@ public class RegisterTask extends BackgroundTask {
     this.username = registerRequest.getUsername();
     this.password = registerRequest.getPassword();
     this.imageBytes = registerRequest.getImageBytes();
-    this.imageURL = registerRequest.getImageURL();
   }
 
   @Override
   protected void runTask() throws IOException {
     try {
-      RegisterRequest request = new RegisterRequest(firstName, lastName, username, password, imageBytes, imageURL);
+      RegisterRequest request = new RegisterRequest(firstName, lastName, username, password, imageBytes);
       RegisterResponse response = ServerFacade.getServerFacade().register(request, URL_PATH);
 
       if (response.isSuccess()) {

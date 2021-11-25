@@ -3,25 +3,23 @@ package edu.byu.cs.tweeter.model.net.request;
 /**
  * Contains all the information needed to make a login request.
  */
-public class RegisterRequest extends Request{
+public class RegisterRequest extends Request {
 
   private String firstName;
   private String lastName;
   private String username;
   private String password;
   private String imageBytes;
-  private String imageURL;
 
   public RegisterRequest() {
   }
 
-  public RegisterRequest(String firstName, String lastName, String username, String password, String imageBytes, String imageURL) {
+  public RegisterRequest(String firstName, String lastName, String username, String password, String imageBytes) {
     this.firstName = firstName;
     this.lastName = lastName;
     this.username = username;
     this.password = password;
     this.imageBytes = imageBytes;
-    this.imageURL = imageURL;
   }
 
   public String getFirstName() {
@@ -64,11 +62,4 @@ public class RegisterRequest extends Request{
     this.imageBytes = imageBytes;
   }
 
-  public String getImageURL() {
-    return imageURL;
-  }
-
-  public void setImageURL(String imageURL) {
-    this.imageURL = imageURL;
-  }
 }

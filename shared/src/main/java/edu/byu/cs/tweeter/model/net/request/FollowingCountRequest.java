@@ -3,19 +3,22 @@ package edu.byu.cs.tweeter.model.net.request;
 import edu.byu.cs.tweeter.model.domain.AuthToken;
 import edu.byu.cs.tweeter.model.domain.User;
 
-public class FollowCountRequest extends Request{
+public class FollowingCountRequest extends Request {
   AuthToken authToken;
   User user;
+  Integer followingCount;
 
-  private FollowCountRequest() {
+  private FollowingCountRequest() {
   }
 
-  public FollowCountRequest(AuthToken authToken, User user) {
+  public FollowingCountRequest(AuthToken authToken, User user) {
     this.authToken = authToken;
     this.user = user;
-    if(user != null) {
-      user.setImageBytes(null);
-    }
+  }
+
+  public FollowingCountRequest(User user, Integer newFollowingCount) {
+    this.user = user;
+    this.followingCount = newFollowingCount;
   }
 
   public AuthToken getAuthToken() {
@@ -32,5 +35,13 @@ public class FollowCountRequest extends Request{
 
   public void setUser(User user) {
     this.user = user;
+  }
+
+  public Integer getFollowingCount() {
+    return followingCount;
+  }
+
+  public void setFollowingCount(Integer followingCount) {
+    this.followingCount = followingCount;
   }
 }

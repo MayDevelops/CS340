@@ -396,4 +396,10 @@ public class StoryFragment extends Fragment implements StoryPresenter.StoryView 
       }
     }
   }
+
+  @Override
+  public void onSaveInstanceState(Bundle oldInstanceState) {
+    super.onSaveInstanceState(oldInstanceState);
+    oldInstanceState.clear();
+  }
 }

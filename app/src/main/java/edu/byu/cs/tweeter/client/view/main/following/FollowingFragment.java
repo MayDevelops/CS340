@@ -344,5 +344,11 @@ public class FollowingFragment extends Fragment implements FollowingPresenter.Fo
       }
     }
   }
+
+  @Override
+  public void onSaveInstanceState(Bundle oldInstanceState) {
+    super.onSaveInstanceState(oldInstanceState);
+    oldInstanceState.clear();
+  }
 }
 

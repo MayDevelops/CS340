@@ -4,13 +4,13 @@ import edu.byu.cs.tweeter.model.domain.AuthToken;
 import edu.byu.cs.tweeter.model.domain.Status;
 import edu.byu.cs.tweeter.model.domain.User;
 
-public class FeedRequest extends Request{
+public class FeedRequest extends Request {
   private AuthToken authToken;
   private User user;
   private int limit;
   private Status lastStatus;
 
-  FeedRequest() {
+  private FeedRequest() {
   }
 
   public FeedRequest(AuthToken authToken, User user, int limit, Status lastStatus) {

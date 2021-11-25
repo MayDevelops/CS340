@@ -18,7 +18,6 @@ import edu.byu.cs.tweeter.util.Pair;
 public class GetFeedTask extends PagedStatusTask {
   private static final String URL_PATH = "/feed";
 
-
   public GetFeedTask(FeedRequest feedRequest,
                      Handler messageHandler) {
     super(feedRequest.getAuthToken(), feedRequest.getUser(), 10, feedRequest.getLastStatus(), messageHandler);
@@ -37,7 +36,7 @@ public class GetFeedTask extends PagedStatusTask {
         sendFailedMessage(response.getMessage());
       }
     } catch (Exception e) {
-      Log.e("PagedStatusTask", e.getMessage(), e);
+      Log.e("GetFeedTask", e.getMessage(), e);
       sendExceptionMessage(e);
     }
     return null;

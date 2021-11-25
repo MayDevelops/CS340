@@ -67,7 +67,7 @@ public class MainActivity extends AppCompatActivity implements StatusDialogFragm
       }
     });
 
-    presenter.updateFollowingAndFollowers();
+    presenter.updateFollowingAndFollowers(Cache.getInstance().getCurrUserAuthToken(), selectedUser);
 
     TextView userName = findViewById(R.id.userName);
     userName.setText(selectedUser.getName());
@@ -96,14 +96,11 @@ public class MainActivity extends AppCompatActivity implements StatusDialogFragm
     followButton.setOnClickListener(new View.OnClickListener() {
       @Override
       public void onClick(View v) {
-        //todo this does not get hit when I click the button, only works once before button becomes unresponsive???
-//        followButton.setEnabled(false);
-
         if (followButton.getText().toString().equals(v.getContext().getString(R.string.following))) {
-          presenter.unfollow(Cache.getInstance().getCurrUserAuthToken(), selectedUser);
+          presenter.unfollow(Cache.getInstance().getCurrUserAuthToken(), selectedUser, Cache.getInstance().getCurrUser());
           Toast.makeText(MainActivity.this, "Removing " + selectedUser.getName() + "...", Toast.LENGTH_LONG).show();
         } else {
-          presenter.follow(Cache.getInstance().getCurrUserAuthToken(), selectedUser);
+          presenter.follow(Cache.getInstance().getCurrUserAuthToken(), selectedUser, Cache.getInstance().getCurrUser());
 
           Toast.makeText(MainActivity.this, "Adding " + selectedUser.getName() + "...", Toast.LENGTH_LONG).show();
         }
@@ -156,11 +153,6 @@ public class MainActivity extends AppCompatActivity implements StatusDialogFragm
   }
 
   @Override
-  public void setFollowButton(boolean value) {
-    followButton.setEnabled(value);
-  }
-
-  @Override
   public void setFollowerCount(int count) {
     followerCount.setText(getString(R.string.followerCount, String.valueOf(count)));
   }
@@ -193,5 +185,11 @@ public class MainActivity extends AppCompatActivity implements StatusDialogFragm
       followButton.setText(R.string.follow);
       followButton.setBackgroundColor(getResources().getColor(R.color.colorAccent));
     }
+  }
+
+  @Override
+  public void onSaveInstanceState(Bundle oldInstanceState) {
+    super.onSaveInstanceState(oldInstanceState);
+    oldInstanceState.clear();
   }
 }

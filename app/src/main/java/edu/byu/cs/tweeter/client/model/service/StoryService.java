@@ -12,13 +12,12 @@ import edu.byu.cs.tweeter.client.backgroundTask.observer.ServiceObserver;
 import edu.byu.cs.tweeter.model.domain.AuthToken;
 import edu.byu.cs.tweeter.model.domain.Status;
 import edu.byu.cs.tweeter.model.domain.User;
+import edu.byu.cs.tweeter.model.net.request.StoryRequest;
 
 public class StoryService {
-  private static final int PAGE_SIZE = 10;
 
-  public void getStoryTask(AuthToken authToken, User user, Status lastStatus, ServiceObserver observer) {
-    GetStoryTask getStoryTask = new GetStoryTask(authToken,
-            user, PAGE_SIZE, lastStatus, new GetStoryHandler(observer));
+  public void getStoryTask(StoryRequest storyRequest, StoryObserver observer) {
+    GetStoryTask getStoryTask = new GetStoryTask(storyRequest, new GetStoryHandler(observer));
     new TaskExecutor<>(getStoryTask);
   }
 
@@ -29,7 +28,7 @@ public class StoryService {
 
   private static class GetStoryHandler extends BackgroundTaskHandler {
 
-    public GetStoryHandler(ServiceObserver observer) {
+    public GetStoryHandler(StoryObserver observer) {
       super(observer);
     }
 

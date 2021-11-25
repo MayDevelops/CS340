@@ -41,6 +41,10 @@ public class FollowingPageRequest {
     this.lastFollowingAlias = lastFollowingAlias;
   }
 
+  public FollowingPageRequest(String followerAlias) {
+    this.followerAlias = followerAlias;
+  }
+
   /**
    * Returns the auth token of the user who is making the request.
    *

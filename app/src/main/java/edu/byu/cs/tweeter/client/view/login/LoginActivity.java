@@ -25,4 +25,10 @@ public class LoginActivity extends AppCompatActivity {
     TabLayout tabs = findViewById(R.id.loginTabs);
     tabs.setupWithViewPager(viewPager);
   }
+
+  @Override
+  protected void onSaveInstanceState(Bundle oldInstanceState) {
+    super.onSaveInstanceState(oldInstanceState);
+    oldInstanceState.clear();
+  }
 }

@@ -344,5 +344,10 @@ public class FollowersFragment extends Fragment implements FollowersPresenter.Fo
       }
     }
   }
+  @Override
+  public void onSaveInstanceState(Bundle oldInstanceState) {
+    super.onSaveInstanceState(oldInstanceState);
+    oldInstanceState.clear();
+  }
 }
 

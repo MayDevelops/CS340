@@ -51,4 +51,5 @@ public class LoginSectionsPagerAdapter extends FragmentPagerAdapter {
   public int getCount() {
     return 2;
   }
+
 }

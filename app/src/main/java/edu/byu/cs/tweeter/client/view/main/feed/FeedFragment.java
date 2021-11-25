@@ -409,4 +409,10 @@ public class FeedFragment extends Fragment implements FeedPresenter.FeedView {
       }
     }
   }
+
+  @Override
+  public void onSaveInstanceState(Bundle oldInstanceState) {
+    super.onSaveInstanceState(oldInstanceState);
+    oldInstanceState.clear();
+  }
 }

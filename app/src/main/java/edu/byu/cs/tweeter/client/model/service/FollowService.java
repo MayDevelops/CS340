@@ -18,8 +18,10 @@ import edu.byu.cs.tweeter.client.backgroundTask.handler.TaskExecutor;
 import edu.byu.cs.tweeter.client.backgroundTask.observer.ServiceObserver;
 import edu.byu.cs.tweeter.model.domain.AuthToken;
 import edu.byu.cs.tweeter.model.domain.User;
-import edu.byu.cs.tweeter.model.net.request.FollowCountRequest;
+import edu.byu.cs.tweeter.model.net.request.FollowerCountRequest;
 import edu.byu.cs.tweeter.model.net.request.FollowUserRequest;
+import edu.byu.cs.tweeter.model.net.request.FollowingCountRequest;
+import edu.byu.cs.tweeter.model.net.request.UnfollowUserRequest;
 
 public class FollowService {
 
@@ -27,6 +29,13 @@ public class FollowService {
 
   private User selectedUser;
   private AuthToken authToken;
+
+  public FollowService() {}
+
+  public FollowService(AuthToken authToken, User user) {
+    this.authToken = authToken;
+    this.selectedUser = user;
+  }
 
   public void getFollowers(AuthToken authToken, User user, User lastFollower, GetFollowerObserver observer) {
     GetFollowersTask getFollowersTask = new GetFollowersTask(authToken,
@@ -50,24 +59,24 @@ public class FollowService {
                          GetFolloweeCountObserver followeeCountObserver,
                          GetFollowerCountObserver followerCountObserver) {
     this.authToken = followUserRequest.getAuthToken();
-    this.selectedUser = followUserRequest.getUser();
+    this.selectedUser = followUserRequest.getSelectedUser();
     FollowTask followTask = new FollowTask(followUserRequest, new FollowHandler(observer, followeeCountObserver, followerCountObserver));
     new TaskExecutor<>(followTask);
   }
 
-  public void unfollowTask(FollowUserRequest followUserRequest,
+  public void unfollowTask(UnfollowUserRequest unfollowUserRequest,
                            GetUnfollowObserver observer,
                            GetFolloweeCountObserver followeeCountObserver,
                            GetFollowerCountObserver followerCountObserver) {
-    this.authToken = followUserRequest.getAuthToken();
-    this.selectedUser = followUserRequest.getUser();
-    UnfollowTask unfollowTask = new UnfollowTask(followUserRequest, new UnfollowHandler(observer, followeeCountObserver, followerCountObserver));
+    this.authToken = unfollowUserRequest.getAuthToken();
+    this.selectedUser = unfollowUserRequest.getSelectedUser();
+    UnfollowTask unfollowTask = new UnfollowTask(unfollowUserRequest, new UnfollowHandler(observer, followeeCountObserver, followerCountObserver));
     new TaskExecutor<>(unfollowTask);
   }
 
   public void updateSelectedUserFollowingAndFollowers(GetFollowerCountObserver followerCountObserver, GetFolloweeCountObserver followeeCountObserver) {
-    FollowCountRequest followerCount = new FollowCountRequest(authToken, selectedUser);
-    FollowCountRequest followingCount = new FollowCountRequest(authToken, selectedUser);
+    FollowerCountRequest followerCount = new FollowerCountRequest(authToken, selectedUser);
+    FollowingCountRequest followingCount = new FollowingCountRequest(authToken, selectedUser);
 
     GetFollowersCountTask followersCountTask = new GetFollowersCountTask(followerCount, new GetFollowersCountHandler(followerCountObserver));
     GetFollowingCountTask followingCountTask = new GetFollowingCountTask(followingCount, new GetFollowingCountHandler(followeeCountObserver));
@@ -85,13 +94,13 @@ public class FollowService {
   public interface GetFollowObserver extends ServiceObserver {
     void getFollowSucceeded();
 
-    void follow(AuthToken authToken, User user);
+    void follow(AuthToken authToken, User selectedUser, User currentUser);
   }
 
   public interface GetUnfollowObserver extends ServiceObserver {
     void getUnfollowSucceeded();
 
-    void unfollow(AuthToken authToken, User user);
+    void unfollow(AuthToken authToken, User selectedUser, User currentUser);
   }
 
   public interface GetFollowerCountObserver extends ServiceObserver {
@@ -114,7 +123,7 @@ public class FollowService {
 
     @Override
     protected String getFailedMessagePrefix() {
-      return "Follow Service";
+      return "Failed to check is follower";
     }
 
     @Override
@@ -132,7 +141,7 @@ public class FollowService {
 
     @Override
     protected String getFailedMessagePrefix() {
-      return "Follow Service";
+      return "Failed to get followers";
     }
 
     @Override
@@ -152,7 +161,7 @@ public class FollowService {
 
     @Override
     protected String getFailedMessagePrefix() {
-      return "Follow Service";
+      return "Failed to get following";
     }
 
     @Override
@@ -172,7 +181,7 @@ public class FollowService {
 
     @Override
     protected String getFailedMessagePrefix() {
-      return "Follow Service";
+      return "Failed to get followers count";
     }
 
     @Override
@@ -190,7 +199,7 @@ public class FollowService {
 
     @Override
     protected String getFailedMessagePrefix() {
-      return "Follow Service";
+      return "Failed to get following count";
     }
 
     @Override
@@ -215,7 +224,7 @@ public class FollowService {
 
     @Override
     protected String getFailedMessagePrefix() {
-      return "Follow Service";
+      return "Failed to follow";
     }
 
     @Override
@@ -240,7 +249,7 @@ public class FollowService {
 
     @Override
     protected String getFailedMessagePrefix() {
-      return null;
+      return "Failed to unfollow";
     }
 
     @Override

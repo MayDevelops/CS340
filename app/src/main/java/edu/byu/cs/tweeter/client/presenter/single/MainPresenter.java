@@ -6,6 +6,7 @@ import edu.byu.cs.tweeter.client.model.service.UserService;
 import edu.byu.cs.tweeter.model.domain.AuthToken;
 import edu.byu.cs.tweeter.model.domain.User;
 import edu.byu.cs.tweeter.model.net.request.FollowUserRequest;
+import edu.byu.cs.tweeter.model.net.request.UnfollowUserRequest;
 
 public class MainPresenter implements FollowService.GetFollowObserver,
         FollowService.GetUnfollowObserver,
@@ -39,8 +40,8 @@ public class MainPresenter implements FollowService.GetFollowObserver,
   }
 
 
-  public void updateFollowingAndFollowers() {
-    new FollowService().updateSelectedUserFollowingAndFollowers(this, this);
+  public void updateFollowingAndFollowers(AuthToken authToken, User user) {
+    new FollowService(authToken, user).updateSelectedUserFollowingAndFollowers(this, this);
   }
 
   public void postStatus(String post, User user) {
@@ -55,13 +56,12 @@ public class MainPresenter implements FollowService.GetFollowObserver,
   @Override
   public void getFollowSucceeded() {
     view.followButtonUpdates(false);
-    view.setFollowButton(true);
   }
 
   @Override
-  public void follow(AuthToken authToken, User user) {
+  public void follow(AuthToken authToken, User selectedUser, User currentUser) {
     FollowService followService = new FollowService();
-    FollowUserRequest followUserRequest = new FollowUserRequest(authToken, user);
+    FollowUserRequest followUserRequest = new FollowUserRequest(authToken, selectedUser, currentUser);
     followService.followTask(followUserRequest, this, this, this);
   }
 
@@ -69,14 +69,13 @@ public class MainPresenter implements FollowService.GetFollowObserver,
   @Override
   public void getUnfollowSucceeded() {
     view.followButtonUpdates(true);
-    view.setFollowButton(true);
   }
 
   @Override
-  public void unfollow(AuthToken authToken, User user) {
+  public void unfollow(AuthToken authToken, User selectedUser, User currentUser) {
     FollowService followService = new FollowService();
-    FollowUserRequest followUserRequest = new FollowUserRequest(authToken, user);
-    followService.unfollowTask(followUserRequest, this, this, this);
+    UnfollowUserRequest unfollowUserRequest = new UnfollowUserRequest(authToken, selectedUser, currentUser);
+    followService.unfollowTask(unfollowUserRequest, this, this, this);
   }
 
   @Override
@@ -124,8 +123,6 @@ public class MainPresenter implements FollowService.GetFollowObserver,
   public interface MainView extends SingleView{
 
     void followButtonUpdates(boolean value);
-
-    void setFollowButton(boolean value);
 
     void setFollowerCount(int count);
 

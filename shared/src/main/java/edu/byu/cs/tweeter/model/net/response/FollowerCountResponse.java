@@ -2,21 +2,27 @@ package edu.byu.cs.tweeter.model.net.response;
 
 import edu.byu.cs.tweeter.model.domain.AuthToken;
 import edu.byu.cs.tweeter.model.domain.User;
-import edu.byu.cs.tweeter.model.net.request.FollowCountRequest;
+import edu.byu.cs.tweeter.model.net.request.FollowerCountRequest;
 
-public class FollowCountResponse extends Response {
+public class FollowerCountResponse extends Response {
 
   private AuthToken authToken;
   private User user;
+  private Integer followerCount;
 
-  public FollowCountResponse(String message) {
+  public FollowerCountResponse(String message) {
     super(false, message);
   }
 
-  public FollowCountResponse(FollowCountRequest request) {
+  public FollowerCountResponse(FollowerCountRequest request) {
     super(true, null);
     this.authToken = request.getAuthToken();
     this.user = request.getUser();
+  }
+
+  public FollowerCountResponse(Integer followerCount) {
+    super(true, null);
+    this.followerCount = followerCount;
   }
 
 
@@ -36,11 +42,12 @@ public class FollowCountResponse extends Response {
     this.user = user;
   }
 
-  public int getFollowerCount() {
-    return 20;
+
+  public Integer getFollowerCount() {
+    return followerCount;
   }
 
-  public int getFollowingCount() {
-    return 20;
+  public void setFollowerCount(Integer followerCount) {
+    this.followerCount = followerCount;
   }
 }
