@@ -1,4 +1,4 @@
-package edu.byu.cs.tweeter.server.service;
+package edu.byu.cs.tweeter.server.service.config;
 
 import com.amazonaws.services.dynamodbv2.document.Item;
 
@@ -100,22 +100,6 @@ public class ServiceHelper {
 
     return result;
   }
-
-//  public int getListStartingIndex(Status lastStatus, List<Status> allFeed) {
-//
-//    int feedIndex = 0;
-//
-//    if (lastStatus != null) {
-//      for (int i = 0; i < allFeed.size(); i++) {
-//        if (lastStatus.equals(allFeed.get(i).getUser())) {
-//          feedIndex = i + 1;
-//          break;
-//        }
-//      }
-//    }
-//
-//    return feedIndex;
-//  }
 
   protected User buildUser(Item item) {
     String userHandle = item.getString("user_handle");

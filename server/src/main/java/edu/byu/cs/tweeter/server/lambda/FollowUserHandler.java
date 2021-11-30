@@ -5,7 +5,7 @@ import com.amazonaws.services.lambda.runtime.RequestHandler;
 
 import edu.byu.cs.tweeter.model.net.request.FollowUserRequest;
 import edu.byu.cs.tweeter.model.net.response.FollowUserResponse;
-import edu.byu.cs.tweeter.server.service.config.FollowsService;
+import edu.byu.cs.tweeter.server.service.FollowsService;
 
 
 public class FollowUserHandler implements RequestHandler<FollowUserRequest, FollowUserResponse> {

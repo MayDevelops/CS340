@@ -92,7 +92,7 @@ public class UserService {
   }
 
   public void logout(LogoutObserver observer) {
-    LogoutRequest logoutRequest = new LogoutRequest(Cache.getInstance().getCurrUserAuthToken());
+    LogoutRequest logoutRequest = new LogoutRequest(Cache.getInstance().getCurrUserAuthToken(), Cache.getInstance().getCurrUser().getAlias());
     LogoutTask logoutTask = new LogoutTask(logoutRequest, new LogoutHandler(observer));
     new TaskExecutor<>(logoutTask);
   }

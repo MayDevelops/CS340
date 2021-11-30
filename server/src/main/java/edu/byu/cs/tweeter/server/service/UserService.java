@@ -5,10 +5,14 @@ import com.amazonaws.services.dynamodbv2.document.ItemCollection;
 import com.amazonaws.services.dynamodbv2.document.PutItemOutcome;
 import com.amazonaws.services.dynamodbv2.document.QueryOutcome;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.time.Instant;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.Iterator;
 
 import edu.byu.cs.tweeter.model.domain.AuthToken;
-import edu.byu.cs.tweeter.model.domain.User;
 import edu.byu.cs.tweeter.model.net.request.FollowerCountRequest;
 import edu.byu.cs.tweeter.model.net.request.FollowingCountRequest;
 import edu.byu.cs.tweeter.model.net.request.LoginRequest;
@@ -26,6 +30,7 @@ import edu.byu.cs.tweeter.model.net.response.UserResponse;
 import edu.byu.cs.tweeter.server.factories.abstracts.AuthAbstractFactory;
 import edu.byu.cs.tweeter.server.factories.abstracts.UserAbstractFactory;
 import edu.byu.cs.tweeter.server.helpers.Passwords;
+import edu.byu.cs.tweeter.server.service.config.ServiceHelper;
 
 public class UserService extends ServiceHelper {
   UserAbstractFactory userDAO = ServiceHelper.userDAO;
@@ -47,12 +52,8 @@ public class UserService extends ServiceHelper {
     boolean match = passwords.isExpectedPassword(request.getPassword().toCharArray(), dbSalt, dbPassword);
 
     if (match) {
-//      String userHandle = request.getUsername();
-//      String firstName = item.getString("first_name");
-//      String lastName = item.getString("last_name");
-//      String imageURL = item.getString("image_url");
       AuthToken authToken = new AuthToken();
-//      User user = new User(firstName, lastName, userHandle, imageURL);
+      authDAO.registerToken(new TokenRequest(authToken, request.getUsername(), getEpoch()));
       return new LoginResponse(buildUser(item), authToken);
     } else {
       return new LoginResponse("Failed to Login");
@@ -63,13 +64,9 @@ public class UserService extends ServiceHelper {
     Item outcome = userDAO.register(request);
 
     if (outcome != null) {
-//      User newUser = new User(
-//              outcome.getString("first_name"),
-//              outcome.getString("last_name"),
-//              outcome.getString("user_handle"),
-//              outcome.getString("image_url"));
 
       AuthToken authToken = new AuthToken();
+      authDAO.registerToken(new TokenRequest(authToken, request.getUsername(), getEpoch()));
       return new RegisterResponse(buildUser(outcome), authToken);
     } else {
       return new RegisterResponse("Failed to Register");
@@ -78,17 +75,13 @@ public class UserService extends ServiceHelper {
 
   public LogoutResponse logout(LogoutRequest request) {
     AuthToken authToken = request.getAuthToken();
+    authDAO.removeToken(new TokenRequest(request.getAuthToken(), request.getAlias()));
+
     return new LogoutResponse(authToken);
   }
 
   public UserResponse getUser(UserRequest request) {
     Item outcome = userDAO.getUser(request);
-//
-//    User newUser = new User(
-//            outcome.getString("first_name"),
-//            outcome.getString("last_name"),
-//            outcome.getString("user_handle"),
-//            outcome.getString("image_url"));
 
     return new UserResponse(buildUser(outcome));
   }
@@ -113,18 +106,15 @@ public class UserService extends ServiceHelper {
     PutItemOutcome outcome = authDAO.registerToken(request);
 
     Item item = outcome.getItem();
-    AuthToken authToken = new AuthToken(item.getString("auth_token"));
+    AuthToken authToken = new AuthToken(item.getString("token"));
 
     return new TokenResponse(authToken, item.getString("user_handle"));
   }
 
-//  User buildUser(Item item) {
-//    String userHandle = item.getString("user_handle");
-//    String firstName = item.getString("first_name");
-//    String lastName = item.getString("last_name");
-//    String imageURL = item.getString("image_url");
-//    return new User(firstName, lastName, userHandle, imageURL);
-//  }
-
+  public long getEpoch() {
+    long time = System.currentTimeMillis()/1000;
+    time += 10 * 60;
+    return time;
+  }
 
 }

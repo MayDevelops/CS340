@@ -13,14 +13,13 @@ import edu.byu.cs.tweeter.model.net.request.UserRequest;
 import edu.byu.cs.tweeter.model.net.request.parents.CountRequest;
 import edu.byu.cs.tweeter.model.net.request.parents.FollowsPageRequest;
 import edu.byu.cs.tweeter.model.net.response.Response;
-import edu.byu.cs.tweeter.server.service.ServiceHelper;
 
 public abstract class FollowsServiceHelper extends ServiceHelper {
   public FollowsServiceHelper() {
     super();
   }
 
-  Response runRequest(FollowsPageRequest request) {
+  public Response runRequest(FollowsPageRequest request) {
 
     assert request.getLimit() > 0;
     assert request.getFollowerAlias() != null;
@@ -45,7 +44,6 @@ public abstract class FollowsServiceHelper extends ServiceHelper {
     Item requestUserItem = userDAO.getUser(new UserRequest(request.getFollowerAlias()));
     User tempRequestUser = buildUser(requestUserItem);
 
-//    userDAO.updateFollowerCount(new FollowerCountRequest(tempRequestUser, count));
     updateCount(new CountRequest(tempRequestUser, count));
 
     boolean hasMorePages = false;
@@ -60,7 +58,6 @@ public abstract class FollowsServiceHelper extends ServiceHelper {
         hasMorePages = followsIndex < allFollows.size();
       }
     }
-//    return new FollowerPageResponse(responseFollows, hasMorePages);
     return returnResponse(responseFollows, hasMorePages);
   }
 
@@ -71,29 +68,5 @@ public abstract class FollowsServiceHelper extends ServiceHelper {
   public abstract void updateCount(CountRequest request);
 
   public abstract Response returnResponse(List<User> responseFollows, boolean hasMorePages);
-
-//  private int getUserStartingIndex(String lastFolloweeAlias, List<User> allFollowees) {
-//
-//    int followeesIndex = 0;
-//
-//    if (lastFolloweeAlias != null) {
-//      for (int i = 0; i < allFollowees.size(); i++) {
-//        if (lastFolloweeAlias.equals(allFollowees.get(i).getAlias())) {
-//          followeesIndex = i + 1;
-//          break;
-//        }
-//      }
-//    }
-//    return followeesIndex;
-//  }
-
-//  User buildUser(Item item) {
-//    String userHandle = item.getString("user_handle");
-//    String firstName = item.getString("first_name");
-//    String lastName = item.getString("last_name");
-//    String imageURL = item.getString("image_url");
-//    return new User(firstName, lastName, userHandle, imageURL);
-//  }
-
 
 }

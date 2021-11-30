@@ -20,6 +20,7 @@ import edu.byu.cs.tweeter.model.net.response.PostStatusResponse;
 import edu.byu.cs.tweeter.server.factories.abstracts.FollowsAbstractFactory;
 import edu.byu.cs.tweeter.server.factories.abstracts.StoryAbstractFactory;
 import edu.byu.cs.tweeter.server.factories.abstracts.UserAbstractFactory;
+import edu.byu.cs.tweeter.server.service.config.ServiceHelper;
 import edu.byu.cs.tweeter.server.util.Pair;
 
 public class FeedService extends ServiceHelper {
@@ -74,7 +75,6 @@ public class FeedService extends ServiceHelper {
       }
     }
 
-
     Pair<List<Status>, Boolean> feed = getPageOfStatus(request.getLastStatus(), request.getLimit(), feedStatuses);
 
     List<Status> allStatuses = feed.getFirst();
@@ -94,48 +94,5 @@ public class FeedService extends ServiceHelper {
 
     return new FeedResponse(responseFeed, hasMorePages);
   }
-
-//  private int getFeedStartingIndex(Status lastStatus, List<Status> allFeed) {
-//
-//    int feedIndex = 0;
-//
-//    if (lastStatus != null) {
-//      for (int i = 0; i < allFeed.size(); i++) {
-//        if (lastStatus.equals(allFeed.get(i).getUser())) {
-//          feedIndex = i + 1;
-//          break;
-//        }
-//      }
-//    }
-//
-//    return feedIndex;
-//  }
-//
-//  public Pair<List<Status>, Boolean> getPageOfStatus(Status lastStatus, int limit, List<Status> feedStatuses) {
-//
-//    Pair<List<Status>, Boolean> result = new Pair<>(new ArrayList<>(), false);
-//
-//    int index = 0;
-//
-//    if (lastStatus != null) {
-//      for (int i = 0; i < feedStatuses.size(); ++i) {
-//        Status curStatus = feedStatuses.get(i);
-//        if (curStatus.getUser().getAlias().equals(lastStatus.getUser().getAlias()) &&
-//                curStatus.getDate().equals(lastStatus.getDate())) {
-//          index = i + 1;
-//          break;
-//        }
-//      }
-//    }
-//
-//    for (int count = 0; index < feedStatuses.size() && count < limit; ++count, ++index) {
-//      Status curStatus = feedStatuses.get(index);
-//      result.getFirst().add(curStatus);
-//    }
-//
-//    result.setSecond(index < feedStatuses.size());
-//
-//    return result;
-//  }
 
 }

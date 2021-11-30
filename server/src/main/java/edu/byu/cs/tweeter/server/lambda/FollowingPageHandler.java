@@ -5,7 +5,7 @@ import com.amazonaws.services.lambda.runtime.RequestHandler;
 
 import edu.byu.cs.tweeter.model.net.request.FollowingPageRequest;
 import edu.byu.cs.tweeter.model.net.response.FollowingPageResponse;
-import edu.byu.cs.tweeter.server.service.config.FollowsService;
+import edu.byu.cs.tweeter.server.service.FollowsService;
 
 /**
  * An AWS lambda function that returns the users a user is following.
