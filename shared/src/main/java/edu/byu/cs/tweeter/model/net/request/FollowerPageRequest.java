@@ -9,6 +9,10 @@ public class FollowerPageRequest extends FollowsPageRequest {
     super();
   }
 
+  public FollowerPageRequest(String followerAlias) {
+    super(followerAlias);
+  }
+
   public FollowerPageRequest(AuthToken authToken, String followerAlias, int limit, String lastFollowingAlias) {
     super(authToken, followerAlias, limit, lastFollowingAlias);
   }

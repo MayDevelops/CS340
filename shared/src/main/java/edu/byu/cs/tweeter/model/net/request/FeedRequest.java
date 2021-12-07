@@ -10,8 +10,13 @@ public class FeedRequest extends Request {
   private User user;
   private int limit;
   private Status lastStatus;
+  private String userAlias;
 
   private FeedRequest() {
+  }
+
+  public FeedRequest(String userAlias) {
+    this.userAlias = userAlias;
   }
 
   public FeedRequest(AuthToken authToken, User user, int limit, Status lastStatus) {
@@ -57,5 +62,13 @@ public class FeedRequest extends Request {
 
   public void setLimit(int limit) {
     this.limit = limit;
+  }
+
+  public String getUserAlias() {
+    return userAlias;
+  }
+
+  public void setUserAlias(String userAlias) {
+    this.userAlias = userAlias;
   }
 }
