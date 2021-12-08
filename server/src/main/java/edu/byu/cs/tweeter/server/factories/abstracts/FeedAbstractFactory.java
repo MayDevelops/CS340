@@ -6,9 +6,10 @@ import com.amazonaws.services.dynamodbv2.document.QueryOutcome;
 
 import edu.byu.cs.tweeter.model.net.request.FeedRequest;
 import edu.byu.cs.tweeter.model.net.request.PostStatusRequest;
+import edu.byu.cs.tweeter.server.util.Pair;
 
 public abstract class FeedAbstractFactory {
-  public abstract ItemCollection<QueryOutcome> getFeed(FeedRequest request);
+  public abstract Pair<ItemCollection<QueryOutcome>, Boolean> getFeed(FeedRequest request);
 
   public abstract Boolean addToFeed(PostStatusRequest request);
 

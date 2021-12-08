@@ -10,12 +10,16 @@ import edu.byu.cs.tweeter.model.net.request.FollowUserRequest;
 import edu.byu.cs.tweeter.model.net.request.FollowerPageRequest;
 import edu.byu.cs.tweeter.model.net.request.FollowingPageRequest;
 import edu.byu.cs.tweeter.model.net.request.UnfollowUserRequest;
+import edu.byu.cs.tweeter.server.util.Pair;
 
 public interface FollowsDAOInterface {
 
-  ItemCollection<QueryOutcome> getFollowing(FollowingPageRequest request);
+  Pair<ItemCollection<QueryOutcome>, Boolean> getFollowing(FollowingPageRequest request);
 
-  ItemCollection<QueryOutcome> getFollowers(FollowerPageRequest request);
+  Pair<ItemCollection<QueryOutcome>, Boolean> getFollowers(FollowerPageRequest request);
+
+  ItemCollection<QueryOutcome> getAllFollowers(FollowerPageRequest request);
+  ItemCollection<QueryOutcome> getAllFollowing(FollowingPageRequest request);
 
   PutItemOutcome follow(FollowUserRequest request);
 

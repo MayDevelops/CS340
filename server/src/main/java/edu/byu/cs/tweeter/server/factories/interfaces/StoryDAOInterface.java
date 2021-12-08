@@ -6,11 +6,11 @@ import com.amazonaws.services.dynamodbv2.document.QueryOutcome;
 
 import edu.byu.cs.tweeter.model.net.request.PostStatusRequest;
 import edu.byu.cs.tweeter.model.net.request.StoryRequest;
+import edu.byu.cs.tweeter.server.util.Pair;
 
 public interface StoryDAOInterface {
 
-  ItemCollection<QueryOutcome> getStories(StoryRequest request);
+  Pair<ItemCollection<QueryOutcome>, Boolean> getStories(StoryRequest request);
+
   PutItemOutcome postStatus(PostStatusRequest request);
-
-
 }

@@ -26,13 +26,15 @@ public class StoryService extends ServiceHelper {
     super();
   }
 
-  public StoryResponse getStories(StoryRequest request) {
 
+  public StoryResponse getStories(StoryRequest request) {
     assert request.getLimit() > 0;
     assert request.getUser() != null;
     List<Status> storyStatuses = new ArrayList<>();
-    ItemCollection<QueryOutcome> userStories = storyDAO.getStories(request);
-    Iterator<Item> storyIterator = userStories.iterator();
+    Pair<ItemCollection<QueryOutcome>, Boolean> userStories = storyDAO.getStories(request);
+
+    Iterator<Item> storyIterator = userStories.getFirst().iterator();
+    Boolean hasMorePages = userStories.getSecond();
 
     Item userItem = userDAO.getUser(new UserRequest(request.getUser().getAlias()));
 
@@ -49,25 +51,7 @@ public class StoryService extends ServiceHelper {
       Status tempStatus = new Status(post, user, dateTime, urls, mentions);
       storyStatuses.add(tempStatus);
     }
-
-    Pair<List<Status>, Boolean> stories = getPageOfStatus(request.getLastStatus(), request.getLimit(), storyStatuses);
-
-    List<Status> allStatuses = stories.getFirst();
-    boolean hasMorePages = stories.getSecond();
-
-    List<Status> responseFeed = new ArrayList<>(request.getLimit());
-
-    if (request.getLimit() > 0) {
-      if (allStatuses != null) {
-        int feedIndex = getStatusStartingIndex(request.getLastStatus(), allStatuses);
-
-        for (int limitCounter = 0; feedIndex < allStatuses.size() && limitCounter < request.getLimit(); feedIndex++, limitCounter++) {
-          responseFeed.add(allStatuses.get(feedIndex));
-        }
-      }
-    }
-
-    return new StoryResponse(responseFeed, hasMorePages);
+    return new StoryResponse(storyStatuses, hasMorePages);
   }
 
 }

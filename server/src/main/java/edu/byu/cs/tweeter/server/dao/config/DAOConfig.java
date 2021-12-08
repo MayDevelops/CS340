@@ -6,6 +6,7 @@ import com.amazonaws.services.dynamodbv2.document.DynamoDB;
 import com.amazonaws.services.dynamodbv2.document.Table;
 
 public class DAOConfig {
+  public int MAX_ITEMS = 10;
   AmazonDynamoDB client = AmazonDynamoDBClientBuilder.standard()
           .withRegion("us-west-2").build();
   DynamoDB dynamoDB = new DynamoDB(client);

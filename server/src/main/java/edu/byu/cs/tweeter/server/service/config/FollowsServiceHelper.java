@@ -13,6 +13,7 @@ import edu.byu.cs.tweeter.model.net.request.UserRequest;
 import edu.byu.cs.tweeter.model.net.request.parents.CountRequest;
 import edu.byu.cs.tweeter.model.net.request.parents.FollowsPageRequest;
 import edu.byu.cs.tweeter.model.net.response.Response;
+import edu.byu.cs.tweeter.server.util.Pair;
 
 public abstract class FollowsServiceHelper extends ServiceHelper {
   public FollowsServiceHelper() {
@@ -24,12 +25,12 @@ public abstract class FollowsServiceHelper extends ServiceHelper {
     assert request.getLimit() > 0;
     assert request.getFollowerAlias() != null;
 
-    List<User> allFollows = new ArrayList<>();
-    List<User> responseFollows = new ArrayList<>(request.getLimit());
+    List<User> allFollows = new ArrayList<>(request.getLimit());
     Integer count;
 
-    ItemCollection<QueryOutcome> items = getQueryOutcome(request);
-    Iterator<Item> iterator = items.iterator();
+    Pair<ItemCollection<QueryOutcome>, Boolean> items = getQueryOutcome(request);
+    Iterator<Item> iterator = items.getFirst().iterator();
+    Boolean hasMorePages = items.getSecond();
 
     while (iterator.hasNext()) {
       Item item = iterator.next();
@@ -45,23 +46,10 @@ public abstract class FollowsServiceHelper extends ServiceHelper {
     User tempRequestUser = buildUser(requestUserItem);
 
     updateCount(new CountRequest(tempRequestUser, count));
-
-    boolean hasMorePages = false;
-
-    if (request.getLimit() > 0) {
-      if (allFollows != null) {
-        int followsIndex = getUserStartingIndex(request.getLastFollowsAlias(), allFollows);
-
-        for (int limitCounter = 0; followsIndex < allFollows.size() && limitCounter < request.getLimit(); followsIndex++, limitCounter++) {
-          responseFollows.add(allFollows.get(followsIndex));
-        }
-        hasMorePages = followsIndex < allFollows.size();
-      }
-    }
-    return returnResponse(responseFollows, hasMorePages);
+    return returnResponse(allFollows, hasMorePages);
   }
 
-  public abstract ItemCollection<QueryOutcome> getQueryOutcome(FollowsPageRequest request);
+  public abstract Pair<ItemCollection<QueryOutcome>, Boolean> getQueryOutcome(FollowsPageRequest request);
 
   public abstract Item findUser(Item item);
 

@@ -8,10 +8,11 @@ import edu.byu.cs.tweeter.model.net.request.PostStatusRequest;
 import edu.byu.cs.tweeter.model.net.request.StoryRequest;
 import edu.byu.cs.tweeter.server.dao.StoryDAO;
 import edu.byu.cs.tweeter.server.factories.abstracts.StoryAbstractFactory;
+import edu.byu.cs.tweeter.server.util.Pair;
 
 public class StoryDAOFactory extends StoryAbstractFactory {
   @Override
-  public ItemCollection<QueryOutcome> getStories(StoryRequest request) {
+  public Pair<ItemCollection<QueryOutcome>, Boolean> getStories(StoryRequest request) {
     return new StoryDAO().getStories(request);
   }
 

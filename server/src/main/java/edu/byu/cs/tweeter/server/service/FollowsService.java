@@ -25,6 +25,7 @@ import edu.byu.cs.tweeter.model.net.response.UnfollowUserResponse;
 import edu.byu.cs.tweeter.server.factories.abstracts.FollowsAbstractFactory;
 import edu.byu.cs.tweeter.server.service.config.FollowsServiceHelper;
 import edu.byu.cs.tweeter.server.service.config.ServiceHelper;
+import edu.byu.cs.tweeter.server.util.Pair;
 
 public class FollowsService {
   FollowsAbstractFactory followDAO = ServiceHelper.followDAO;
@@ -51,7 +52,7 @@ public class FollowsService {
     }
 
     @Override
-    public ItemCollection<QueryOutcome> getQueryOutcome(FollowsPageRequest request) {
+    public Pair<ItemCollection<QueryOutcome>, Boolean> getQueryOutcome(FollowsPageRequest request) {
       return followDAO.getFollowers((FollowerPageRequest) request);
     }
 
@@ -77,7 +78,7 @@ public class FollowsService {
     }
 
     @Override
-    public ItemCollection<QueryOutcome> getQueryOutcome(FollowsPageRequest request) {
+    public Pair<ItemCollection<QueryOutcome>, Boolean> getQueryOutcome(FollowsPageRequest request) {
       return followDAO.getFollowing((FollowingPageRequest) request);
     }
 

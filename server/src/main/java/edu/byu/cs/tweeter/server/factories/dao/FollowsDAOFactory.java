@@ -12,16 +12,27 @@ import edu.byu.cs.tweeter.model.net.request.FollowingPageRequest;
 import edu.byu.cs.tweeter.model.net.request.UnfollowUserRequest;
 import edu.byu.cs.tweeter.server.dao.FollowsDAO;
 import edu.byu.cs.tweeter.server.factories.abstracts.FollowsAbstractFactory;
+import edu.byu.cs.tweeter.server.util.Pair;
 
 public class FollowsDAOFactory extends FollowsAbstractFactory {
 
   @Override
-  public ItemCollection<QueryOutcome> getFollowing(FollowingPageRequest request) {
+  public Pair<ItemCollection<QueryOutcome>, Boolean> getFollowing(FollowingPageRequest request) {
     return new FollowsDAO().getFollowing(request);
   }
 
   @Override
-  public ItemCollection<QueryOutcome> getFollowers(FollowerPageRequest request) {
+  public ItemCollection<QueryOutcome> getAllFollowing(FollowingPageRequest request) {
+    return new FollowsDAO().getAllFollowing(request);
+  }
+
+  @Override
+  public ItemCollection<QueryOutcome> getAllFollowers(FollowerPageRequest request) {
+    return new FollowsDAO().getAllFollowers(request);
+  }
+
+  @Override
+  public Pair<ItemCollection<QueryOutcome>, Boolean> getFollowers(FollowerPageRequest request) {
     return new FollowsDAO().getFollowers(request);
   }
 

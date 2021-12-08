@@ -6,6 +6,7 @@ import com.amazonaws.services.dynamodbv2.document.BatchWriteItemOutcome;
 import com.amazonaws.services.dynamodbv2.document.DynamoDB;
 import com.amazonaws.services.dynamodbv2.document.Item;
 import com.amazonaws.services.dynamodbv2.document.ItemCollection;
+import com.amazonaws.services.dynamodbv2.document.PrimaryKey;
 import com.amazonaws.services.dynamodbv2.document.QueryOutcome;
 import com.amazonaws.services.dynamodbv2.document.TableWriteItems;
 import com.amazonaws.services.dynamodbv2.document.spec.QuerySpec;
@@ -23,6 +24,7 @@ import edu.byu.cs.tweeter.server.dao.config.DAOConfig;
 import edu.byu.cs.tweeter.server.factories.abstracts.FollowsAbstractFactory;
 import edu.byu.cs.tweeter.server.factories.interfaces.FeedDAOInterface;
 import edu.byu.cs.tweeter.server.service.config.ServiceHelper;
+import edu.byu.cs.tweeter.server.util.Pair;
 
 public class FeedDAO extends DAOConfig implements FeedDAOInterface {
 
@@ -32,13 +34,51 @@ public class FeedDAO extends DAOConfig implements FeedDAOInterface {
     super();
   }
 
-  public ItemCollection<QueryOutcome> getFeed(FeedRequest request) {
-    QuerySpec feedSpec = new QuerySpec()
-            .withKeyConditionExpression("user_handle = :v_id")
-            .withValueMap(new ValueMap()
-                    .withString(":v_id", request.getUser().getAlias()));
+  public Pair<ItemCollection<QueryOutcome>, Boolean> getFeed(FeedRequest request) {
+    ItemCollection<QueryOutcome> results;
+    QuerySpec feedSpec;
+    Boolean hasMorePages;
 
-    return feedTable.query(feedSpec);
+    if (request.getLastStatus() == null) {
+      feedSpec = new QuerySpec()
+              .withKeyConditionExpression("user_handle = :v_id")
+              .withValueMap(new ValueMap()
+                      .withString(":v_id", request.getUser().getAlias()))
+              .withMaxResultSize(request.getLimit());
+
+      results = feedTable.query(feedSpec);
+      List<Item> a = new ArrayList<>();
+      results.pages().forEach(p -> {
+        p.iterator().forEachRemaining(o -> a.add(o));
+      });
+
+      if(results.getLastLowLevelResult().getQueryResult().getLastEvaluatedKey() == null) {
+        hasMorePages = false;
+      } else {
+        hasMorePages = true;
+      }
+      return new Pair<>(results, hasMorePages);
+
+    } else {
+      PrimaryKey lastKey = new PrimaryKey("user_handle", request.getLastStatus().getUser().getAlias(),
+              "datetime", request.getLastStatus().getDate());
+
+      feedSpec = new QuerySpec()
+              .withKeyConditionExpression("user_handle = :v_id")
+              .withValueMap(new ValueMap()
+                      .withString(":v_id", request.getUser().getAlias()))
+              .withMaxResultSize(request.getLimit())
+              .withExclusiveStartKey(lastKey);
+
+      results = feedTable.query(feedSpec);
+      List<Item> a = new ArrayList<>();
+      results.pages().forEach(p -> {
+        p.iterator().forEachRemaining(o -> a.add(o));
+      });
+      hasMorePages = (results.getLastLowLevelResult().getQueryResult().getLastEvaluatedKey() != null);
+      return new Pair<>(results, hasMorePages);
+    }
+
   }
 
   public Boolean addToFeed(PostStatusRequest request) {
@@ -46,7 +86,7 @@ public class FeedDAO extends DAOConfig implements FeedDAOInterface {
 
     try {
 
-      ItemCollection<QueryOutcome> allFollowers = followDAO.getFollowers(new FollowerPageRequest(request.getStatus().getUser().getAlias()));
+      ItemCollection<QueryOutcome> allFollowers = followDAO.getAllFollowers(new FollowerPageRequest(request.getStatus().getUser().getAlias()));
 
       for (Item follower : allFollowers) {
 

@@ -55,11 +55,13 @@ public class FeedService extends ServiceHelper {
     assert request.getLimit() > 0;
     assert request.getUser() != null;
     List<Status> feedStatuses = new ArrayList<>();
-    ItemCollection<QueryOutcome> allFeed = feedDAO.getFeed(request);
-    Iterator<Item> iterator = allFeed.iterator();
+    Pair<ItemCollection<QueryOutcome>, Boolean> allFeed = feedDAO.getFeed(request);
 
-    while (iterator.hasNext()) {
-      Item item = iterator.next();
+    Iterator<Item> feedIterator = allFeed.getFirst().iterator();
+    Boolean hasMorePages = allFeed.getSecond();
+
+    while (feedIterator.hasNext()) {
+      Item item = feedIterator.next();
       Item userItem = userDAO.getUser(new UserRequest(item.getString("post_user")));
 
       String userHandle = userItem.getString("user_handle");
@@ -77,24 +79,7 @@ public class FeedService extends ServiceHelper {
       feedStatuses.add(tempStatus);
     }
 
-    Pair<List<Status>, Boolean> feed = getPageOfStatus(request.getLastStatus(), request.getLimit(), feedStatuses);
-
-    List<Status> allStatuses = feed.getFirst();
-    boolean hasMorePages = feed.getSecond();
-
-    List<Status> responseFeed = new ArrayList<>(request.getLimit());
-
-    if (request.getLimit() > 0) {
-      if (allStatuses != null) {
-        int feedIndex = getStatusStartingIndex(request.getLastStatus(), allStatuses);
-
-        for (int limitCounter = 0; feedIndex < allStatuses.size() && limitCounter < request.getLimit(); feedIndex++, limitCounter++) {
-          responseFeed.add(allStatuses.get(feedIndex));
-        }
-      }
-    }
-
-    return new FeedResponse(responseFeed, hasMorePages);
+    return new FeedResponse(feedStatuses, hasMorePages);
   }
 
 
