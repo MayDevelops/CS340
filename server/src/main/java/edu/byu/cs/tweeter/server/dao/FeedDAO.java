@@ -12,6 +12,11 @@ import com.amazonaws.services.dynamodbv2.document.TableWriteItems;
 import com.amazonaws.services.dynamodbv2.document.spec.QuerySpec;
 import com.amazonaws.services.dynamodbv2.document.utils.ValueMap;
 import com.amazonaws.services.dynamodbv2.model.WriteRequest;
+import com.amazonaws.services.sqs.AmazonSQS;
+import com.amazonaws.services.sqs.AmazonSQSClientBuilder;
+import com.amazonaws.services.sqs.model.SendMessageRequest;
+import com.amazonaws.services.sqs.model.SendMessageResult;
+import com.google.gson.Gson;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -82,28 +87,45 @@ public class FeedDAO extends DAOConfig implements FeedDAOInterface {
   }
 
   public Boolean addToFeed(PostStatusRequest request) {
-    List<String> allFollowerAlias = new ArrayList<>();
+//    String queueUrl = "https://sqs.us-west-2.amazonaws.com/245031076589/PostStatusQueue";
+//
+//    SendMessageRequest send_msg_request = new SendMessageRequest()
+//            .withQueueUrl(queueUrl)
+//            .withMessageBody(new Gson().toJson(request))
+//            .withDelaySeconds(5);
+//
+//    AmazonSQS sqs = AmazonSQSClientBuilder.defaultClient();
+//    SendMessageResult send_msg_result = sqs.sendMessage(send_msg_request);
+//    String msgId = send_msg_result.getMessageId();
+//    System.out.println("request -> json: Message ID: " + msgId + " \n\n JSON Object: " +  new Gson().toJson(request));
 
-    try {
+return true;
 
-      ItemCollection<QueryOutcome> allFollowers = followDAO.getAllFollowers(new FollowerPageRequest(request.getStatus().getUser().getAlias()));
 
-      for (Item follower : allFollowers) {
 
-        String followerAlias = follower.getString("follower_handle");
-        allFollowerAlias.add(followerAlias);
-      }
 
-      if (allFollowerAlias.size() > 0) {
-        addUserBatch(allFollowerAlias, request);
-      }
 
-      return true;
-    } catch (Exception e) {
-      return null;
-    }
+//    List<String> allFollowerAlias = new ArrayList<>();
+//
+//    try {
+//
+//      ItemCollection<QueryOutcome> allFollowers = followDAO.getAllFollowers(new FollowerPageRequest(request.getStatus().getUser().getAlias()));
+//
+//      for (Item follower : allFollowers) {
+//
+//        String followerAlias = follower.getString("follower_handle");
+//        allFollowerAlias.add(followerAlias);
+//      }
+//
+//      if (allFollowerAlias.size() > 0) {
+//        addUserBatch(allFollowerAlias, request);
+//      }
+//
+//      return true;
+//    } catch (Exception e) {
+//      return null;
+//    }
   }
-
 
   public void addUserBatch(List<String> users, PostStatusRequest request) {
 
@@ -142,3 +164,5 @@ public class FeedDAO extends DAOConfig implements FeedDAOInterface {
   }
 
 }
+
+

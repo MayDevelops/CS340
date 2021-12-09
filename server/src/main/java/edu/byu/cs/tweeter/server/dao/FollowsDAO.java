@@ -58,8 +58,6 @@ public class FollowsDAO extends DAOConfig implements FollowsDAOInterface {
       return new Pair<>(results, hasMorePages);
 
     } else {
-      //todo could be broken?
-
       PrimaryKey lastKey = new PrimaryKey("follower_handle", request.getFollowerAlias(), "followee_handle", request.getLastFollowsAlias());
 
       followsSpec = new QuerySpec()
@@ -109,8 +107,6 @@ public class FollowsDAO extends DAOConfig implements FollowsDAOInterface {
       return new Pair<>(results, hasMorePages);
 
     } else {
-      //todo could be broken?
-
       PrimaryKey lastKey = new PrimaryKey("follower_handle", request.getLastFollowsAlias(),
               "followee_handle", request.getFollowerAlias());
 
