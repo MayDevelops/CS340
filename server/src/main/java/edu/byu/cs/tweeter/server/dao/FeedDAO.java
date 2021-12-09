@@ -19,6 +19,7 @@ import com.amazonaws.services.sqs.model.SendMessageResult;
 import com.google.gson.Gson;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
@@ -65,7 +66,7 @@ public class FeedDAO extends DAOConfig implements FeedDAOInterface {
       return new Pair<>(results, hasMorePages);
 
     } else {
-      PrimaryKey lastKey = new PrimaryKey("user_handle", request.getLastStatus().getUser().getAlias(),
+      PrimaryKey lastKey = new PrimaryKey("user_handle", request.getUser().getAlias(),
               "datetime", request.getLastStatus().getDate());
 
       feedSpec = new QuerySpec()

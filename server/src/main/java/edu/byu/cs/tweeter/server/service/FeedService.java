@@ -52,6 +52,7 @@ public class FeedService extends ServiceHelper {
   }
 
   public PostStatusResponse postStatus(PostStatusRequest request) {
+//    request.getStatus().getUser().setImageBytes(null);
     storyDAO.postStatus(request);
 
     String queueUrl = "https://sqs.us-west-2.amazonaws.com/245031076589/PostStatusQueue";
