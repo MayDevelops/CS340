@@ -15,20 +15,20 @@ import com.google.gson.Gson;
 import java.util.List;
 import java.util.Map;
 
+import edu.byu.cs.tweeter.model.domain.Status;
 import edu.byu.cs.tweeter.model.net.request.PostStatusRequest;
 import edu.byu.cs.tweeter.model.net.request.PostUpdateFeedMessagesRequest;
 
-public class UpdateFeed implements RequestHandler<SQSEvent, Void> {
+public class UpdateFeedHandler implements RequestHandler<SQSEvent, Void> {
   @Override
   public Void handleRequest(SQSEvent event, Context context) {
     if (event.getRecords() == null) {
       return null;
     }
-    int count = 1;
     for (SQSEvent.SQSMessage msg : event.getRecords()) {
       PostUpdateFeedMessagesRequest request = new Gson().fromJson(msg.getBody(), PostUpdateFeedMessagesRequest.class);
 
-      System.out.println("Adding user batch..." + count++);
+      System.out.println(request.getAllAlias().size());
       addUserBatch(request.getAllAlias(), request.getPostStatusRequest());
 
     }
@@ -36,11 +36,13 @@ public class UpdateFeed implements RequestHandler<SQSEvent, Void> {
   }
 
   public void addUserBatch(List<String> users, PostStatusRequest request) {
-    String postUser = request.getStatus().getUser().getAlias();
-    String post = request.getStatus().getPost();
-    String dateTime = request.getStatus().getDate();
-    List<String> urls = request.getStatus().getUrls();
-    List<String> mentions = request.getStatus().getMentions();
+    Status status = request.getStatus();
+
+    String postUser = status.getUser().getAlias();
+    String post = status.getPost();
+    String dateTime = status.getDate();
+    List<String> urls = status.getUrls();
+    List<String> mentions = status.getMentions();
 
     TableWriteItems items = new TableWriteItems("feed");
 
